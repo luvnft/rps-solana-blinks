@@ -30,7 +30,7 @@ import {
             {
               type: "number",
               name: "amount", // parameter name in the `href` above
-              label: "Donation Amount in SOL", // placeholder of the text input
+              label: "Bet Amount in SOL", // placeholder of the text input
               required: true,
             },
             {

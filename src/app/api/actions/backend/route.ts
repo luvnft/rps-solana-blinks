@@ -1,61 +1,11 @@
-import {
-  ActionPostResponse,
-  createActionHeaders,
-  createPostResponse,
-  ActionGetResponse,
-  ActionPostRequest,
-  MEMO_PROGRAM_ID,
-} from "@solana/actions";
-
-import { 
-  clusterApiUrl,
-  ComputeBudgetProgram,
-  Connection,
-  PublicKey,
-  Transaction,
-  TransactionInstruction
-} from "@solana/web3.js";
+import { ActionPostRequest, ActionPostResponse, createActionHeaders, createPostResponse, MEMO_PROGRAM_ID } from "@solana/actions";
+import { clusterApiUrl, ComputeBudgetProgram, Connection, PublicKey, Transaction, TransactionInstruction } from "@solana/web3.js";
 
 const headers = createActionHeaders({
-  chainId: "devnet", // or chainId: "devnet"
-  actionVersion: "2.2.1", // the desired spec version
-});
-export const GET = async (req: Request) => {
-  const payload: ActionGetResponse = {
-    title: "Rock Paper Scissors",
-    icon: new URL(
-      "/icon.png",
-      new URL(req.url).origin
-    ).toString(),
-    description:
-      "Simple On-chain Memo Blinks: Send a message on-chain using Solana Memo program via Blinks.",
-    label: "Send Memo",
-    links: 
-      {
-        actions: [
-          {
-            label: "Send Memo1",
-            href: "/api/actions/backend",
-            type: "transaction"
-          },
-
-        {
-          label: "Send Memo2",
-          href: req.url,
-          type: "transaction"
-        }
-      ]
-      }
-  };
-
-  return Response.json(payload, {
-    headers,
+    chainId: "devnet", // or chainId: "devnet"
+    actionVersion: "2.2.1", // the desired spec version
   });
-};
-
-export const OPTIONS = GET;
-
-
+  
 export const POST = async (req: Request) => {
   try {
     const body: ActionPostRequest = await req.json();
@@ -105,7 +55,7 @@ export const POST = async (req: Request) => {
       fields: {
         type: "transaction",
         transaction,
-        message: "Post this memo on-chain from memo2.",
+        message: "Post this memo on-chain from memo1.",
       },
       // no additional signers are required for this transaction
       // signers: [],

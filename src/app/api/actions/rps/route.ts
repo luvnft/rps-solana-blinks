@@ -33,9 +33,9 @@ import {
               label: "Bet Amount in SOL", // placeholder of the text input
               required: true,
               options: [
-                { label: "1", value: "1" },
-                { label: "0.1", value: "0.1" },
-                { label: "0.01", value: "0.01" },
+                { label: "1 SOL", value: "1" },
+                { label: "0.1 SOL", value: "0.1" },
+                { label: "0.01 SOL", value: "0.01" },
               ],
             },
             {

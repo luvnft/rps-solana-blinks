@@ -28,10 +28,15 @@ import {
           "href": "/api/actions/backend?amount={amount}&choice={choice}",
           "parameters": [
             {
-              type: "number",
+              type: "select",
               name: "amount", // parameter name in the `href` above
               label: "Bet Amount in SOL", // placeholder of the text input
               required: true,
+              options: [
+                { label: "1", value: "1" },
+                { label: "0.1", value: "0.1" },
+                { label: "0.01", value: "0.01" },
+              ],
             },
             {
               type: "radio",

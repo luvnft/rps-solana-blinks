@@ -15,7 +15,7 @@ import {
     Transaction,
     TransactionInstruction
   } from "@solana/web3.js";
-  
+
 const headers = createActionHeaders({
     chainId: "devnet", // or chainId: "devnet"
     actionVersion: "2.2.1", // the desired spec version
@@ -23,6 +23,18 @@ const headers = createActionHeaders({
   
 export const POST = async (req: Request) => {
   try {
+    // Extract the query parameters from the URL
+    const url = new URL(req.url);
+    const amount = url.searchParams.get("amount");
+    const choice = url.searchParams.get("choice");
+
+    // Ensure the required parameters are present
+    if (!amount || !choice) {
+      return new Response('Missing "amount" or "choice" in request', {
+        status: 400,
+        headers,
+      });
+    }
     const body: ActionPostRequest = await req.json();
     // Validate to confirm the user publickey received is valid before use
     let account: PublicKey;
@@ -51,7 +63,7 @@ export const POST = async (req: Request) => {
       new TransactionInstruction({
         programId: new PublicKey(MEMO_PROGRAM_ID),
         data: Buffer.from(
-          "This is a simple memo message from Arpit.",
+          `User chose ${choice} with bet ${amount} SOL`,
           "utf8"
         ),
         keys: [],
@@ -70,7 +82,7 @@ export const POST = async (req: Request) => {
       fields: {
         type: "transaction",
         transaction,
-        message: "Post this memo on-chain from memo1.",
+        message: `Your choice was ${choice} with a bet of ${amount} SOL.`,
       },
       // no additional signers are required for this transaction
       // signers: [],

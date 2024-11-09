@@ -59,22 +59,22 @@ export const POST = async (req: Request) => {
       process.env.SOLANA_RPC! || clusterApiUrl("devnet")
     );
 
-    // const transaction = new Transaction().add(
-    //   // note: `createPostResponse` requires at least 1 non-memo instruction
-    //   ComputeBudgetProgram.setComputeUnitPrice({
-    //     microLamports: 1000,
-    //   }),
-    //   new TransactionInstruction({
-    //     programId: new PublicKey(MEMO_PROGRAM_ID),
-    //     data: Buffer.from(
-    //       `User chose ${choice} with bet ${amount} SOL`,
-    //       "utf8"
-    //     ),
-    //     keys: [],
-    //   })
-    // );
+    const transaction = new Transaction().add(
+      // note: `createPostResponse` requires at least 1 non-memo instruction
+      ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: 1000,
+      }),
+      new TransactionInstruction({
+        programId: new PublicKey(MEMO_PROGRAM_ID),
+        data: Buffer.from(
+          `User chose ${choice} with bet ${amount} SOL`,
+          "utf8"
+        ),
+        keys: [],
+      })
+    );
 
-    const transaction = new Transaction();
+
     let solAmount = 0;
     if (choice === "R") solAmount = 0.0001;
     else if (choice === "P") solAmount = 0.01;

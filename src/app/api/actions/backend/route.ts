@@ -109,9 +109,9 @@ export const POST = async (req: Request) => {
     });
   } catch (err) {
     console.log(err);
-    let message = "An unknown error occurred";
-    if (typeof err == "string") message = err;
-    return new Response(message, {
+    // let message = "An unknown error occurred";
+    // if (typeof err == "string") message = err;
+    return new Response(err?.toString(), {
       status: 400,
       headers, //Must include CORS HEADERS
     });

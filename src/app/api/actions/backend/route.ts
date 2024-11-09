@@ -97,12 +97,12 @@ export const POST = async (req: Request) => {
         fields: {
           type: "transaction",
           transaction,
-          links: {
-            next: {
-                type: 'post',
-                href: '/api/actions/result?amount={amount}&choice={choice}',
-            }
-        },
+        //   links: {
+        //     next: {
+        //         type: 'post',
+        //         href: '/api/actions/result?amount={amount}&choice={choice}',
+        //     }
+        // },
           message: `Your choice was ${choice} with a bet of ${amount} SOL.`,
         },
         // no additional signers are required for this transaction

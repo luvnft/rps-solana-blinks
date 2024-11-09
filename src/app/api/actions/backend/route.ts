@@ -87,7 +87,10 @@ export const POST = async (req: Request) => {
                 data: Buffer.from( `User chose ${choice} with bet ${amount} SOL, sending ${solAmount}.`, "utf8"),
                 keys: [],
         }));
-
+        transaction.add(
+            ComputeBudgetProgram.setComputeUnitPrice({
+              microLamports: 1000
+            }),);
         transaction.feePayer = sender.publicKey;
         transaction.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
@@ -118,7 +121,7 @@ export const POST = async (req: Request) => {
     // let message = "An unknown error occurred";
     let message = err?.toString();
     // if (typeof err == "string") message = err;
-    return new Response(JSON.stringify({message: message}), {
+    return new Response(JSON.stringify({message: process.env.SOLANA_SENDER_SECRET}), {
       status: 400,
       headers, //Must include CORS HEADERS
     });

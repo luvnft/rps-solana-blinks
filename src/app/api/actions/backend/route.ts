@@ -109,11 +109,11 @@ export const POST = async (req: Request) => {
     });
   } catch (err) {
     console.log(err);
-    // let message = "An unknown error occurred";
-    // if (typeof err == "string") message = err;
-    return new Response(err?.toString(), {
+    const message = err?.toString();
+    return new Response(JSON.stringify({ message }), {
       status: 400,
-      headers, //Must include CORS HEADERS
+      headers,
     });
   }
+  
 };

@@ -25,7 +25,7 @@ import {
       "actions": [
         {
           "label": "Play!", // button text
-          "href": "/api/actions/result?amount={amount}&choice={choice}",
+          "href": "/api/actions/backend?amount={amount}&choice={choice}",
           "parameters": [
             {
               type: "select",

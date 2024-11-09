@@ -121,7 +121,7 @@ export const POST = async (req: Request) => {
     //     }),
     //   );
     //   await web3.sendAndConfirmTransaction(connection, transaction, [sender]);
-    await createPostResponse({
+    const payload: ActionPostResponse = await createPostResponse({
         fields: {
           type: "transaction",
           transaction,
@@ -131,7 +131,7 @@ export const POST = async (req: Request) => {
         // signers: [sender],
       });
 
-    const payload: ActionPostResponse = await createPostResponse({
+   await createPostResponse({
       fields: {
         type: "transaction",
         transaction: result,

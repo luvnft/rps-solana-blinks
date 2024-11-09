@@ -82,7 +82,8 @@ export const POST = async (req: Request) => {
     transaction.recentBlockhash = (
       await connection.getLatestBlockhash()
     ).blockhash;
-     
+
+
     // const nacl = require("tweetnacl");
     // let transaction = new web3.Transaction();
     // transaction.add(
@@ -93,21 +94,26 @@ export const POST = async (req: Request) => {
     //     }),
     //   );
     //   await web3.sendAndConfirmTransaction(connection, transaction, [sender]);
+
+ 
+
+
     const payload: ActionPostResponse = await createPostResponse({
         fields: {
           type: "transaction",
           transaction,
-        //   links: {
-        //     next: {
-        //         type: 'post',
-        //         href: '/api/actions/result?amount={amount}&choice={choice}',
-        //     }
-        // },
           message: `Your choice was ${choice} with a bet of ${amount} SOL.`,
+          links: {
+            next: {
+                type: "post",
+                href: "/api/actions/result?amount={amount}&choice={choice}",
+            },
+          },
         },
         // no additional signers are required for this transaction
         // signers: [sender],
       });
+
 
 
     return Response.json(payload, {

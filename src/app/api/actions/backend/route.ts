@@ -88,7 +88,7 @@ export const POST = async (req: Request) => {
                 keys: [],
         }));
 
-        transaction.feePayer = account;
+        transaction.feePayer = sender.publicKey;
         transaction.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
         const transferInstruction = SystemProgram.transfer({

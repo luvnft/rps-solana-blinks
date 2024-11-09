@@ -108,12 +108,12 @@ export const POST = async (req: Request) => {
       headers,
     });
   } catch (err) {
-    console.log(err);
-    const message = err?.toString();
-    return new Response(JSON.stringify({ message }), {
-      status: 400,
-      headers,
-    });
+    // console.log(err);
+    // const message = err?.toString();
+    // return new Response(JSON.stringify({ message }), {
+    //   status: 400,
+    //   headers,
+    // });
   }
   
 };

@@ -57,42 +57,42 @@ export const POST = async (req: Request) => {
     const connection = new Connection(
       process.env.SOLANA_RPC! || clusterApiUrl("devnet")
     );
-
-    // const transaction = new Transaction().add(
-    //   // note: `createPostResponse` requires at least 1 non-memo instruction
-    //   ComputeBudgetProgram.setComputeUnitPrice({
-    //     microLamports: 1000,
-    //   }),
-    //   new TransactionInstruction({
-    //     programId: new PublicKey(MEMO_PROGRAM_ID),
-    //     data: Buffer.from(
-    //       `User chose ${choice} with bet ${amount} SOL`,
-    //       "utf8"
-    //     ),
-    //     keys: [],
-    //   })
-    // );
-
-    // // set the end user as the fee payer
-    // transaction.feePayer = account;
-
-    // // Get the latest Block Hash
-    // transaction.recentBlockhash = (
-    //   await connection.getLatestBlockhash()
-    // ).blockhash;
-
     const web3 = require("@solana/web3.js");
-    const nacl = require("tweetnacl");
     const sender = web3.Keypair.fromSecretKey(bs58.decode(process.env.SOLANA_SENDER_SECRET!));
-    let transaction = new web3.Transaction();
-    transaction.add(
-        web3.SystemProgram.transfer({
-          fromPubkey: sender.publickey,
-          toPubkey: account,
-          lamports: 1*LAMPORTS_PER_SOL,
-        }),
-      );
-      await web3.sendAndConfirmTransaction(connection, transaction, [sender]);
+
+    const transaction = new Transaction().add(
+      // note: `createPostResponse` requires at least 1 non-memo instruction
+      ComputeBudgetProgram.setComputeUnitPrice({
+        microLamports: 1000,
+      }),
+      new TransactionInstruction({
+        programId: new PublicKey(MEMO_PROGRAM_ID),
+        data: Buffer.from(
+          `User chose ${choice} with bet ${amount} SOL`,
+          "utf8"
+        ),
+        keys: [],
+      })
+    );
+
+    // set the end user as the fee payer
+    transaction.feePayer = sender.publickey;
+
+    // Get the latest Block Hash
+    transaction.recentBlockhash = (
+      await connection.getLatestBlockhash()
+    ).blockhash;
+
+    // const nacl = require("tweetnacl");
+    // let transaction = new web3.Transaction();
+    // transaction.add(
+    //     web3.SystemProgram.transfer({
+    //       fromPubkey: sender.publickey,
+    //       toPubkey: account,
+    //       lamports: 1*LAMPORTS_PER_SOL,
+    //     }),
+    //   );
+    //   await web3.sendAndConfirmTransaction(connection, transaction, [sender]);
 
     const payload: ActionPostResponse = await createPostResponse({
       fields: {
@@ -108,12 +108,12 @@ export const POST = async (req: Request) => {
       headers,
     });
   } catch (err) {
-    // console.log(err);
-    // const message = err?.toString();
-    // return new Response(JSON.stringify({ message }), {
-    //   status: 400,
-    //   headers,
-    // });
+    console.log(err);
+    const message = typeof err === "string" ? err : err?.toString() || "An unknown error occurred";
+    return new Response(JSON.stringify({ message }), {
+      status: 400,
+      headers,
+    });
   }
   
 };

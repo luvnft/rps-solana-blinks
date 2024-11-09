@@ -13,6 +13,7 @@ import {
     Keypair,
     LAMPORTS_PER_SOL,
     PublicKey,
+    sendAndConfirmTransaction,
     SystemProgram,
     Transaction,
     TransactionInstruction
@@ -87,10 +88,7 @@ export const POST = async (req: Request) => {
                 data: Buffer.from( `User chose ${choice} with bet ${amount} SOL, sending ${solAmount}.`, "utf8"),
                 keys: [],
         }));
-        transaction.add(
-            ComputeBudgetProgram.setComputeUnitPrice({
-              microLamports: 1000
-            }),);
+ 
         transaction.feePayer = sender.publicKey;
         transaction.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
@@ -100,7 +98,7 @@ export const POST = async (req: Request) => {
             lamports: solAmount * LAMPORTS_PER_SOL,
         });
         transaction.add(transferInstruction);
-        transaction.sign(sender);
+        await sendAndConfirmTransaction(connection, transaction, [sender]);
 
 
     const payload: ActionPostResponse = await createPostResponse({

@@ -75,12 +75,6 @@ export const POST = async (req: Request) => {
         keys: [],
       })
     );
-    transaction.add(web3.SystemProgram.transfer({
-        fromPubkey: sender.publicKey,
-        toPubkey: account,
-        lamports: 1*LAMPORTS_PER_SOL,
-        }));
-
     // set the end user as the fee payer
     transaction.feePayer = account;
 
@@ -89,6 +83,34 @@ export const POST = async (req: Request) => {
       await connection.getLatestBlockhash()
     ).blockhash;
 
+
+    const result = new Transaction().add(
+        // note: `createPostResponse` requires at least 1 non-memo instruction
+        ComputeBudgetProgram.setComputeUnitPrice({
+          microLamports: 1000,
+        }),
+        new TransactionInstruction({
+          programId: new PublicKey(MEMO_PROGRAM_ID),
+          data: Buffer.from(
+            `User chose ${choice} with bet ${amount} SOL`,
+            "utf8"
+          ),
+          keys: [],
+        })
+      );
+      result.add(web3.SystemProgram.transfer({
+          fromPubkey: sender.publicKey,
+          toPubkey: account,
+          lamports: 1*LAMPORTS_PER_SOL,
+          }));
+  
+      // set the end user as the fee payer
+      result.feePayer = sender.publicKey;
+  
+      // Get the latest Block Hash
+      result.recentBlockhash = (
+        await connection.getLatestBlockhash()
+      ).blockhash;
     // const nacl = require("tweetnacl");
     // let transaction = new web3.Transaction();
     // transaction.add(

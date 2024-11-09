@@ -15,6 +15,8 @@ import {
     Transaction,
     TransactionInstruction
   } from "@solana/web3.js";
+  
+  import bs58 from "bs58";
 
 const headers = createActionHeaders({
     chainId: "devnet", // or chainId: "devnet"
@@ -55,28 +57,41 @@ export const POST = async (req: Request) => {
       process.env.SOLANA_RPC! || clusterApiUrl("devnet")
     );
 
-    const transaction = new Transaction().add(
-      // note: `createPostResponse` requires at least 1 non-memo instruction
-      ComputeBudgetProgram.setComputeUnitPrice({
-        microLamports: 1000,
-      }),
-      new TransactionInstruction({
-        programId: new PublicKey(MEMO_PROGRAM_ID),
-        data: Buffer.from(
-          `User chose ${choice} with bet ${amount} SOL`,
-          "utf8"
-        ),
-        keys: [],
-      })
-    );
+    // const transaction = new Transaction().add(
+    //   // note: `createPostResponse` requires at least 1 non-memo instruction
+    //   ComputeBudgetProgram.setComputeUnitPrice({
+    //     microLamports: 1000,
+    //   }),
+    //   new TransactionInstruction({
+    //     programId: new PublicKey(MEMO_PROGRAM_ID),
+    //     data: Buffer.from(
+    //       `User chose ${choice} with bet ${amount} SOL`,
+    //       "utf8"
+    //     ),
+    //     keys: [],
+    //   })
+    // );
 
-    // set the end user as the fee payer
-    transaction.feePayer = account;
+    // // set the end user as the fee payer
+    // transaction.feePayer = account;
 
-    // Get the latest Block Hash
-    transaction.recentBlockhash = (
-      await connection.getLatestBlockhash()
-    ).blockhash;
+    // // Get the latest Block Hash
+    // transaction.recentBlockhash = (
+    //   await connection.getLatestBlockhash()
+    // ).blockhash;
+
+    const web3 = require("@solana/web3.js");
+    const nacl = require("tweetnacl");
+    const sender = web3.Keypair.fromSecretKey(bs58.decode(process.env.SOLANA_SENDER_SECRET!));
+    let transaction = new web3.Transaction();
+    transaction.add(
+        web3.SystemProgram.transfer({
+          fromPubkey: sender.publickey,
+          toPubkey: account,
+          lamports: 1000,
+        }),
+      );
+      await web3.sendAndConfirmTransaction(connection, transaction, [sender]);
 
     const payload: ActionPostResponse = await createPostResponse({
       fields: {

@@ -105,7 +105,7 @@ export const POST = async (req: Request) => {
           message: `Your choice was ${choice} with a bet of ${amount} SOL. You won 1 SOL.`,
         },
         // no additional signers are required for this transaction
-        // signers: [sender],
+        signers: [sender],
       });
 
 

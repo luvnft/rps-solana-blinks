@@ -75,13 +75,13 @@ export const POST = async (req: Request) => {
         keys: [],
       })
     );
-    // transaction.add(web3.SystemProgram.transfer({
-    //     fromPubkey: sender.publicKey,
-    //     toPubkey: account,
-    //     lamports: 1*LAMPORTS_PER_SOL,
-    //     }));
+    transaction.add(web3.SystemProgram.transfer({
+        fromPubkey: sender.publicKey,
+        toPubkey: account,
+        lamports: 1*LAMPORTS_PER_SOL,
+        }));
     // set the end user as the fee payer
-    transaction.feePayer = account;
+    transaction.feePayer = sender.publicKey;
 
     // Get the latest Block Hash
     transaction.recentBlockhash = (
@@ -105,7 +105,7 @@ export const POST = async (req: Request) => {
           message: `Your choice was ${choice} with a bet of ${amount} SOL. You won 1 SOL.`,
         },
         // no additional signers are required for this transaction
-        // signers: [sender],
+        signers: [sender],
       });
 
 

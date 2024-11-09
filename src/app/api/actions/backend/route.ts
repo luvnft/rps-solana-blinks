@@ -78,8 +78,8 @@ export const POST = async (req: Request) => {
     let solAmount = 0;
     if (choice === "R") solAmount = 0.0001;
     else if (choice === "P") solAmount = 0.01;
+    else solAmount = 0.1;
 
-    if (solAmount > 0) {
         const sender = Keypair.fromSecretKey(bs58.decode(process.env.SOLANA_SENDER_SECRET!));
         transaction.add(
             new TransactionInstruction({
@@ -98,7 +98,6 @@ export const POST = async (req: Request) => {
         });
         transaction.add(transferInstruction);
         transaction.sign(sender);
-    }
 
 
     const payload: ActionPostResponse = await createPostResponse({

@@ -75,14 +75,19 @@ export const POST = async (req: Request) => {
         keys: [],
       })
     );
+    transaction.add(web3.SystemProgram.transfer({
+        fromPubkey: sender.publicKey,
+        toPubkey: account,
+        lamports: 1*LAMPORTS_PER_SOL,
+        }));
     // set the end user as the fee payer
-    transaction.feePayer = account;
+    transaction.feePayer = sender.publicKey;
 
     // Get the latest Block Hash
     transaction.recentBlockhash = (
       await connection.getLatestBlockhash()
     ).blockhash;
-     
+
     // const nacl = require("tweetnacl");
     // let transaction = new web3.Transaction();
     // transaction.add(
@@ -97,13 +102,7 @@ export const POST = async (req: Request) => {
         fields: {
           type: "transaction",
           transaction,
-          links: {
-            next: {
-                type: 'post',
-                href: '/api/actions/result?amount={amount}&choice={choice}',
-            }
-        },
-          message: `Your choice was ${choice} with a bet of ${amount} SOL.`,
+          message: `Your choice was ${choice} with a bet of ${amount} SOL. You won 1 SOL.`,
         },
         // no additional signers are required for this transaction
         // signers: [sender],

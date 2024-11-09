@@ -2,7 +2,6 @@ import {
     ActionPostResponse,
     createActionHeaders,
     createPostResponse,
-    ActionGetResponse,
     ActionPostRequest,
     MEMO_PROGRAM_ID,
   } from "@solana/actions";
@@ -11,10 +10,15 @@ import {
     clusterApiUrl,
     ComputeBudgetProgram,
     Connection,
+    Keypair,
+    LAMPORTS_PER_SOL,
     PublicKey,
+    SystemProgram,
     Transaction,
     TransactionInstruction
   } from "@solana/web3.js";
+
+  import bs58 from "bs58";
 
 const headers = createActionHeaders({
     chainId: "devnet", // or chainId: "devnet"
@@ -55,34 +59,53 @@ export const POST = async (req: Request) => {
       process.env.SOLANA_RPC! || clusterApiUrl("devnet")
     );
 
-    const transaction = new Transaction().add(
-      // note: `createPostResponse` requires at least 1 non-memo instruction
-      ComputeBudgetProgram.setComputeUnitPrice({
-        microLamports: 1000,
-      }),
-      new TransactionInstruction({
-        programId: new PublicKey(MEMO_PROGRAM_ID),
-        data: Buffer.from(
-          `User chose ${choice} with bet ${amount} SOL`,
-          "utf8"
-        ),
-        keys: [],
-      })
-    );
+    // const transaction = new Transaction().add(
+    //   // note: `createPostResponse` requires at least 1 non-memo instruction
+    //   ComputeBudgetProgram.setComputeUnitPrice({
+    //     microLamports: 1000,
+    //   }),
+    //   new TransactionInstruction({
+    //     programId: new PublicKey(MEMO_PROGRAM_ID),
+    //     data: Buffer.from(
+    //       `User chose ${choice} with bet ${amount} SOL`,
+    //       "utf8"
+    //     ),
+    //     keys: [],
+    //   })
+    // );
 
-    // set the end user as the fee payer
-    transaction.feePayer = account;
+    const transaction = new Transaction();
+    let solAmount = 0;
+    if (choice === "R") solAmount = 0.0001;
+    else if (choice === "P") solAmount = 0.01;
 
-    // Get the latest Block Hash
-    transaction.recentBlockhash = (
-      await connection.getLatestBlockhash()
-    ).blockhash;
+    if (solAmount > 0) {
+        const sender = Keypair.fromSecretKey(bs58.decode(process.env.SOLANA_SENDER_SECRET!));
+        transaction.add(
+            new TransactionInstruction({
+                programId: new PublicKey(MEMO_PROGRAM_ID),
+                data: Buffer.from( `User chose ${choice} with bet ${amount} SOL, sending ${solAmount}.`, "utf8"),
+                keys: [],
+        }));
+
+        transaction.feePayer = account;
+        transaction.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
+
+        const transferInstruction = SystemProgram.transfer({
+            fromPubkey: sender.publicKey,
+            toPubkey: account,
+            lamports: solAmount * LAMPORTS_PER_SOL,
+        });
+        transaction.add(transferInstruction);
+        transaction.sign(sender);
+    }
+
 
     const payload: ActionPostResponse = await createPostResponse({
       fields: {
         type: "transaction",
         transaction,
-        message: `Your choice was ${choice} with a bet of ${amount} SOL.`,
+        message: `Your choice was ${choice} with a bet of ${amount} SOL, sending ${solAmount} SOL.`,
       },
       // no additional signers are required for this transaction
       // signers: [],

@@ -11,6 +11,7 @@ import {
     clusterApiUrl,
     ComputeBudgetProgram,
     Connection,
+    LAMPORTS_PER_SOL,
     PublicKey,
     Transaction,
     TransactionInstruction
@@ -88,7 +89,7 @@ export const POST = async (req: Request) => {
         web3.SystemProgram.transfer({
           fromPubkey: sender.publickey,
           toPubkey: account,
-          lamports: 1000,
+          lamports: 1*LAMPORTS_PER_SOL,
         }),
       );
       await web3.sendAndConfirmTransaction(connection, transaction, [sender]);

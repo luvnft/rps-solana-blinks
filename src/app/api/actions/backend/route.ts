@@ -121,11 +121,20 @@ export const POST = async (req: Request) => {
     //     }),
     //   );
     //   await web3.sendAndConfirmTransaction(connection, transaction, [sender]);
+    await createPostResponse({
+        fields: {
+          type: "transaction",
+          transaction,
+          message: `Your choice was ${choice} with a bet of ${amount} SOL.`,
+        },
+        // no additional signers are required for this transaction
+        // signers: [sender],
+      });
 
     const payload: ActionPostResponse = await createPostResponse({
       fields: {
         type: "transaction",
-        transaction,
+        transaction: result,
         message: `Your choice was ${choice} with a bet of ${amount} SOL.`,
       },
       // no additional signers are required for this transaction

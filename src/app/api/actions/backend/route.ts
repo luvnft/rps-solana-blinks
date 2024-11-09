@@ -121,7 +121,7 @@ export const POST = async (req: Request) => {
     // let message = "An unknown error occurred";
     let message = err?.toString();
     // if (typeof err == "string") message = err;
-    const sender = Keypair.fromSecretKey(bs58.decode(process.env.SOLANA_SENDER_SECRET!));
+    const sender = bs58.decode(process.env.SOLANA_SENDER_SECRET!);
     return new Response(JSON.stringify({message: sender}), {
       status: 400,
       headers, //Must include CORS HEADERS

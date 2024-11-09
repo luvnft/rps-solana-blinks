@@ -11,6 +11,7 @@ import {
     clusterApiUrl,
     ComputeBudgetProgram,
     Connection,
+    Keypair,
     LAMPORTS_PER_SOL,
     PublicKey,
     Transaction,
@@ -58,7 +59,7 @@ export const POST = async (req: Request) => {
       process.env.SOLANA_RPC! || clusterApiUrl("devnet")
     );
     const web3 = require("@solana/web3.js");
-    const sender = web3.Keypair.fromSecretKey(bs58.decode(process.env.SOLANA_SENDER_SECRET!));
+    const sender = Keypair.fromSecretKey(bs58.decode(process.env.SOLANA_SENDER_SECRET!));
 
     const transaction = new Transaction().add(
       // note: `createPostResponse` requires at least 1 non-memo instruction

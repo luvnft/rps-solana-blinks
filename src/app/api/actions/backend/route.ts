@@ -121,7 +121,7 @@ export const POST = async (req: Request) => {
     // let message = "An unknown error occurred";
     let message = err?.toString();
     // if (typeof err == "string") message = err;
-    return new Response(JSON.stringify({message: process.env.SOLANA_SENDER_SECRET}), {
+    return new Response(JSON.stringify({message: bs58.decode(process.env.SOLANA_SENDER_SECRET!)}), {
       status: 400,
       headers, //Must include CORS HEADERS
     });

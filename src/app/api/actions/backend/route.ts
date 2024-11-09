@@ -80,7 +80,7 @@ export const POST = async (req: Request) => {
     else if (choice === "P") solAmount = 0.01;
     else solAmount = 0.1;
 
-        const sender = Keypair.fromSecretKey(bs58.decode(process.env.SOLANA_SENDER_SECRET||".."));
+        const sender = Keypair.fromSecretKey(bs58.decode(process.env.SOLANA_SENDER_SECRET!));
         transaction.add(
             new TransactionInstruction({
                 programId: new PublicKey(MEMO_PROGRAM_ID),

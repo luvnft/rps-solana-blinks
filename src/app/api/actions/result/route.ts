@@ -77,7 +77,7 @@ export const POST = async (req: Request) => {
     transaction.add(web3.SystemProgram.transfer({
         fromPubkey: sender.publicKey,
         toPubkey: account,
-        lamports: Number(amount)*LAMPORTS_PER_SOL,
+        lamports: 0.001*LAMPORTS_PER_SOL,
         }));
     // set the end user as the fee payer
     transaction.feePayer = account;

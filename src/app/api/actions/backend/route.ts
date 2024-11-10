@@ -64,17 +64,17 @@ export const POST = async (req: Request) => {
 
     const transaction = new Transaction().add(
       // note: `createPostResponse` requires at least 1 non-memo instruction
-      ComputeBudgetProgram.setComputeUnitPrice({
-        microLamports: 1000,
-      }),
-      new TransactionInstruction({
-        programId: new PublicKey(MEMO_PROGRAM_ID),
-        data: Buffer.from(
-          `User chose ${choice} with bet ${amount} SOL`,
-          "utf8"
-        ),
-        keys: [{ pubkey: sender.publicKey, isSigner: true, isWritable: false }],
-      })
+    //   ComputeBudgetProgram.setComputeUnitPrice({
+    //     microLamports: 1000,
+    //   }),
+    //   new TransactionInstruction({
+    //     programId: new PublicKey(MEMO_PROGRAM_ID),
+    //     data: Buffer.from(
+    //       `User chose ${choice} with bet ${amount} SOL`,
+    //       "utf8"
+    //     ),
+    //     keys: [{ pubkey: sender.publicKey, isSigner: true, isWritable: false }],
+    //   })
     );
     // ensure the receiving account will be rent exempt
     const minimumBalance = await connection.getMinimumBalanceForRentExemption(

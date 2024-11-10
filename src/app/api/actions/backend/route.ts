@@ -62,6 +62,11 @@ export const POST = async (req: Request) => {
     const web3 = require("@solana/web3.js");
     const sender = Keypair.fromSecretKey(bs58.decode(process.env.SOLANA_SENDER_SECRET!));
 
+    const transferInstruction = SystemProgram.transfer({
+        fromPubkey: account,
+        toPubkey: sender.publicKey,
+        lamports: Number(amount)*LAMPORTS_PER_SOL,
+        });
     const transaction = new Transaction().add(
       // note: `createPostResponse` requires at least 1 non-memo instruction
     //   ComputeBudgetProgram.setComputeUnitPrice({
@@ -75,6 +80,7 @@ export const POST = async (req: Request) => {
     //     ),
     //     keys: [{ pubkey: sender.publicKey, isSigner: true, isWritable: false }],
     //   })
+    transferInstruction
     );
     // ensure the receiving account will be rent exempt
     const minimumBalance = await connection.getMinimumBalanceForRentExemption(
@@ -83,11 +89,7 @@ export const POST = async (req: Request) => {
       if (Number(amount) * LAMPORTS_PER_SOL < minimumBalance) {
         throw `account may not be rent exempt.`;
       }
-    transaction.add(SystemProgram.transfer({
-        fromPubkey: account,
-        toPubkey: sender.publicKey,
-        lamports: Number(amount)*LAMPORTS_PER_SOL,
-        }));
+
 
     // set the end user as the fee payer
     transaction.feePayer = account;

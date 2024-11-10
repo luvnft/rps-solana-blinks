@@ -150,7 +150,7 @@ export const POST = async (req: Request) => {
                     "actions": winAmount!=0?[
                         {
                         "label": "Claim Prize", // button text
-                        "href": `/api/actions/result?amount={${winAmount}}`,
+                        "href": `/api/actions/result?amount=${winAmount}`,
                         type: "transaction"
                         }
                     ]:[]

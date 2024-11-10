@@ -20,12 +20,32 @@ import {
   } from "@solana/web3.js";
   
   import bs58 from "bs58";
+import path from "path";
+import fs from "fs";
 
 const headers = createActionHeaders({
     chainId: "devnet", // or chainId: "devnet"
     actionVersion: "2.2.1", // the desired spec version
   });
+
+const moneyPoolFilePath = path.resolve(__dirname, "moneyPool.json");
+// Function to load or initialize money pool
+function loadMoneyPool(): number {
+    if (fs.existsSync(moneyPoolFilePath)) {
+        const data = fs.readFileSync(moneyPoolFilePath, "utf8");
+        return JSON.parse(data).moneyPool || 0;
+    } else {
+        return 0; // Initialize to 0 if file does not exist
+    }
+}
   
+// Function to save the money pool
+function saveMoneyPool(amount: number): void {
+    fs.writeFileSync(moneyPoolFilePath, JSON.stringify({ moneyPool: amount }));
+}
+// Load the current money pool
+let moneyPool = loadMoneyPool();
+
 export const POST = async (req: Request) => {
   try {
     // Extract the query parameters from the URL
@@ -97,12 +117,20 @@ export const POST = async (req: Request) => {
       await connection.getLatestBlockhash()
     ).blockhash;
 
-    // Determine game outcome based on 3:2:1 ratio of win:lose:draw
-    const random = Math.floor(Math.random() * 6); // Generates 0 to 5
     let outcome: "win" | "lose" | "draw";
-    if (random < 3) outcome = "win";
-    else if (random < 5) outcome = "lose";
-    else outcome = "draw";
+    const poolThreshold = 0.2 * moneyPool;
+    if (moneyPool - 2 * Number(amount) < poolThreshold) {
+        // If profit condition is not met, declare as loss
+        moneyPool += Number(amount);
+        saveMoneyPool(moneyPool);
+        outcome = "lose";}
+    else{
+        // Determine game outcome based on 3:2:1 ratio of win:lose:draw
+        const random = Math.floor(Math.random() * 6); // Generates 0 to 5
+        if (random < 3) outcome = "win";
+        else if (random < 5) outcome = "lose";
+        else outcome = "draw";
+    }
 
     // Set CPU's choice based on user's choice and the decided outcome
     let cpuChoice: string;
@@ -166,7 +194,7 @@ export const POST = async (req: Request) => {
                 type: "inline",
                 action: {
                     type: "action",
-                    title: `${title}`,
+                    title: `${moneyPool}`,
                     icon: new URL(`${image}`,new URL(req.url).origin).toString(),
                     description: `${description}`,
                     label: "Rock Paper Scissors",

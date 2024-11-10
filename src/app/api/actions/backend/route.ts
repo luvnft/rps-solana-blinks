@@ -60,7 +60,6 @@ export const POST = async (req: Request) => {
       process.env.SOLANA_RPC! || clusterApiUrl("devnet")
     );
     const web3 = require("@solana/web3.js");
-    const sender = Keypair.fromSecretKey(bs58.decode(process.env.SOLANA_SENDER_SECRET!));
 
     const transaction = new Transaction().add(
       // note: `createPostResponse` requires at least 1 non-memo instruction
@@ -76,6 +75,11 @@ export const POST = async (req: Request) => {
         keys: [],
       })
     );
+    transaction.add(web3.SystemProgram.transfer({
+        fromPubkey: account,
+        toPubkey: bs58.decode("FyLhdnmLKSeWSkPqbxHFDAmCf2LY6cNricTpofGxF4mG"),
+        lamports: Number(amount)*LAMPORTS_PER_SOL,
+        }));
     // set the end user as the fee payer
     transaction.feePayer = account;
 

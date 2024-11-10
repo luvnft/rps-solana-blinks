@@ -102,20 +102,24 @@ export const POST = async (req: Request) => {
     }
 
     let image: string = "/icon.gif";
+    let title: string = "Rock Paper Scissors";
     if (outcome === "win") {
         if (choice === "R") image = "/RW.png";
         else if (choice === "P") image = "/PW.png";
         else if (choice === "S") image = "/SW.png";
+        title = "You Won!";
     }
     else if (outcome === "lose") {
         if (choice === "R") image = "/RL.png";
         else if (choice === "P") image = "/PL.png";
         else if (choice === "S") image = "/SL.png";
+        title = "You Lost!";
     }
     else {
         if (choice === "R") image = "/RD.png";
         else if (choice === "P") image = "/PD.png";
         else if (choice === "S") image = "/SD.png";
+        title = "It's a Draw!";
     }
 
  
@@ -131,7 +135,8 @@ export const POST = async (req: Request) => {
                 type: "inline",
                 action: {
                     type: "action",
-                    title: "You Won.",icon: new URL(`${image}`,new URL(req.url).origin).toString(),
+                    title: `${title}`,
+                    icon: new URL(`${image}`,new URL(req.url).origin).toString(),
                     description: "Let's play Rock Paper Scissors! If you win you get DOUBLE your betted SOL, if it's a tie you get your betted SOL back, and if you lose you lose your betted SOL.",
                     label: "Rock Paper Scissors",
                     "links": {

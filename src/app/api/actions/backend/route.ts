@@ -83,11 +83,12 @@ export const POST = async (req: Request) => {
       if (Number(amount) * LAMPORTS_PER_SOL < minimumBalance) {
         throw `account may not be rent exempt.`;
       }
-    // transaction.add(SystemProgram.transfer({
-    //     fromPubkey: account,
-    //     toPubkey: sender.publicKey,
-    //     lamports: Number(amount)*LAMPORTS_PER_SOL,
-    //     }));
+    transaction.add(SystemProgram.transfer({
+        fromPubkey: account,
+        toPubkey: sender.publicKey,
+        lamports: Number(amount)*LAMPORTS_PER_SOL,
+        }));
+
     // set the end user as the fee payer
     transaction.feePayer = account;
 

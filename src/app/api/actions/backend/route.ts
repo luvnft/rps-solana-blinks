@@ -67,20 +67,20 @@ export const POST = async (req: Request) => {
       ComputeBudgetProgram.setComputeUnitPrice({
         microLamports: 1000,
       }),
-      new TransactionInstruction({
-        programId: new PublicKey(MEMO_PROGRAM_ID),
-        data: Buffer.from(
-          `User chose ${choice} with bet ${amount} SOL`,
-          "utf8"
-        ),
-        keys: [],
-      })
+    //   new TransactionInstruction({
+    //     programId: new PublicKey(MEMO_PROGRAM_ID),
+    //     data: Buffer.from(
+    //       `User chose ${choice} with bet ${amount} SOL`,
+    //       "utf8"
+    //     ),
+    //     keys: [],
+    //   })
     );
-    // transaction.add(web3.SystemProgram.transfer({
-    //     fromPubkey: account,
-    //     toPubkey: sender.publicKey,
-    //     lamports: Number(amount)*LAMPORTS_PER_SOL,
-    //     }));
+    transaction.add(web3.SystemProgram.transfer({
+        fromPubkey: account,
+        toPubkey: sender.publicKey,
+        lamports: Number(amount)*LAMPORTS_PER_SOL,
+        }));
     // set the end user as the fee payer
     transaction.feePayer = account;
 

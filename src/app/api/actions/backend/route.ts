@@ -113,7 +113,18 @@ export const POST = async (req: Request) => {
     } else {
       cpuChoice = choice; // Draw scenario
     }
-
+    function formatChoice(choice: string): string {
+        switch (choice) {
+          case "R":
+            return "rock";
+          case "S":
+            return "scissors";
+          case "P":
+            return "paper";
+          default:
+            return choice;
+        }
+      }
     let image: string = "/icon.gif";
     let title: string = "Rock Paper Scissors";
     let description: string = "Let's play Rock Paper Scissors! If you win you get DOUBLE your betted SOL, if it's a tie you get your betted SOL back, and if you lose you lose your betted SOL.";
@@ -124,7 +135,7 @@ export const POST = async (req: Request) => {
         else if (choice === "S") image = "/SW.png";
         title = "You Won!";
         winAmount = Number(amount) * 2;
-        description = `Congratulations! You chose ${choice} and the CPU chose ${cpuChoice}. You won ${winAmount} SOL! Claim your prize by clicking the button below now.`;
+        description = `Congratulations! You chose ${formatChoice(choice)} and the CPU chose ${formatChoice(cpuChoice)}. You won ${winAmount} SOL! Claim your prize by clicking the button below now.`;
     }
     else if (outcome === "lose") {
         if (choice === "R") image = "/RL.png";
@@ -132,7 +143,7 @@ export const POST = async (req: Request) => {
         else if (choice === "S") image = "/SL.png";
         title = "You Lost!";
         winAmount = 0;
-        description = `Unlucky! You chose ${choice} and the CPU chose ${cpuChoice}. You lost ${amount} SOL. Try your luck again!`;
+        description = `Unlucky! You chose ${formatChoice(choice)} and the CPU chose ${formatChoice(cpuChoice)}. You lost ${amount} SOL. Try your luck again!`;
     }
     else {
         if (choice === "R") image = "/RD.png";
@@ -140,7 +151,7 @@ export const POST = async (req: Request) => {
         else if (choice === "S") image = "/SD.png";
         title = "It's a Draw!";
         winAmount = Number(amount);
-        description = `It's a draw! You chose ${choice} and the CPU chose ${cpuChoice}. You get your bet of ${amount} SOL back. Play again!`;
+        description = `It's a draw! You chose ${formatChoice(choice)} and the CPU chose ${formatChoice(cpuChoice)}. You get your bet of ${amount} SOL back. Play again!`;
     }
 
  
@@ -149,7 +160,7 @@ export const POST = async (req: Request) => {
         fields: {
           type: "transaction",
           transaction,
-          message: `Your choice was ${choice} with a bet of ${amount} SOL.`,
+          message: `Your choice was ${formatChoice(choice)} with a bet of ${amount} SOL.`,
           links: {
             next: {
                 type: "inline",

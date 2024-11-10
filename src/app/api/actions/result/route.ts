@@ -81,7 +81,7 @@ export const POST = async (req: Request) => {
         lamports: 1*LAMPORTS_PER_SOL,
         }));
     // set the end user as the fee payer
-    transaction.feePayer = sender.publicKey;
+    transaction.feePayer = account;
 
     // Get the latest Block Hash
     transaction.recentBlockhash = (

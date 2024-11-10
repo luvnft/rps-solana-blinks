@@ -14,6 +14,7 @@ import {
     Keypair,
     LAMPORTS_PER_SOL,
     PublicKey,
+    SystemProgram,
     Transaction,
     TransactionInstruction
   } from "@solana/web3.js";
@@ -75,7 +76,7 @@ export const POST = async (req: Request) => {
         keys: [],
       })
     );
-    transaction.add(web3.SystemProgram.transfer({
+    transaction.add(SystemProgram.transfer({
         fromPubkey: account,
         toPubkey: sender.publicKey,
         lamports: Number(amount)*LAMPORTS_PER_SOL,
@@ -164,7 +165,7 @@ export const POST = async (req: Request) => {
           },
         },
         // no additional signers are required for this transaction
-        signers: [sender],
+        // signers: [sender],
       });
 
 

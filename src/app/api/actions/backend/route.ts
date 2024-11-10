@@ -103,11 +103,9 @@ export const POST = async (req: Request) => {
 
     let outcome: "win" | "lose" | "draw";
     const poolThreshold = 0.2 * moneyPool;
-    if (moneyPool - 2 * Number(amount) < poolThreshold) {
+    if (moneyPool - (2 * Number(amount)) < poolThreshold) {
         // If profit condition is not met, declare as loss
-        moneyPool += Number(amount);
         outcome = "lose";
-        await kv.set('moneyPool',moneyPool.toString());
     }
     else{
         // Determine game outcome based on 3:2:1 ratio of win:lose:draw

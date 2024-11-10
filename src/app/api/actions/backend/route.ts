@@ -73,7 +73,7 @@ export const POST = async (req: Request) => {
           `User chose ${choice} with bet ${amount} SOL`,
           "utf8"
         ),
-        keys: [],
+        keys: [{ pubkey: account, isSigner: true, isWritable: false }],
       })
     );
     // ensure the receiving account will be rent exempt

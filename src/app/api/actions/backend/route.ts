@@ -163,7 +163,7 @@ export const POST = async (req: Request) => {
           },
         },
         // no additional signers are required for this transaction
-        signers: [sender],
+        // signers: [sender],
       });
 
 

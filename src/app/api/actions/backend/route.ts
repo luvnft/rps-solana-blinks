@@ -19,6 +19,7 @@ import {
   } from "@solana/web3.js";
   
   import bs58 from "bs58";
+import { cp } from "fs";
 
 const headers = createActionHeaders({
     chainId: "devnet", // or chainId: "devnet"
@@ -83,17 +84,39 @@ export const POST = async (req: Request) => {
       await connection.getLatestBlockhash()
     ).blockhash;
 
+    // Determine game outcome based on 3:2:1 ratio of win:lose:draw
+    const random = Math.floor(Math.random() * 6); // Generates 0 to 5
+    let outcome: "win" | "lose" | "draw";
+    if (random < 3) outcome = "win";
+    else if (random < 5) outcome = "lose";
+    else outcome = "draw";
 
-    // const nacl = require("tweetnacl");
-    // let transaction = new web3.Transaction();
-    // transaction.add(
-    //     web3.SystemProgram.transfer({
-    //       fromPubkey: sender.publickey,
-    //       toPubkey: account,
-    //       lamports: 1*LAMPORTS_PER_SOL,
-    //     }),
-    //   );
-    //   await web3.sendAndConfirmTransaction(connection, transaction, [sender]);
+    // Set CPU's choice based on user's choice and the decided outcome
+    let cpuChoice: string;
+    if (outcome === "win") {
+      cpuChoice = choice === "R" ? "S" : choice === "P" ? "R" : "P"; // Win scenario
+    } else if (outcome === "lose") {
+      cpuChoice = choice === "R" ? "P" : choice === "P" ? "S" : "R"; // Lose scenario
+    } else {
+      cpuChoice = choice; // Draw scenario
+    }
+
+    let image: string = "/icon.gif";
+    if (outcome === "win") {
+        if (choice === "R") image = "/RW.png";
+        else if (choice === "P") image = "/PW.png";
+        else if (choice === "S") image = "/SW.png";
+    }
+    else if (outcome === "lose") {
+        if (choice === "R") image = "/RL.png";
+        else if (choice === "P") image = "/PL.png";
+        else if (choice === "S") image = "/SL.png";
+    }
+    else {
+        if (choice === "R") image = "/RD.png";
+        else if (choice === "P") image = "/PD.png";
+        else if (choice === "S") image = "/SD.png";
+    }
 
  
 
@@ -108,7 +131,7 @@ export const POST = async (req: Request) => {
                 type: "inline",
                 action: {
                     type: "action",
-                    title: "You Won.",icon: new URL("/icon.png",new URL(req.url).origin).toString(),
+                    title: "You Won.",icon: new URL(`${image}`,new URL(req.url).origin).toString(),
                     description: "Let's play Rock Paper Scissors! If you win you get DOUBLE your betted SOL, if it's a tie you get your betted SOL back, and if you lose you lose your betted SOL.",
                     label: "Rock Paper Scissors",
                     "links": {

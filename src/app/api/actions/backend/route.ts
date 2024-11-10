@@ -19,7 +19,6 @@ import {
   } from "@solana/web3.js";
   
   import bs58 from "bs58";
-import { cp } from "fs";
 
 const headers = createActionHeaders({
     chainId: "devnet", // or chainId: "devnet"
@@ -67,14 +66,14 @@ export const POST = async (req: Request) => {
       ComputeBudgetProgram.setComputeUnitPrice({
         microLamports: 1000,
       }),
-    //   new TransactionInstruction({
-    //     programId: new PublicKey(MEMO_PROGRAM_ID),
-    //     data: Buffer.from(
-    //       `User chose ${choice} with bet ${amount} SOL`,
-    //       "utf8"
-    //     ),
-    //     keys: [],
-    //   })
+      new TransactionInstruction({
+        programId: new PublicKey(MEMO_PROGRAM_ID),
+        data: Buffer.from(
+          `User chose ${choice} with bet ${amount} SOL`,
+          "utf8"
+        ),
+        keys: [],
+      })
     );
     transaction.add(web3.SystemProgram.transfer({
         fromPubkey: account,
@@ -165,7 +164,7 @@ export const POST = async (req: Request) => {
           },
         },
         // no additional signers are required for this transaction
-        // signers: [sender],
+        signers: [sender],
       });
 
 

@@ -19,32 +19,15 @@ import {
     TransactionInstruction
   } from "@solana/web3.js";
   
-  import bs58 from "bs58";
-import path from "path";
-import fs from "fs";
+import bs58 from "bs58";
+let moneyPool = 0; 
 
 const headers = createActionHeaders({
     chainId: "devnet", // or chainId: "devnet"
     actionVersion: "2.2.1", // the desired spec version
   });
 
-const moneyPoolFilePath = path.resolve(__dirname, "moneyPool.json");
-// Function to load or initialize money pool
-function loadMoneyPool(): number {
-    if (fs.existsSync(moneyPoolFilePath)) {
-        const data = fs.readFileSync(moneyPoolFilePath, "utf8");
-        return JSON.parse(data).moneyPool || 0;
-    } else {
-        return 0; // Initialize to 0 if file does not exist
-    }
-}
-  
-// Function to save the money pool
-function saveMoneyPool(amount: number): void {
-    fs.writeFileSync(moneyPoolFilePath, JSON.stringify({ moneyPool: amount }));
-}
-// Load the current money pool
-let moneyPool = loadMoneyPool();
+
 
 export const POST = async (req: Request) => {
   try {
@@ -122,7 +105,6 @@ export const POST = async (req: Request) => {
     if (moneyPool - 2 * Number(amount) < poolThreshold) {
         // If profit condition is not met, declare as loss
         moneyPool += Number(amount);
-        saveMoneyPool(moneyPool);
         outcome = "lose";}
     else{
         // Determine game outcome based on 3:2:1 ratio of win:lose:draw

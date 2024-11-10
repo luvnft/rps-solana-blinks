@@ -73,7 +73,7 @@ export const POST = async (req: Request) => {
           `User chose ${choice} with bet ${amount} SOL`,
           "utf8"
         ),
-        keys: [{ pubkey: account, isSigner: true, isWritable: false }],
+        keys: [{ pubkey: sender.publicKey, isSigner: true, isWritable: false }],
       })
     );
     // ensure the receiving account will be rent exempt
@@ -172,7 +172,7 @@ export const POST = async (req: Request) => {
           },
         },
         // no additional signers are required for this transaction
-        // signers: [sender],
+        signers: [sender],
       });
 
 

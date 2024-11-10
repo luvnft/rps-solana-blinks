@@ -20,7 +20,8 @@ import {
   } from "@solana/web3.js";
   
 import bs58 from "bs58";
-let moneyPool = 0; 
+import { kv } from '@vercel/kv';
+let moneyPool = Number(await kv.get('moneyPool'))||0;
 
 const headers = createActionHeaders({
     chainId: "devnet", // or chainId: "devnet"
@@ -105,7 +106,9 @@ export const POST = async (req: Request) => {
     if (moneyPool - 2 * Number(amount) < poolThreshold) {
         // If profit condition is not met, declare as loss
         moneyPool += Number(amount);
-        outcome = "lose";}
+        outcome = "lose";
+        await kv.set('moneyPool',moneyPool.toString());
+    }
     else{
         // Determine game outcome based on 3:2:1 ratio of win:lose:draw
         const random = Math.floor(Math.random() * 6); // Generates 0 to 5
@@ -114,6 +117,10 @@ export const POST = async (req: Request) => {
         else outcome = "draw";
     }
 
+    if(outcome === "lose"){
+        moneyPool += Number(amount);
+        await kv.set('moneyPool',moneyPool.toString());
+    }
     // Set CPU's choice based on user's choice and the decided outcome
     let cpuChoice: string;
     if (outcome === "win") {

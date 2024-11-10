@@ -15,7 +15,7 @@ import {
     const payload: ActionGetResponse = {
       title: "Rock Paper Scissors",
       icon: new URL(
-        "/icon.png",
+        "/icon.gif",
         new URL(req.url).origin
       ).toString(),
       description:

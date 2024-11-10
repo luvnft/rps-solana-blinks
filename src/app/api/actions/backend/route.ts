@@ -115,7 +115,7 @@ export const POST = async (req: Request) => {
                     "actions": [
                         {
                         "label": "Play!", // button text
-                        "href": "/api/actions/backend?result={amount}&choice={choice}",
+                        "href": "/api/actions/result?amount={amount}&choice={choice}",
                         "parameters": [
                             {
                             type: "select",

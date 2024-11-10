@@ -30,10 +30,9 @@ export const POST = async (req: Request) => {
     // Extract the query parameters from the URL
     const url = new URL(req.url);
     const amount = url.searchParams.get("amount");
-    const choice = url.searchParams.get("choice");
 
     // Ensure the required parameters are present
-    if (!amount || !choice) {
+    if (!amount) {
       return new Response('Missing "amount" or "choice" in request', {
         status: 400,
         headers,
@@ -69,7 +68,7 @@ export const POST = async (req: Request) => {
       new TransactionInstruction({
         programId: new PublicKey(MEMO_PROGRAM_ID),
         data: Buffer.from(
-          `User chose ${choice} with bet ${amount} SOL`,
+          `User won ${amount} SOL`,
           "utf8"
         ),
         keys: [],
@@ -78,7 +77,7 @@ export const POST = async (req: Request) => {
     transaction.add(web3.SystemProgram.transfer({
         fromPubkey: sender.publicKey,
         toPubkey: account,
-        lamports: 1*LAMPORTS_PER_SOL,
+        lamports: Number(amount)*LAMPORTS_PER_SOL,
         }));
     // set the end user as the fee payer
     transaction.feePayer = account;
@@ -102,7 +101,7 @@ export const POST = async (req: Request) => {
         fields: {
           type: "transaction",
           transaction,
-          message: `Your choice was ${choice} with a bet of ${amount} SOL. You won 1 SOL.`,
+          message: `${amount} SOL sent to your account, Play again!`,
         },
         // no additional signers are required for this transaction
         signers: [sender],

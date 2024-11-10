@@ -103,27 +103,34 @@ export const POST = async (req: Request) => {
 
     let image: string = "/icon.gif";
     let title: string = "Rock Paper Scissors";
+    let description: string = "Let's play Rock Paper Scissors! If you win you get DOUBLE your betted SOL, if it's a tie you get your betted SOL back, and if you lose you lose your betted SOL.";
+    let winAmount:Number = 0;
     if (outcome === "win") {
         if (choice === "R") image = "/RW.png";
         else if (choice === "P") image = "/PW.png";
         else if (choice === "S") image = "/SW.png";
         title = "You Won!";
+        winAmount = Number(amount) * 2;
+        description = `Congratulations! You chose ${choice} and the CPU chose ${cpuChoice}. You won ${winAmount} SOL! Claim your prize by clicking the button below now.`;
     }
     else if (outcome === "lose") {
         if (choice === "R") image = "/RL.png";
         else if (choice === "P") image = "/PL.png";
         else if (choice === "S") image = "/SL.png";
         title = "You Lost!";
+        winAmount = 0;
+        description = `Unlucky! You chose ${choice} and the CPU chose ${cpuChoice}. You lost ${amount} SOL. Try your luck again!`;
     }
     else {
         if (choice === "R") image = "/RD.png";
         else if (choice === "P") image = "/PD.png";
         else if (choice === "S") image = "/SD.png";
         title = "It's a Draw!";
+        winAmount = Number(amount);
+        description = `It's a draw! You chose ${choice} and the CPU chose ${cpuChoice}. You get your bet of ${amount} SOL back. Play again!`;
     }
 
  
-
 
     const payload: ActionPostResponse = await createPostResponse({
         fields: {
@@ -137,16 +144,16 @@ export const POST = async (req: Request) => {
                     type: "action",
                     title: `${title}`,
                     icon: new URL(`${image}`,new URL(req.url).origin).toString(),
-                    description: "Let's play Rock Paper Scissors! If you win you get DOUBLE your betted SOL, if it's a tie you get your betted SOL back, and if you lose you lose your betted SOL.",
+                    description: `${description}`,
                     label: "Rock Paper Scissors",
                     "links": {
-                    "actions": [
+                    "actions": winAmount!=0?[
                         {
                         "label": "Claim Prize", // button text
-                        "href": "/api/actions/result?amount={amount}&choice={choice}",
+                        "href": `/api/actions/result?amount={${winAmount}}`,
                         type: "transaction"
                         }
-                    ]
+                    ]:[]
                     }
                 },
             },

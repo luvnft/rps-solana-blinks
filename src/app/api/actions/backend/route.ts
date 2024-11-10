@@ -181,7 +181,7 @@ export const POST = async (req: Request) => {
                 type: "inline",
                 action: {
                     type: "action",
-                    title: `${moneyPool}`,
+                    title: `${title}`,
                     icon: new URL(`${image}`,new URL(req.url).origin).toString(),
                     description: `${description}`,
                     label: "Rock Paper Scissors",

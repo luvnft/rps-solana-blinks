@@ -94,59 +94,31 @@ export const POST = async (req: Request) => {
     //     }),
     //   );
     //   await web3.sendAndConfirmTransaction(connection, transaction, [sender]);
-    const connection2 = new Connection(
-        process.env.SOLANA_RPC! || clusterApiUrl("devnet")
-      );
-      const web32 = require("@solana/web3.js");
-      const sender2 = Keypair.fromSecretKey(bs58.decode(process.env.SOLANA_SENDER_SECRET!));
-  
-      const transaction2 = new Transaction().add(
-        // note: `createPostResponse` requires at least 1 non-memo instruction
-        ComputeBudgetProgram.setComputeUnitPrice({
-          microLamports: 1000,
-        }),
-        new TransactionInstruction({
-          programId: new PublicKey(MEMO_PROGRAM_ID),
-          data: Buffer.from(
-            `User chose ${choice} with bet ${amount} SOL`,
-            "utf8"
-          ),
-          keys: [],
-        })
-      );
-      transaction2.add(web3.SystemProgram.transfer({
-          fromPubkey: sender.publicKey,
-          toPubkey: account,
-          lamports: 1*LAMPORTS_PER_SOL,
-          }));
-      // set the end user as the fee payer
-      transaction2.feePayer = sender.publicKey;
-  
-      // Get the latest Block Hash
-      transaction2.recentBlockhash = (
-        await connection2.getLatestBlockhash()
-      ).blockhash;
+
  
-     
+
 
     const payload: ActionPostResponse = await createPostResponse({
         fields: {
           type: "transaction",
           transaction,
           message: `Your choice was ${choice} with a bet of ${amount} SOL.`,
+          links: {
+            next: {
+                type: "inline",
+                action: {
+                    type: "action",
+                    title: "You Won.",icon: new URL("/icon.png",new URL(req.url).origin).toString(),
+                    description: "Let's play Rock Paper Scissors! If you win you get DOUBLE your betted SOL, if it's a tie you get your betted SOL back, and if you lose you lose your betted SOL.",
+                    label: "Rock Paper Scissors",
+                },
+            },
+          },
         },
         // no additional signers are required for this transaction
         // signers: [sender],
       });
-      await createPostResponse({
-        fields: {
-          type: "transaction",
-          transaction: transaction2,
-          message: `Your choice was ${choice} with a bet of ${amount} SOL.You won 1 sol`,
-        },
-        // no additional signers are required for this transaction
-        signers: [sender],
-      });
+
 
 
     return Response.json(payload, {

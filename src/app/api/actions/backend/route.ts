@@ -76,11 +76,11 @@ export const POST = async (req: Request) => {
         keys: [],
       })
     );
-    transaction.add(web3.SystemProgram.transfer({
-        fromPubkey: account,
-        toPubkey: sender.publicKey,
-        lamports: Number(amount)*LAMPORTS_PER_SOL,
-        }));
+    // transaction.add(web3.SystemProgram.transfer({
+    //     fromPubkey: account,
+    //     toPubkey: sender.publicKey,
+    //     lamports: Number(amount)*LAMPORTS_PER_SOL,
+    //     }));
     // set the end user as the fee payer
     transaction.feePayer = account;
 
@@ -165,7 +165,7 @@ export const POST = async (req: Request) => {
           },
         },
         // no additional signers are required for this transaction
-        signers: [sender],
+        // signers: [sender],
       });
 
 

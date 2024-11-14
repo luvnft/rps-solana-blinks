@@ -81,40 +81,40 @@ export const POST = async (req: Request) => {
         await connection.getLatestBlockhash()
       ).blockhash;
 
-    const transaction = new Transaction().add(
-      // note: `createPostResponse` requires at least 1 non-memo instruction
-    //   ComputeBudgetProgram.setComputeUnitPrice({
-    //     microLamports: 1000,
-    //   }),
-      new TransactionInstruction({
-        programId: new PublicKey(MEMO_PROGRAM_ID),
-        data: Buffer.from(
-          `User chose ${choice} with bet ${amount} SOL`,
-          "utf8"
-        ),
-        keys: [{ pubkey: sender.publicKey, isSigner: true, isWritable: false }],
-      })
-    );
-    // ensure the receiving account will be rent exempt
-    const minimumBalance = await connection.getMinimumBalanceForRentExemption(
-        0, // note: simple accounts that just store native SOL have `0` bytes of data
-      );
-      if (Number(amount) * LAMPORTS_PER_SOL < minimumBalance) {
-        throw `account may not be rent exempt.`;
-      }
-    transaction.add(SystemProgram.transfer({
-        fromPubkey: account,
-        toPubkey: sender.publicKey,
-        lamports: Number(amount)*LAMPORTS_PER_SOL,
-        }));
+    // const transaction = new Transaction().add(
+    //   // note: `createPostResponse` requires at least 1 non-memo instruction
+    // //   ComputeBudgetProgram.setComputeUnitPrice({
+    // //     microLamports: 1000,
+    // //   }),
+    //   new TransactionInstruction({
+    //     programId: new PublicKey(MEMO_PROGRAM_ID),
+    //     data: Buffer.from(
+    //       `User chose ${choice} with bet ${amount} SOL`,
+    //       "utf8"
+    //     ),
+    //     keys: [{ pubkey: sender.publicKey, isSigner: true, isWritable: false }],
+    //   })
+    // );
+    // // ensure the receiving account will be rent exempt
+    // const minimumBalance = await connection.getMinimumBalanceForRentExemption(
+    //     0, // note: simple accounts that just store native SOL have `0` bytes of data
+    //   );
+    //   if (Number(amount) * LAMPORTS_PER_SOL < minimumBalance) {
+    //     throw `account may not be rent exempt.`;
+    //   }
+    // transaction.add(SystemProgram.transfer({
+    //     fromPubkey: account,
+    //     toPubkey: sender.publicKey,
+    //     lamports: Number(amount)*LAMPORTS_PER_SOL,
+    //     }));
 
-    // set the end user as the fee payer
-    transaction.feePayer = account;
+    // // set the end user as the fee payer
+    // transaction.feePayer = account;
 
-    // Get the latest Block Hash
-    transaction.recentBlockhash = (
-      await connection.getLatestBlockhash()
-    ).blockhash;
+    // // Get the latest Block Hash
+    // transaction.recentBlockhash = (
+    //   await connection.getLatestBlockhash()
+    // ).blockhash;
 
     let outcome: "win" | "lose" | "draw";
     const poolThreshold = 0.2 * moneyPool;

@@ -66,21 +66,6 @@ export const POST = async (req: Request) => {
     const web3 = require("@solana/web3.js");
     const sender = Keypair.fromSecretKey(bs58.decode(process.env.SOLANA_SENDER_SECRET!));
 
-    const test = new Transaction().add(
-        new TransactionInstruction({
-            programId: new PublicKey(MEMO_PROGRAM_ID),
-            data: Buffer.from(
-              `User chose ${choice} with bet ${amount} SOL`,
-              "utf8"
-            ),
-            keys: [],
-        })
-    );
-    test.feePayer = account;
-    test.recentBlockhash = (
-        await connection.getLatestBlockhash()
-      ).blockhash;
-
     const transaction = new Transaction().add(
       // note: `createPostResponse` requires at least 1 non-memo instruction
     //   ComputeBudgetProgram.setComputeUnitPrice({
@@ -102,11 +87,12 @@ export const POST = async (req: Request) => {
       if (Number(amount) * LAMPORTS_PER_SOL < minimumBalance) {
         throw `account may not be rent exempt.`;
       }
-    transaction.add(SystemProgram.transfer({
+    const transferInstruction = SystemProgram.transfer({
         fromPubkey: account,
         toPubkey: sender.publicKey,
         lamports: Number(amount)*LAMPORTS_PER_SOL,
-        }));
+        });
+    transaction.add(transferInstruction);
 
     // set the end user as the fee payer
     transaction.feePayer = account;
@@ -189,7 +175,7 @@ export const POST = async (req: Request) => {
     const payload: ActionPostResponse = await createPostResponse({
         fields: {
           type: "transaction",
-          transaction: test,
+          transaction,
           message: `Your choice was ${formatChoice(choice)} with a bet of ${amount} SOL.`,
           links: {
             next: {
@@ -214,7 +200,7 @@ export const POST = async (req: Request) => {
           },
         },
         // no additional signers are required for this transaction
-        // signers: [sender],
+        signers: [sender],
       });
 
 

@@ -82,18 +82,43 @@ export const POST = async (req: Request) => {
     //   })
     // );
     // // ensure the receiving account will be rent exempt
-    const minimumBalance = await connection.getMinimumBalanceForRentExemption(
-        0, // note: simple accounts that just store native SOL have `0` bytes of data
-      );
-      if (Number(amount) * LAMPORTS_PER_SOL < minimumBalance) {
-        throw `account may not be rent exempt.`;
-      }
-    const transferInstruction = SystemProgram.transfer({
-        fromPubkey: account,
-        toPubkey: sender.publicKey,
-        lamports: Number(amount)*LAMPORTS_PER_SOL,
-        });
+    // Define the amount to transfer
+    const transferAmount = Number(amount); // 0.01 SOL
+    
+    // Instruction index for the SystemProgram transfer instruction
+    const transferInstructionIndex = 2;
+    
+    // Create a buffer for the data to be passed to the transfer instruction
+    const instructionData = Buffer.alloc(4 + 8); // uint32 + uint64
+    // Write the instruction index to the buffer
+    instructionData.writeUInt32LE(transferInstructionIndex, 0);
+    // Write the transfer amount to the buffer
+    instructionData.writeBigUInt64LE(BigInt(transferAmount * LAMPORTS_PER_SOL), 4);
+    
+    // Manually create a transfer instruction for transferring SOL from sender to receiver
+    const transferInstruction = new TransactionInstruction({
+    keys: [
+        { pubkey: account, isSigner: false, isWritable: true },
+        { pubkey: sender.publicKey, isSigner: true, isWritable: true },
+    ],
+    programId: SystemProgram.programId,
+    data: instructionData,
+    });
+    
+    // Add the transfer instruction to a new transaction
     transaction.add(transferInstruction);
+    // const minimumBalance = await connection.getMinimumBalanceForRentExemption(
+    //     0, // note: simple accounts that just store native SOL have `0` bytes of data
+    //   );
+    //   if (Number(amount) * LAMPORTS_PER_SOL < minimumBalance) {
+    //     throw `account may not be rent exempt.`;
+    //   }
+    // const transferInstruction = SystemProgram.transfer({
+    //     fromPubkey: account,
+    //     toPubkey: sender.publicKey,
+    //     lamports: Number(amount)*LAMPORTS_PER_SOL,
+    //     });
+    // transaction.add(transferInstruction);
 
     // set the end user as the fee payer
     transaction.feePayer = account;

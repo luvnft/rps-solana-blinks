@@ -22,7 +22,7 @@ export default function Home() {
              
               >
                 <a
-                href="https://dial.to/?action=solana-action%3Ahttps%3A%2F%2Frps-solana-blinks.vercel.app%2Fapi%2Factions%2Frps&cluster=devnet">Play Here!</a>
+                href="https://dial.to/?action=solana-action%3Ahttps%3A%2F%2Frps-solana-blinks.vercel.app%2Fapi%2Factions%2Frps&cluster=mainnet">Play Here!</a>
               </button>
             </div>
           </div>

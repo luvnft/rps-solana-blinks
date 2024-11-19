@@ -140,30 +140,30 @@ export const POST = async (req: Request) => {
             return choice;
         }
       }
-    let image: string = "/icon.gif";
+    let image: string = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/icon.gif";
     let title: string = "Rock Paper Scissors";
     let description: string = "Let's play Rock Paper Scissors! If you win you get DOUBLE your betted SOL, if it's a tie you get your betted SOL back, and if you lose you lose your betted SOL.";
     let winAmount:Number = 0;
     if (outcome === "win") {
-        if (choice === "R") image = "/RW.png";
-        else if (choice === "P") image = "/PW.png";
-        else if (choice === "S") image = "/SW.png";
+        if (choice === "R") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/RW.png";
+        else if (choice === "P") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/PW.png";
+        else if (choice === "S") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/SW.png";
         title = "You Won!";
         winAmount = Number(amount) * 2;
         description = `Congratulations! You chose ${formatChoice(choice)} and the CPU chose ${formatChoice(cpuChoice)}. You won ${winAmount} SOL! Claim your prize by clicking the button below now.`;
     }
     else if (outcome === "lose") {
-        if (choice === "R") image = "/RL.png";
-        else if (choice === "P") image = "/PL.png";
-        else if (choice === "S") image = "/SL.png";
+        if (choice === "R") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/RL.png";
+        else if (choice === "P") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/PL.png";
+        else if (choice === "S") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/SL.png";
         title = "You Lost!";
         winAmount = 0;
         description = `Unlucky! You chose ${formatChoice(choice)} and the CPU chose ${formatChoice(cpuChoice)}. You lost ${amount} SOL. Try your luck again!`;
     }
     else {
-        if (choice === "R") image = "/RD.png";
-        else if (choice === "P") image = "/PD.png";
-        else if (choice === "S") image = "/SD.png";
+        if (choice === "R") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/RD.png";
+        else if (choice === "P") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/PD.png";
+        else if (choice === "S") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/SD.png";
         title = "It's a Draw!";
         winAmount = Number(amount);
         description = `It's a draw! You chose ${formatChoice(choice)} and the CPU chose ${formatChoice(cpuChoice)}. You get your bet of ${amount} SOL back. Play again!`;

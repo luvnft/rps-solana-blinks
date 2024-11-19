@@ -14,10 +14,8 @@ import {
   export const GET = async (req: Request) => {
     const payload: ActionGetResponse = {
       title: "Rock Paper Scissors",
-      icon: await new URL(
-        "/icon.gif",
-        new URL(req.url).origin
-      ).toString(),
+      icon: "/icon.gif",
+        
       description:
         "Let's play Rock Paper Scissors! If you win you get DOUBLE your betted SOL, if it's a tie you get your betted SOL back, and if you lose you lose your betted SOL.",
       label: "Rock Paper Scissors",

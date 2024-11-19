@@ -14,7 +14,7 @@ import {
   export const GET = async (req: Request) => {
     const payload: ActionGetResponse = {
       title: "Rock Paper Scissors",
-      icon: new URL(
+      icon: await new URL(
         "/icon.gif",
         new URL(req.url).origin
       ).toString(),

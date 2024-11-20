@@ -270,7 +270,7 @@ else{
                 type: "inline",
                 action: {
                     type: "action",
-                    title: `${title}`,
+                    title: `Player 1 (${account.toString()}) has made a bet of ${amount} SOL. Waiting for Player 2 to make a choice.`,
                     icon: new URL(`${image}`,new URL(req.url).origin).toString(),
                     description: `${description}`,
                     label: "Rock Paper Scissors",

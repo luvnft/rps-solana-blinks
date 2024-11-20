@@ -91,7 +91,7 @@ export const POST = async (req: Request) => {
     let title: string = "Rock Paper Scissors";
     let description: string = "Let's play Rock Paper Scissors! If you win you get DOUBLE your betted SOL, if it's a tie you get your betted SOL back, and if you lose you lose your betted SOL.";
     let winAmount:Number = 0;
-if (player === "B") {
+  if (player === "B") {
     // Solana Blockchain Cluster (Set Mainnet "mainnet-beta" or Devnet "devnet")
     // If your RPC not present, it will use default devnet RPC provided to us via web3.js "clusterApiUrl("devnet")"
     // NOTE: "clusterApiUrl("devnet")" is not for mainnet use - for mainnet production launched Blinks, get your own RPC
@@ -186,7 +186,7 @@ if (player === "B") {
         winAmount = Number(amount);
         description = `It's a draw! You chose ${formatChoice(choice)} and the CPU chose ${formatChoice(cpuChoice)}. You get your bet of ${amount} SOL back. Play again!`;
     }
-}
+  }
 else{
   const connection = new Connection(
     clusterApiUrl("devnet")
@@ -230,7 +230,7 @@ else{
 
 }
 
-    const payload: ActionPostResponse = await createPostResponse({
+    const payload: ActionPostResponse = (player === "B")? await createPostResponse({
         fields: {
           type: "transaction",
           transaction,
@@ -259,7 +259,50 @@ else{
         },
         // no additional signers are required for this transaction
         signers: [sender],
-      });
+      }):
+      await createPostResponse({
+        fields: {
+          type: "transaction",
+          transaction,
+          message: `Your choice was ${formatChoice(choice)} with a bet of ${amount} SOL against a friend`,
+          links: {
+            next: {
+                type: "inline",
+                action: {
+                    type: "action",
+                    title: `Player 1 (${account.toString()}) has made a bet of ${amount} SOL. Waiting for Player 2 to make a choice.`,
+                    icon: new URL(`${image}`,new URL(req.url).origin).toString(),
+                    description: `Player 1 made a bet and is waiting for Player 2 to make a choice and match his bet of ${amount} SOL! Both the bet amounts will be pooled together and the winner will take it all, after we cut a 10% fees.`,
+                    label: "Rock Paper Scissors",
+                    "links": {
+                    "actions":[
+                        {
+                          "label": "Claim Prize", // button text
+                          "href": `/api/actions/friend?choice={choice}&player=${account.toString()}`,
+                          "parameters": [
+                            {
+                              type: "radio",
+                              name: "choice", // parameter name in the `href` above
+                              label: "Choose your move?", // placeholder of the text input
+                              required: true,
+                              options: [
+                                { label: "Rock", value: "R" },
+                                { label: "Paper", value: "P" },
+                                { label: "Scissors", value: "S" },
+                              ],
+                            },
+                          ],
+                          type: "transaction"
+                        }
+                      ]
+                    }
+                },
+            },
+          },
+        },
+        // no additional signers are required for this transaction
+        signers: [sender],
+      });;
 
 
 

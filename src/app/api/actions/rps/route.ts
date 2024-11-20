@@ -55,8 +55,8 @@ import { getFirestore, getDoc, doc } from "firebase/firestore";
               label: "Who would you like to play against?", // placeholder of the text input
               required: true,
               options: [
-                { label: "Our bot (Instant prize)", value: "B" },
-                { label: "Friend", value: "F" },
+                { label: "Our bot (Instant prize, no fees)", value: "B" },
+                { label: "Friend (10% fees cut of total value)", value: "F" },
               ],
             },
           ],

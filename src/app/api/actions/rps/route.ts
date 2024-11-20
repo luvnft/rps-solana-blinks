@@ -21,7 +21,7 @@ import { getFirestore, getDoc, doc } from "firebase/firestore";
     let payload: ActionGetResponse;
     if(player1) {
       payload= {
-        title: `Player 1 (${player1.toString()}) has made a bet of ${amount} SOL. Waiting for Player 2 to make a choice.`,
+        title: `Player 1 (${player1}) has made a bet of ${amount} SOL. Waiting for Player 2 to make a choice.`,
         icon: "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/icon.gif",
         description:`Player 1 made a bet and is waiting for Player 2 to make a choice and match his bet of ${amount} SOL! Both the bet amounts will be pooled together and the winner will take it all, after we cut a 10% fees.`,
         label: "Rock Paper Scissors",

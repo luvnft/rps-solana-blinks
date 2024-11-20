@@ -18,17 +18,16 @@ import {
   } from "@solana/web3.js";
   
 import bs58 from "bs58";
-import { kv } from '@vercel/kv';
 import { getApp, getApps, initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { doc, getDoc, getFirestore } from "firebase/firestore";
+import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
 
 const headers = createActionHeaders({
     chainId: "devnet", // or chainId: "devnet"
     actionVersion: "2.2.1", // the desired spec version
   });
 
-  // Firebase _______________________________________________
+    // Firebase _______________________________________________
   const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
     authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -37,16 +36,17 @@ const headers = createActionHeaders({
     messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
     appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
     measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
-  };
-  
+    };
+    
   const app = !getApps.length ? initializeApp(firebaseConfig) : getApp();
-  
+    
   const auth = getAuth(app);
   const firestore = getFirestore(app);
-// __________________________________________________________
-let db = await getDoc(doc(firestore, "rps", "moneyPool"));
-let moneyPool = 0;
-if(db.exists()) moneyPool = Number(db.data().moneyPool);
+  // __________________________________________________________
+  let db = await getDoc(doc(firestore, "rps", "moneyPool"));
+  let moneyPool = 0;
+  if(db.exists()) moneyPool = Number(db.data().value);
+
 
 export const POST = async (req: Request) => {
   try {
@@ -135,7 +135,7 @@ export const POST = async (req: Request) => {
 
     if(outcome === "lose"){
         moneyPool += Number(amount);
-        await kv.set('moneyPool',moneyPool.toString());
+        await setDoc(doc(firestore, "rps", "moneyPool"), { value: moneyPool });
     }
     // Set CPU's choice based on user's choice and the decided outcome
     let cpuChoice: string;

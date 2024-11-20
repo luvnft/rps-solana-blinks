@@ -268,14 +268,12 @@ else{
                 type: "inline",
                 action: {
                     type: "action",
-                    title: `Successfully submitted your bet`,
+                    title: `Successfully submitted your bet of ${amount} SOL with choice ${formatChoice(choice)}.`,
                     icon: new URL(`${image}`,new URL(req.url).origin).toString(),
-                    description: `${description}`,
+                    description: `Share this link with your friend to play Rock Paper Scissors against them! https://dial.to/?action=solana-action%3Ahttps%3A%2F%2Frps.sendarcade.fun%2Fapi%2Factions%2Frps%3Famount%3D%7B${amount}%7D%26player%3D%7B${account.toString()}%7D&cluster=devnet`,
                     label: "Rock Paper Scissors",
                     "links": {
-                    "actions":[
-                        
-                    ]},
+                    "actions":[]},
                 },
             },
           },

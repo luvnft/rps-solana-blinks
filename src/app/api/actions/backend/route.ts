@@ -226,6 +226,8 @@ else{
     await connection.getLatestBlockhash()
   ).blockhash;
 
+  await setDoc(doc(firestore, "players", account.toString()), { choice: choice, amount: amount});
+
 }
 
     const payload: ActionPostResponse = await createPostResponse({

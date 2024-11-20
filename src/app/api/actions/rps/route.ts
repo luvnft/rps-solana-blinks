@@ -28,7 +28,7 @@ import { getFirestore, getDoc, doc } from "firebase/firestore";
   // __________________________________________________________
   let db = await getDoc(doc(firestore, "rps", "moneyPool"));
   let moneyPool = 0;
-  if(db.exists()) moneyPool = Number(db.data().moneyPool);
+  if(db.exists()) moneyPool = Number(db.data().value);
 
   const headers = createActionHeaders({
     chainId: "devnet", // or chainId: "devnet"

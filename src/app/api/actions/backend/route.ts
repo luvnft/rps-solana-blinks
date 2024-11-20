@@ -291,17 +291,6 @@ else{
                                 { label: "Scissors", value: "S" },
                               ],
                             },
-                            {
-                              type: "radio",
-                              name: "choice", // parameter name in the `href` above
-                              label: "Choose your move?", // placeholder of the text input
-                              required: true,
-                              options: [
-                                { label: "Rock", value: "R" },
-                                { label: "Paper", value: "P" },
-                                { label: "Scissors", value: "S" },
-                              ],
-                            },
                           ],
                           type: "transaction"
                         }
@@ -323,7 +312,8 @@ else{
   } catch (err) {
     console.log(err);
     const message = typeof err === "string" ? err : err?.toString() || "An unknown error occurred";
-    return new Response(JSON.stringify({ message }), {
+    // ||JSON.stringify({ message })
+    return new Response("error in backend", {
       status: 400,
       headers,
     });

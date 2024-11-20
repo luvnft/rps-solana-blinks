@@ -23,25 +23,22 @@ import { getApps, initializeApp, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore, getDoc, doc } from "firebase/firestore";
 
-    // Firebase _______________________________________________
-    const firebaseConfig = {
-        apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-        authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-        projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-        storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-        messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-        appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-        measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
-        };
-        
-      const app = !getApps.length ? initializeApp(firebaseConfig) : getApp();
-        
-      const auth = getAuth(app);
-      const firestore = getFirestore(app);
-      // __________________________________________________________
-      let db = await getDoc(doc(firestore, "rps", "moneyPool"));
-      let amount = 0;
-      if(db.exists()) amount = Number(db.data().value);
+// Firebase _______________________________________________
+const firebaseConfig = {
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+    measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+    };
+    
+  const app = !getApps.length ? initializeApp(firebaseConfig) : getApp();
+    
+  const auth = getAuth(app);
+  const firestore = getFirestore(app);
+  // __________________________________________________________
 
 const headers = createActionHeaders({
     chainId: "devnet", // or chainId: "devnet"
@@ -53,11 +50,17 @@ export const POST = async (req: Request) => {
     // Extract the query parameters from the URL
     const url = new URL(req.url);
     const choice = url.searchParams.get("choice");
-    const player1 = url.searchParams.get("player");
+    const player1 = url.searchParams.get("player")!;
+
+    let db = await getDoc(doc(firestore, "players", player1?.toString()));
+    let amount = 0;
+    let P1choice = "";
+    if(db.exists()) amount = Number(db.data().amount);
+    if(db.exists()) P1choice = db.data().choice;
 
     // Ensure the required parameters are present
     if (!amount) {
-      return new Response('Missing "amount" or "choice" in request', {
+      return new Response('Bet not found.', {
         status: 400,
         headers,
       });
@@ -125,7 +128,7 @@ export const POST = async (req: Request) => {
         fields: {
           type: "transaction",
           transaction,
-          message: `${amount} SOL sent to your account, Play again! ${choice} and ${player1}`,
+          message: `${amount} SOL sent to your account, Play again! ${amount} and ${P1choice}`,
         },
         // no additional signers are required for this transaction
         signers: [sender],

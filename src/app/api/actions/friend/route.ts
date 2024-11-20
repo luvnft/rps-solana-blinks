@@ -115,7 +115,7 @@ export const POST = async (req: Request) => {
   } catch (err) {
     console.log(err);
     const message = typeof err === "string" ? err : err?.toString() || "An unknown error occurred";
-    return new Response("error in friend", {
+    return new Response(JSON.stringify({ message }), {
       status: 400,
       headers,
     });

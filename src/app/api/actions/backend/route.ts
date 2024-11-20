@@ -279,19 +279,19 @@ else{
                         {
                           "label": "Play!", // button text
                           "href": `/api/actions/friend?choice={choice}&player=${account.toString()}`,
-                          "parameters": [
-                            {
-                              type: "radio",
-                              name: "choice", // parameter name in the `href` above
-                              label: "Choose your move?", // placeholder of the text input
-                              required: true,
-                              options: [
-                                { label: "Rock", value: "R" },
-                                { label: "Paper", value: "P" },
-                                { label: "Scissors", value: "S" },
-                              ],
-                            },
-                          ],
+                          // "parameters": [
+                          //   {
+                          //     type: "radio",
+                          //     name: "choice", // parameter name in the `href` above
+                          //     label: "Choose your move?", // placeholder of the text input
+                          //     required: true,
+                          //     options: [
+                          //       { label: "Rock", value: "R" },
+                          //       { label: "Paper", value: "P" },
+                          //       { label: "Scissors", value: "S" },
+                          //     ],
+                          //   },
+                          // ],
                           type: "transaction"
                         }
                       ]
@@ -312,8 +312,7 @@ else{
   } catch (err) {
     console.log(err);
     const message = typeof err === "string" ? err : err?.toString() || "An unknown error occurred";
-    // ||JSON.stringify({ message })
-    return new Response("error in backend", {
+    return new Response(JSON.stringify({ message }), {
       status: 400,
       headers,
     });

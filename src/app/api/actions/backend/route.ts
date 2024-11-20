@@ -272,7 +272,7 @@ else{
                     type: "action",
                     title: `Player 1 (${account.toString()}) has made a bet of ${amount} SOL. Waiting for Player 2 to make a choice.`,
                     icon: new URL(`${image}`,new URL(req.url).origin).toString(),
-                    description: `${description}`,
+                    description: `Player 1 made a bet and is waiting for Player 2 to make a choice and match his bet of ${amount} SOL! Both the bet amounts will be pooled together and the winner will take it all, after we cut a 10% fees.`,
                     label: "Rock Paper Scissors",
                     "links": {
                     "actions": winAmount!=0?[

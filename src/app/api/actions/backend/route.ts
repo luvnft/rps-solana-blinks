@@ -291,6 +291,17 @@ else{
                                 { label: "Scissors", value: "S" },
                               ],
                             },
+                            {
+                              type: "radio",
+                              name: "choice", // parameter name in the `href` above
+                              label: "Choose your move?", // placeholder of the text input
+                              required: true,
+                              options: [
+                                { label: "Rock", value: "R" },
+                                { label: "Paper", value: "P" },
+                                { label: "Scissors", value: "S" },
+                              ],
+                            },
                           ],
                           type: "transaction"
                         }

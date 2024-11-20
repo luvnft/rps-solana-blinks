@@ -275,13 +275,13 @@ else{
                     description: `Player 1 made a bet and is waiting for Player 2 to make a choice and match his bet of ${amount} SOL! Both the bet amounts will be pooled together and the winner will take it all, after we cut a 10% fees.`,
                     label: "Rock Paper Scissors",
                     "links": {
-                    "actions": winAmount!=0?[
+                    "actions":[
                         {
                         "label": "Claim Prize", // button text
                         "href": `/api/actions/result?amount=${winAmount}`,
                         type: "transaction"
                         }
-                    ]:[]
+                    ]
                     }
                 },
             },

@@ -277,7 +277,7 @@ else{
                     "links": {
                     "actions":[
                         {
-                          "label": "Claim Prize", // button text
+                          "label": "Play!", // button text
                           "href": `/api/actions/friend?choice={choice}&player=${account.toString()}`,
                           "parameters": [
                             {

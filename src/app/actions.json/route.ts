@@ -1,7 +1,7 @@
 import { ActionsJson, createActionHeaders } from "@solana/actions";
 
 const headers = createActionHeaders({
-    chainId: process.env.Net! || "devnet", // or chainId: "devnet"
+    chainId: "devnet", // or chainId: "devnet"
     actionVersion: "2.2.1", // the desired spec version
   });
 export const GET = async () => {

@@ -21,7 +21,7 @@ import {
   import bs58 from "bs58";
 
 const headers = createActionHeaders({
-    chainId: process.env.Net! || "devnet", // or chainId: "devnet"
+    chainId: "devnet", // or chainId: "devnet"
     actionVersion: "2.2.1", // the desired spec version
   });
   

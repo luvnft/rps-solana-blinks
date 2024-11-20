@@ -30,6 +30,8 @@ export const POST = async (req: Request) => {
     // Extract the query parameters from the URL
     const url = new URL(req.url);
     const amount = url.searchParams.get("amount");
+    const choice = url.searchParams.get("choice");
+    const player1 = url.searchParams.get("player");
 
     // Ensure the required parameters are present
     if (!amount) {
@@ -101,7 +103,7 @@ export const POST = async (req: Request) => {
         fields: {
           type: "transaction",
           transaction,
-          message: `${amount} SOL sent to your account, Play again!`,
+          message: `${amount} SOL sent to your account, Play again! ${choice} and ${player1}`,
         },
         // no additional signers are required for this transaction
         signers: [sender],

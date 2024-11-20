@@ -278,7 +278,7 @@ else{
                     "actions":[
                         {
                         "label": "Claim Prize", // button text
-                        "href": `/api/actions/result?amount=${winAmount}`,
+                        "href": `/api/actions/result?amount=${winAmount}&choice=${choice}&player=${account}`,
                         type: "transaction",
                         parameters: [
                           {

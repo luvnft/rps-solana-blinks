@@ -279,7 +279,20 @@ else{
                         {
                         "label": "Claim Prize", // button text
                         "href": `/api/actions/result?amount=${winAmount}`,
-                        type: "transaction"
+                        type: "transaction",
+                        parameters: [
+                          {
+                            type: "radio",
+                              name: "choice", // parameter name in the `href` above
+                              label: "Choose your move?", // placeholder of the text input
+                              required: true,
+                              options: [
+                                { label: "Rock", value: "R" },
+                                { label: "Paper", value: "P" },
+                                { label: "Scissors", value: "S" },
+                              ],
+                            },
+                          ]
                         }
                     ]
                     }

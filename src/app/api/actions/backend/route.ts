@@ -73,7 +73,25 @@ export const POST = async (req: Request) => {
         headers, //Must include CORS HEADERS
       });
     }
-
+    const transaction = new Transaction();
+    const sender = Keypair.fromSecretKey(bs58.decode(process.env.SOLANA_SENDER_SECRET!));
+    function formatChoice(choice: string): string {
+      switch (choice) {
+        case "R":
+          return "rock";
+        case "S":
+          return "scissors";
+        case "P":
+          return "paper";
+        default:
+          return choice;
+      }
+    }
+    let image: string = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/icon.gif";
+    let title: string = "Rock Paper Scissors";
+    let description: string = "Let's play Rock Paper Scissors! If you win you get DOUBLE your betted SOL, if it's a tie you get your betted SOL back, and if you lose you lose your betted SOL.";
+    let winAmount:Number = 0;
+if (player === "B") {
     // Solana Blockchain Cluster (Set Mainnet "mainnet-beta" or Devnet "devnet")
     // If your RPC not present, it will use default devnet RPC provided to us via web3.js "clusterApiUrl("devnet")"
     // NOTE: "clusterApiUrl("devnet")" is not for mainnet use - for mainnet production launched Blinks, get your own RPC
@@ -81,10 +99,7 @@ export const POST = async (req: Request) => {
     const connection = new Connection(
       clusterApiUrl("devnet")
     );
-    const web3 = require("@solana/web3.js");
-    const sender = Keypair.fromSecretKey(bs58.decode(process.env.SOLANA_SENDER_SECRET!));
-
-    const transaction = new Transaction().add(
+    transaction.add(
       // note: `createPostResponse` requires at least 1 non-memo instruction
     //   ComputeBudgetProgram.setComputeUnitPrice({
     //     microLamports: 1000,
@@ -146,22 +161,7 @@ export const POST = async (req: Request) => {
     } else {
       cpuChoice = choice; // Draw scenario
     }
-    function formatChoice(choice: string): string {
-        switch (choice) {
-          case "R":
-            return "rock";
-          case "S":
-            return "scissors";
-          case "P":
-            return "paper";
-          default:
-            return choice;
-        }
-      }
-    let image: string = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/icon.gif";
-    let title: string = "Rock Paper Scissors";
-    let description: string = "Let's play Rock Paper Scissors! If you win you get DOUBLE your betted SOL, if it's a tie you get your betted SOL back, and if you lose you lose your betted SOL.";
-    let winAmount:Number = 0;
+
     if (outcome === "win") {
         if (choice === "R") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/RW.png";
         else if (choice === "P") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/PW.png";
@@ -186,8 +186,47 @@ export const POST = async (req: Request) => {
         winAmount = Number(amount);
         description = `It's a draw! You chose ${formatChoice(choice)} and the CPU chose ${formatChoice(cpuChoice)}. You get your bet of ${amount} SOL back. Play again!`;
     }
+}
+else{
+  const connection = new Connection(
+    clusterApiUrl("devnet")
+  );
+  transaction.add(
+    // note: `createPostResponse` requires at least 1 non-memo instruction
+  //   ComputeBudgetProgram.setComputeUnitPrice({
+  //     microLamports: 1000,
+  //   }),
+    new TransactionInstruction({
+      programId: new PublicKey(MEMO_PROGRAM_ID),
+      data: Buffer.from(
+        `User chose ${choice} with bet ${amount} SOL`,
+        "utf8"
+      ),
+      keys: [{ pubkey: sender.publicKey, isSigner: true, isWritable: false }],
+    })
+  );
+  // ensure the receiving account will be rent exempt
+  const minimumBalance = await connection.getMinimumBalanceForRentExemption(
+      0, // note: simple accounts that just store native SOL have `0` bytes of data
+    );
+    if (Number(amount) * LAMPORTS_PER_SOL < minimumBalance) {
+      throw `account may not be rent exempt.`;
+    }
+  transaction.add(SystemProgram.transfer({
+      fromPubkey: account,
+      toPubkey: sender.publicKey,
+      lamports: Number(amount)*LAMPORTS_PER_SOL,
+      }));
 
- 
+  // set the end user as the fee payer
+  transaction.feePayer = account;
+
+  // Get the latest Block Hash
+  transaction.recentBlockhash = (
+    await connection.getLatestBlockhash()
+  ).blockhash;
+
+}
 
     const payload: ActionPostResponse = await createPostResponse({
         fields: {

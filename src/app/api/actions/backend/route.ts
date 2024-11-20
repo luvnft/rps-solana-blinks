@@ -264,7 +264,7 @@ else{
         fields: {
           type: "transaction",
           transaction,
-          message: `Your choice was ${formatChoice(choice)} with a bet of ${amount} SOL.`,
+          message: `Your choice was ${formatChoice(choice)} with a bet of ${amount} SOL against a friend`,
           links: {
             next: {
                 type: "inline",

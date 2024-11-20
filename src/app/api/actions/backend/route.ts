@@ -2,14 +2,12 @@ import {
     ActionPostResponse,
     createActionHeaders,
     createPostResponse,
-    ActionGetResponse,
     ActionPostRequest,
     MEMO_PROGRAM_ID,
   } from "@solana/actions";
   
   import { 
     clusterApiUrl,
-    ComputeBudgetProgram,
     Connection,
     Keypair,
     LAMPORTS_PER_SOL,
@@ -21,14 +19,34 @@ import {
   
 import bs58 from "bs58";
 import { kv } from '@vercel/kv';
-let moneyPool = Number(await kv.get('moneyPool'))||0;
+import { getApp, getApps, initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { doc, getDoc, getFirestore } from "firebase/firestore";
 
 const headers = createActionHeaders({
     chainId: "devnet", // or chainId: "devnet"
     actionVersion: "2.2.1", // the desired spec version
   });
 
-
+  // Firebase _______________________________________________
+  const firebaseConfig = {
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+    measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+  };
+  
+  const app = !getApps.length ? initializeApp(firebaseConfig) : getApp();
+  
+  const auth = getAuth(app);
+  const firestore = getFirestore(app);
+// __________________________________________________________
+let db = await getDoc(doc(firestore, "rps", "moneyPool"));
+let moneyPool = 0;
+if(db.exists()) moneyPool = Number(db.data().moneyPool);
 
 export const POST = async (req: Request) => {
   try {

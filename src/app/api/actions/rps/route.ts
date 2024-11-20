@@ -8,7 +8,7 @@ import {
   } from "@solana/actions";
   
   const headers = createActionHeaders({
-    chainId: "mainnet", // or chainId: "devnet"
+    chainId: process.env.Net, // or chainId: "devnet"
     actionVersion: "2.2.1", // the desired spec version
   });
   export const GET = async (req: Request) => {
@@ -22,7 +22,7 @@ import {
       "actions": [
         {
           "label": "Play!", // button text
-          "href": "/api/actions/backend?amount={amount}&choice={choice}",
+          "href": "/api/actions/backend?amount={amount}&choice={choice}&player={player}",
           "parameters": [
             {
               type: "select",
@@ -44,6 +44,16 @@ import {
                 { label: "Rock", value: "R" },
                 { label: "Paper", value: "P" },
                 { label: "Scissors", value: "S" },
+              ],
+            },
+            {
+              type: "radio",
+              name: "player", // parameter name in the `href` above
+              label: "Who would you like to play against?", // placeholder of the text input
+              required: true,
+              options: [
+                { label: "Our bot (Instant prize)", value: "B" },
+                { label: "Friend", value: "F" },
               ],
             },
           ],

@@ -29,9 +29,8 @@ export const POST = async (req: Request) => {
   try {
     // Extract the query parameters from the URL
     const url = new URL(req.url);
-    const player1 = url.searchParams.get("player");
-    const choice = url.searchParams.get("choice");
-    let amount =0;
+    const amount = url.searchParams.get("amount");
+
     // Ensure the required parameters are present
     if (!amount) {
       return new Response('Missing "amount" or "choice" in request', {
@@ -78,7 +77,7 @@ export const POST = async (req: Request) => {
     transaction.add(web3.SystemProgram.transfer({
         fromPubkey: sender.publicKey,
         toPubkey: account,
-        lamports: 0.001*LAMPORTS_PER_SOL,
+        lamports: Number(amount)*LAMPORTS_PER_SOL,
         }));
     // set the end user as the fee payer
     transaction.feePayer = account;
@@ -102,10 +101,10 @@ export const POST = async (req: Request) => {
         fields: {
           type: "transaction",
           transaction,
-          message: `test pass`,
+          message: `${amount} SOL sent to your account, Play again!`,
         },
         // no additional signers are required for this transaction
-        // signers: [sender],
+        signers: [sender],
       });
 
 

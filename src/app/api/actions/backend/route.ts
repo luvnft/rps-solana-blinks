@@ -272,6 +272,10 @@ else{
                     icon: new URL(`${image}`,new URL(req.url).origin).toString(),
                     description: `${description}`,
                     label: "Rock Paper Scissors",
+                    "links": {
+                    "actions":[
+                        
+                    ]},
                 },
             },
           },

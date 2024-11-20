@@ -16,25 +16,36 @@ import { getFirestore, getDoc, doc } from "firebase/firestore";
   });
   export const GET = async (req: Request) => {
     const url = new URL(req.url);
-    const choice = url.searchParams.get("choice");
+    const amount = url.searchParams.get("amount");
     const player1 = url.searchParams.get("player");
     let payload: ActionGetResponse;
-    if(choice || player1) {
+    if(player1) {
       payload= {
-        title: "from subsequent, pass",
+        title: `Player 1 (${player1.toString()}) has made a bet of ${amount} SOL. Waiting for Player 2 to make a choice.`,
         icon: "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/icon.gif",
-        description:
-          "Let's play Rock Paper Scissors! If you win you get DOUBLE your betted SOL, if it's a tie you get your betted SOL back, and if you lose you lose your betted SOL.",
+        description:`Player 1 made a bet and is waiting for Player 2 to make a choice and match his bet of ${amount} SOL! Both the bet amounts will be pooled together and the winner will take it all, after we cut a 10% fees.`,
         label: "Rock Paper Scissors",
         "links": {
-        "actions": [
-          {
-            "label": "Play!", // button text
-            "href": "/api/actions/backend?amount={amount}&choice={choice}&player={player}",
-           
-            type: "transaction"
-          }
-        ]
+        "actions":[
+                    {
+                    "label": "Play!", // button text
+                    "href": `/api/actions/friend?choice={choice}&player=${player1}`,
+                    type: "transaction",
+                    parameters: [
+                      {
+                        type: "radio",
+                          name: "choice", // parameter name in the `href` above
+                          label: "Choose your move?", // placeholder of the text input
+                          required: true,
+                          options: [
+                            { label: "Rock", value: "R" },
+                            { label: "Paper", value: "P" },
+                            { label: "Scissors", value: "S" },
+                          ],
+                        },
+                      ]
+                    }
+                  ]
       }
       };
     }

@@ -262,38 +262,16 @@ else{
         fields: {
           type: "transaction",
           transaction,
-          message: `Your choice was ${formatChoice(choice)} with a bet of ${amount} SOL against a friend`,
+          message: `Your choice was ${formatChoice(choice)} with a bet of ${amount} SOL.`,
           links: {
             next: {
                 type: "inline",
                 action: {
                     type: "action",
-                    title: `Player 1 (${account.toString()}) has made a bet of ${amount} SOL. Waiting for Player 2 to make a choice.`,
+                    title: `Successfully submitted your bet`,
                     icon: new URL(`${image}`,new URL(req.url).origin).toString(),
-                    description: `Player 1 made a bet and is waiting for Player 2 to make a choice and match his bet of ${amount} SOL! Both the bet amounts will be pooled together and the winner will take it all, after we cut a 10% fees.`,
+                    description: `${description}`,
                     label: "Rock Paper Scissors",
-                    "links": {
-                    "actions":[
-                        {
-                        "label": "Claim Prize", // button text
-                        "href": `/api/actions/rps?choice=${choice}&player=${account}`,
-                        type: "transaction",
-                        parameters: [
-                          {
-                            type: "radio",
-                              name: "choice", // parameter name in the `href` above
-                              label: "Choose your move?", // placeholder of the text input
-                              required: true,
-                              options: [
-                                { label: "Rock", value: "R" },
-                                { label: "Paper", value: "P" },
-                                { label: "Scissors", value: "S" },
-                              ],
-                            },
-                          ]
-                        }
-                    ]
-                    }
                 },
             },
           },

@@ -24,7 +24,7 @@ import { kv } from '@vercel/kv';
 let moneyPool = Number(await kv.get('moneyPool'))||0;
 
 const headers = createActionHeaders({
-    chainId: process.env.Net, // or chainId: "devnet"
+    chainId: process.env.Net! || "devnet", // or chainId: "devnet"
     actionVersion: "2.2.1", // the desired spec version
   });
 

@@ -227,6 +227,7 @@ else{
   ).blockhash;
 
   await setDoc(doc(firestore, "players", account.toString()), { choice: choice, amount: amount});
+  winAmount = 0.001;
 
 }
 
@@ -259,42 +260,28 @@ else{
         },
         // no additional signers are required for this transaction
         signers: [sender],
-      }):
-      await createPostResponse({
+      }): await createPostResponse({
         fields: {
           type: "transaction",
           transaction,
-          message: `Your choice was ${formatChoice(choice)} with a bet of ${amount} SOL against a friend`,
+          message: `Your choice was ${formatChoice(choice)} with a bet of ${amount} SOL.`,
           links: {
             next: {
                 type: "inline",
                 action: {
                     type: "action",
-                    title: `Player 1 (${account.toString()}) has made a bet of ${amount} SOL. Waiting for Player 2 to make a choice.`,
+                    title: `${title}`,
                     icon: new URL(`${image}`,new URL(req.url).origin).toString(),
-                    description: `Player 1 made a bet and is waiting for Player 2 to make a choice and match his bet of ${amount} SOL! Both the bet amounts will be pooled together and the winner will take it all, after we cut a 10% fees.`,
+                    description: `${description}`,
                     label: "Rock Paper Scissors",
                     "links": {
-                    "actions":[
+                    "actions": winAmount!=0?[
                         {
-                          "label": "Play!", // button text
-                          "href": `/api/actions/result?amout=${winAmount}`,
-                          // "parameters": [
-                          //   {
-                          //     type: "radio",
-                          //     name: "choice", // parameter name in the `href` above
-                          //     label: "Choose your move?", // placeholder of the text input
-                          //     required: true,
-                          //     options: [
-                          //       { label: "Rock", value: "R" },
-                          //       { label: "Paper", value: "P" },
-                          //       { label: "Scissors", value: "S" },
-                          //     ],
-                          //   },
-                          // ],
-                          type: "transaction"
+                        "label": "Claim Prize", // button text
+                        "href": `/api/actions/result?amount=${winAmount}`,
+                        type: "transaction"
                         }
-                      ]
+                    ]:[]
                     }
                 },
             },
@@ -302,7 +289,7 @@ else{
         },
         // no additional signers are required for this transaction
         signers: [sender],
-      });
+      })
 
 
 

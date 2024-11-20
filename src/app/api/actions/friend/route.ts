@@ -19,6 +19,29 @@ import {
   } from "@solana/web3.js";
   
   import bs58 from "bs58";
+import { getApps, initializeApp, getApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { getFirestore, getDoc, doc } from "firebase/firestore";
+
+    // Firebase _______________________________________________
+    const firebaseConfig = {
+        apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+        authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+        projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+        storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+        messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+        appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+        measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+        };
+        
+      const app = !getApps.length ? initializeApp(firebaseConfig) : getApp();
+        
+      const auth = getAuth(app);
+      const firestore = getFirestore(app);
+      // __________________________________________________________
+      let db = await getDoc(doc(firestore, "rps", "moneyPool"));
+      let amount = 0;
+      if(db.exists()) amount = Number(db.data().value);
 
 const headers = createActionHeaders({
     chainId: "devnet", // or chainId: "devnet"
@@ -29,7 +52,6 @@ export const POST = async (req: Request) => {
   try {
     // Extract the query parameters from the URL
     const url = new URL(req.url);
-    const amount = url.searchParams.get("amount");
     const choice = url.searchParams.get("choice");
     const player1 = url.searchParams.get("player");
 

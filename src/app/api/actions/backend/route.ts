@@ -227,8 +227,6 @@ else{
   ).blockhash;
 
   await setDoc(doc(firestore, "players", account.toString()), { choice: choice, amount: amount});
-  winAmount = 0.001;
-
 }
 
     const payload: ActionPostResponse = (player === "B")? await createPostResponse({
@@ -278,7 +276,7 @@ else{
                     "actions":[
                         {
                         "label": "Claim Prize", // button text
-                        "href": `/api/actions/friend?amount=${winAmount}&choice=${choice}&player=${account}`,
+                        "href": `/api/actions/rps?choice=${choice}&player=${account}`,
                         type: "transaction",
                         parameters: [
                           {

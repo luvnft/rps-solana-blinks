@@ -31,8 +31,8 @@ export const POST = async (req: Request) => {
     const url = new URL(req.url);
     const amount = url.searchParams.get("amount");
     const winner = url.searchParams.get("winner");  
-    const player1 = url.searchParams.get("player1");
-    const player2 = url.searchParams.get("player2");
+    const player1 = url.searchParams.get("player1")!;
+    const player2 = url.searchParams.get("player2")!;
 
     let prizePool = Number(amount)*2*0.9;
 
@@ -80,29 +80,31 @@ export const POST = async (req: Request) => {
       })
     );
 
+    const P1PubKey = new PublicKey(player1);
+    const P2PubKey = new PublicKey(player2);
     if (winner === "player1") {
       transaction.add(web3.SystemProgram.transfer({
         fromPubkey: sender.publicKey,
-        toPubkey: player1,
+        toPubkey: P1PubKey,
         lamports: prizePool*LAMPORTS_PER_SOL,
         }));
     }
     else if (winner === "player2") {
         transaction.add(web3.SystemProgram.transfer({
             fromPubkey: sender.publicKey,
-            toPubkey: player2,
+            toPubkey: P2PubKey,
             lamports: prizePool*LAMPORTS_PER_SOL,
             }));
         }
     else {
         transaction.add(web3.SystemProgram.transfer({
             fromPubkey: sender.publicKey,
-            toPubkey: player1,
+            toPubkey: P1PubKey,
             lamports: (prizePool/2)*LAMPORTS_PER_SOL,
             }));
         transaction.add(web3.SystemProgram.transfer({
             fromPubkey: sender.publicKey,
-            toPubkey: player2,
+            toPubkey: P2PubKey,
             lamports: (prizePool/2)*LAMPORTS_PER_SOL,
             }));
         }

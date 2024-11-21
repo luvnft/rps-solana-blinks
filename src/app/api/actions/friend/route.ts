@@ -179,8 +179,8 @@ export const POST = async (req: Request) => {
                     "links": {
                     "actions":[
                         {
-                        "label": `${amount}`, // button text
-                        "href": `/api/actions/fresult?amount=${amount}&winner=${winner}&player1=${player1}&player2=${account.toString()}`,
+                        "label": "Claim Prize", // button text
+                        "href": `/api/actions/result?amount=${amount}&winner=${winner}&player1=${player1}&player2=${account.toString()}`,
                         type: "transaction"
                         }
                     ]

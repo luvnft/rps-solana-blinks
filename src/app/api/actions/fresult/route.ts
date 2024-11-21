@@ -83,38 +83,34 @@ export const POST = async (req: Request) => {
 
     const P1PubKey = new PublicKey(player1);
     const P2PubKey = new PublicKey(player2);
-    // if (winner === "player1") {
-    //   transaction.add(web3.SystemProgram.transfer({
-    //     fromPubkey: sender.publicKey,
-    //     toPubkey: P1PubKey,
-    //     lamports: prizePool*LAMPORTS_PER_SOL,
-    //     }));
-    // }
-    // else if (winner === "player2") {
-    //     transaction.add(web3.SystemProgram.transfer({
-    //         fromPubkey: sender.publicKey,
-    //         toPubkey: P2PubKey,
-    //         lamports: prizePool*LAMPORTS_PER_SOL,
-    //         }));
-    //     }
-    // else {
-    //     transaction.add(web3.SystemProgram.transfer({
-    //         fromPubkey: sender.publicKey,
-    //         toPubkey: P1PubKey,
-    //         lamports: (prizePool/2)*LAMPORTS_PER_SOL,
-    //         }));
-    //     transaction.add(web3.SystemProgram.transfer({
-    //         fromPubkey: sender.publicKey,
-    //         toPubkey: P2PubKey,
-    //         lamports: (prizePool/2)*LAMPORTS_PER_SOL,
-    //         }));
-    //     }
+    if (winner === "player1") {
+      transaction.add(web3.SystemProgram.transfer({
+        fromPubkey: sender.publicKey,
+        toPubkey: P1PubKey,
+        lamports: prizePool*LAMPORTS_PER_SOL,
+        }));
+    }
+    else if (winner === "player2") {
+        transaction.add(web3.SystemProgram.transfer({
+            fromPubkey: sender.publicKey,
+            toPubkey: P2PubKey,
+            lamports: prizePool*LAMPORTS_PER_SOL,
+            }));
+        }
+    else {
+        transaction.add(web3.SystemProgram.transfer({
+            fromPubkey: sender.publicKey,
+            toPubkey: P1PubKey,
+            lamports: (prizePool/2)*LAMPORTS_PER_SOL,
+            }));
+        transaction.add(web3.SystemProgram.transfer({
+            fromPubkey: sender.publicKey,
+            toPubkey: P2PubKey,
+            lamports: (prizePool/2)*LAMPORTS_PER_SOL,
+            }));
+        }
     // set the end user as the fee payer
-             transaction.add(web3.SystemProgram.transfer({
-                fromPubkey: sender.publicKey,
-                toPubkey: P2PubKey,
-                lamports: (prizePool/2)*LAMPORTS_PER_SOL,
-                }));
+             
     transaction.feePayer = account;
 
     // Get the latest Block Hash

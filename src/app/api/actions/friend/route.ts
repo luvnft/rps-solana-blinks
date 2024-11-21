@@ -21,7 +21,7 @@ import {
   import bs58 from "bs58";
 import { getApps, initializeApp, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore, getDoc, doc } from "firebase/firestore";
+import { getFirestore, getDoc, doc, deleteDoc } from "firebase/firestore";
 
 // Firebase _______________________________________________
 const firebaseConfig = {
@@ -151,6 +151,7 @@ export const POST = async (req: Request) => {
       await connection.getLatestBlockhash()
     ).blockhash;
 
+    await deleteDoc(doc(firestore, "players", player1?.toString()));
     // const nacl = require("tweetnacl");
     // let transaction = new web3.Transaction();
     // transaction.add(
@@ -179,7 +180,7 @@ export const POST = async (req: Request) => {
                     "actions":[
                         {
                         "label": "Claim Prize", // button text
-                        "href": `/api/actions/fresult?amount=${amount}&winner=${winner}`,
+                        "href": `/api/actions/fresult?amount=${amount}&winner=${winner}&player1=${player1}&player2=${account.toString()}`,
                         type: "transaction"
                         }
                     ]

@@ -35,6 +35,7 @@ export const POST = async (req: Request) => {
     const player2 = url.searchParams.get("player2")!;
 
     let prizePool = Number(amount)*2;
+    prizePool *= 0.9
 
     // Ensure the required parameters are present
     if (!amount) {

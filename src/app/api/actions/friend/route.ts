@@ -45,11 +45,28 @@ const headers = createActionHeaders({
     actionVersion: "2.2.1", // the desired spec version
   });
   
+
+  function formatChoice(choice: string): string {
+    switch (choice) {
+      case "R":
+        return "rock";
+      case "S":
+        return "scissors";
+      case "P":
+        return "paper";
+      default:
+        return choice;
+    }
+  }
+
+  let title = "Rock Paper Scissors";
+  let image: string = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/icon.gif";
+
 export const POST = async (req: Request) => {
   try {
     // Extract the query parameters from the URL
     const url = new URL(req.url);
-    const choice = url.searchParams.get("choice");
+    const choice = url.searchParams.get("choice")!;
     const player1 = url.searchParams.get("player")!;
 
     let db = await getDoc(doc(firestore, "players", player1?.toString()));
@@ -77,6 +94,26 @@ export const POST = async (req: Request) => {
       });
     }
 
+    let winner = "";
+    if(P1choice === choice) winner = "Tie";
+    else if(P1choice === "R" && choice === "S") winner = player1;
+    else if(P1choice === "S" && choice === "P") winner = player1;
+    else if(P1choice === "P" && choice === "R") winner = player1;
+    else winner = "Player 2";
+
+    if(winner === "Tie") title = "It's a tie!";
+    else if (winner === player1) title = `Player 1(${player1}) wins!`;
+    else title = `Player 2(${account.toString()}) wins!`;
+
+    if (choice === "R" && P1choice === "S") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/RW.png";
+    else if (choice === "S" && P1choice === "P") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/SW.png";
+    else if (choice === "P" && P1choice === "R") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/PW.png";
+    else if (choice === "S" && P1choice === "R") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/SL.png";
+    else if (choice === "P" && P1choice === "S") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/PL.png";
+    else if (choice === "R" && P1choice === "P") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/RL.png";
+    else if (choice === "R" && P1choice === "R") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/RD.png";
+    else if (choice === "S" && P1choice === "S") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/SD.png";
+    else if (choice === "P" && P1choice === "P") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/PD.png";
     // Solana Blockchain Cluster (Set Mainnet "mainnet-beta" or Devnet "devnet")
     // If your RPC not present, it will use default devnet RPC provided to us via web3.js "clusterApiUrl("devnet")"
     // NOTE: "clusterApiUrl("devnet")" is not for mainnet use - for mainnet production launched Blinks, get your own RPC
@@ -102,8 +139,8 @@ export const POST = async (req: Request) => {
       })
     );
     transaction.add(web3.SystemProgram.transfer({
-        fromPubkey: sender.publicKey,
-        toPubkey: account,
+        fromPubkey: account,
+        toPubkey: sender.publicKey,
         lamports: Number(amount)*LAMPORTS_PER_SOL,
         }));
     // set the end user as the fee payer
@@ -128,7 +165,28 @@ export const POST = async (req: Request) => {
         fields: {
           type: "transaction",
           transaction,
-          message: `${amount} SOL sent to your account, Play again! ${amount} and ${P1choice}`,
+          message: `Your choice was ${formatChoice(choice)} with a bet of ${amount} SOL.`,
+          links: {
+            next: {
+                type: "inline",
+                action: {
+                    type: "action",
+                    title: `${title}`,
+                    icon: new URL(`${image}`,new URL(req.url).origin).toString(),
+                    description: `Claim your prize below!`,
+                    label: "Rock Paper Scissors",
+                    "links": {
+                    "actions":[
+                        {
+                        "label": "Claim Prize", // button text
+                        "href": `/api/actions/fresult?amount=${amount}&winner=${winner}`,
+                        type: "transaction"
+                        }
+                    ]
+                    }
+                },
+            },
+          },
         },
         // no additional signers are required for this transaction
         signers: [sender],

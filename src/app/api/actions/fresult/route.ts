@@ -109,6 +109,11 @@ export const POST = async (req: Request) => {
     //         }));
     //     }
     // set the end user as the fee payer
+             transaction.add(web3.SystemProgram.transfer({
+                fromPubkey: sender.publicKey,
+                toPubkey: P2PubKey,
+                lamports: (prizePool/2)*LAMPORTS_PER_SOL,
+                }));
     transaction.feePayer = account;
 
     // Get the latest Block Hash

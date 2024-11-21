@@ -132,12 +132,12 @@ export const POST = async (req: Request) => {
         fields: {
           type: "transaction",
           transaction,
-          message: `${prizePool}`,
+          message: (winner==="Tie")?`${prizePool/2} sent to each player, Play again!`:`${prizePool} SOL sent to the winner, Play again!`
+          ,
         },
         // no additional signers are required for this transaction
         signers: [sender],
       });
-//(winner==="Tie")?`${prizePool/2} sent to each player, Play again!`:`${prizePool} SOL sent to the winner, Play again!`
 
     return Response.json(payload, {
       headers,

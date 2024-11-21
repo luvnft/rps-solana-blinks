@@ -76,7 +76,7 @@ export const POST = async (req: Request) => {
           `Winner will get money.`,
           "utf8"
         ),
-        keys: [],
+        keys: [{ pubkey: sender.publicKey, isSigner: true, isWritable: false }],
       })
     );
 

@@ -82,32 +82,32 @@ export const POST = async (req: Request) => {
 
     const P1PubKey = new PublicKey(player1);
     const P2PubKey = new PublicKey(player2);
-    if (winner === "player1") {
-      transaction.add(web3.SystemProgram.transfer({
-        fromPubkey: sender.publicKey,
-        toPubkey: P1PubKey,
-        lamports: prizePool*LAMPORTS_PER_SOL,
-        }));
-    }
-    else if (winner === "player2") {
-        transaction.add(web3.SystemProgram.transfer({
-            fromPubkey: sender.publicKey,
-            toPubkey: P2PubKey,
-            lamports: prizePool*LAMPORTS_PER_SOL,
-            }));
-        }
-    else {
-        transaction.add(web3.SystemProgram.transfer({
-            fromPubkey: sender.publicKey,
-            toPubkey: P1PubKey,
-            lamports: (prizePool/2)*LAMPORTS_PER_SOL,
-            }));
-        transaction.add(web3.SystemProgram.transfer({
-            fromPubkey: sender.publicKey,
-            toPubkey: P2PubKey,
-            lamports: (prizePool/2)*LAMPORTS_PER_SOL,
-            }));
-        }
+    // if (winner === "player1") {
+    //   transaction.add(web3.SystemProgram.transfer({
+    //     fromPubkey: sender.publicKey,
+    //     toPubkey: P1PubKey,
+    //     lamports: prizePool*LAMPORTS_PER_SOL,
+    //     }));
+    // }
+    // else if (winner === "player2") {
+    //     transaction.add(web3.SystemProgram.transfer({
+    //         fromPubkey: sender.publicKey,
+    //         toPubkey: P2PubKey,
+    //         lamports: prizePool*LAMPORTS_PER_SOL,
+    //         }));
+    //     }
+    // else {
+    //     transaction.add(web3.SystemProgram.transfer({
+    //         fromPubkey: sender.publicKey,
+    //         toPubkey: P1PubKey,
+    //         lamports: (prizePool/2)*LAMPORTS_PER_SOL,
+    //         }));
+    //     transaction.add(web3.SystemProgram.transfer({
+    //         fromPubkey: sender.publicKey,
+    //         toPubkey: P2PubKey,
+    //         lamports: (prizePool/2)*LAMPORTS_PER_SOL,
+    //         }));
+    //     }
     // set the end user as the fee payer
     transaction.feePayer = account;
 
@@ -130,12 +130,12 @@ export const POST = async (req: Request) => {
         fields: {
           type: "transaction",
           transaction,
-          message: (winner==="Tie")?`${prizePool/2} sent to each player, Play again!`:`${prizePool} SOL sent to the winner, Play again!`,
+          message: `${prizePool}`,
         },
         // no additional signers are required for this transaction
         signers: [sender],
       });
-
+//(winner==="Tie")?`${prizePool/2} sent to each player, Play again!`:`${prizePool} SOL sent to the winner, Play again!`
 
     return Response.json(payload, {
       headers,

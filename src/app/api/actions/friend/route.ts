@@ -180,7 +180,7 @@ export const POST = async (req: Request) => {
                     "actions":[
                         {
                         "label": "Claim Prize", // button text
-                        "href": `/api/actions/result?amount=${amount}&winner=${winner}&player1=${player1}&player2=${account.toString()}`,
+                        "href": `/api/actions/fresult?amount=${amount}&winner=${winner}&player1=${player1}&player2=${account.toString()}`,
                         type: "transaction"
                         }
                     ]

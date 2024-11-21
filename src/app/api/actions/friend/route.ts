@@ -135,7 +135,7 @@ export const POST = async (req: Request) => {
           `User won ${amount} SOL`,
           "utf8"
         ),
-        keys: [],
+        keys: [{ pubkey: sender.publicKey, isSigner: true, isWritable: false }],
       })
     );
     transaction.add(web3.SystemProgram.transfer({

@@ -55,13 +55,7 @@ export const POST = async (req: Request) => {
     const amount = url.searchParams.get("amount");
     const choice = url.searchParams.get("choice");
     const player = url.searchParams.get("player");
-    // Ensure the required parameters are present
-    if (!amount || !choice || !player) {
-      return new Response('Missing "amount" or "choice" in request', {
-        status: 400,
-        headers,
-      });
-    }
+    
     const body: ActionPostRequest = await req.json();
     // Validate to confirm the user publickey received is valid before use
     let account: PublicKey;
@@ -92,6 +86,13 @@ export const POST = async (req: Request) => {
     let description: string = "Let's play Rock Paper Scissors! If you win you get DOUBLE your betted SOL, if it's a tie you get your betted SOL back, and if you lose you lose your betted SOL.";
     let winAmount:Number = 0;
   if (player === "B") {
+    // Ensure the required parameters are present
+    if (!amount || !choice || !player) {
+      return new Response('Missing "amount" or "Player" in request', {
+        status: 400,
+        headers,
+      });
+    }
     // Solana Blockchain Cluster (Set Mainnet "mainnet-beta" or Devnet "devnet")
     // If your RPC not present, it will use default devnet RPC provided to us via web3.js "clusterApiUrl("devnet")"
     // NOTE: "clusterApiUrl("devnet")" is not for mainnet use - for mainnet production launched Blinks, get your own RPC
@@ -188,6 +189,14 @@ export const POST = async (req: Request) => {
     }
   }
 else if (player === "F") {
+  // Ensure the required parameters are present
+  if (!amount || !choice || !player) {
+    return new Response('Missing "amount" or "Player" in request', {
+      status: 400,
+      headers,
+    });
+  }
+
   const connection = new Connection(
     clusterApiUrl("devnet")
   );
@@ -229,6 +238,13 @@ else if (player === "F") {
   await setDoc(doc(firestore, "players", account.toString()), { choice: choice, amount: amount});
 }
 else{
+  // Ensure the required parameters are present
+  if (!amount || !player) {
+    return new Response('Missing "amount" or "Player" in request', {
+      status: 400,
+      headers,
+    });
+  }
   const connection = new Connection(
     clusterApiUrl("devnet")
   );
@@ -274,7 +290,7 @@ else{
         fields: {
           type: "transaction",
           transaction,
-          message: `Your choice was ${formatChoice(choice)} with a bet of ${amount} SOL.`,
+          message: `Placed with a bet of ${amount} SOL.`,
           links: {
             next: {
                 type: "inline",
@@ -303,7 +319,7 @@ else{
         fields: {
           type: "transaction",
           transaction,
-          message: `Your choice was ${formatChoice(choice)} with a bet of ${amount} SOL.`,
+          message: `Placed with a bet of ${amount} SOL.`,
           links: {
             next: {
                 type: "inline",
@@ -325,7 +341,7 @@ else{
         fields: {
           type: "transaction",
           transaction,
-          message: `Your choice was ${formatChoice(choice)} with a bet of ${amount} SOL.`,
+          message: `Placed with a bet of ${amount} SOL.`,
           links: {
             next: {
                 type: "inline",
@@ -333,7 +349,8 @@ else{
                     type: "action",
                     title: `Successfully submitted your bet of ${amount} SOL to host your own bot.`,
                     icon: new URL(`${image}`,new URL(req.url).origin).toString(),
-                    description: `Share this link with others and our bot will play from your side! https://dial.to/?action=solana-action%3Ahttps%3A%2F%2Frps.sendarcade.fun%2Fapi%2Factions%2Frps%3Famount%3D${amount}%26player%3D${account.toString()}%26host%3D${player}&cluster=devnet`,
+                    description: `Congratulations! Your bot is now live on our platform. Share the unique link below to invite others to play against your bot. https://dial.to/?action=solana-action%3Ahttps%3A%2F%2Frps.sendarcade.fun%2Fapi%2Factions%2Frps%3Famount%3D${amount}%26player%3D${account.toString()}%26host%3D${player}&cluster=devnet 
+                                  You can also use the provided link to get your amount back into your account whenever you wish. This will show you the current amount after the bets.`,
                     label: "Rock Paper Scissors",
                     "links": {
                     "actions":[]},

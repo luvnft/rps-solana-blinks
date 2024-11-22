@@ -9,6 +9,22 @@ import {
 import { getApps, initializeApp, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore, getDoc, doc } from "firebase/firestore";
+// Firebase _______________________________________________
+const firebaseConfig = {
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+  };
+// __________________________________________________________
+
+const app = !getApps.length ? initializeApp(firebaseConfig) : getApp();
+  
+const auth = getAuth(app);
+
 
   const headers = createActionHeaders({
     chainId: "devnet", // or chainId: "devnet"
@@ -51,10 +67,14 @@ import { getFirestore, getDoc, doc } from "firebase/firestore";
       };
     }
     else if(player1 && host==="H") {
+      const firestore = getFirestore(app);
+      let db = await getDoc(doc(firestore, "hosts", player1.toString()));
+      let amount = 0;
+      if(db.exists()) amount = Number(db.data().amount);
       payload= {
-        title: `Player 1 (${player1}) has made a bet of ${amount} SOL. Waiting for Player 2 to make a choice.`,
+        title: `Player 1 (${player1}) has made a bet and has ${amount} SOL left in their wager. Waiting for Player 2 to make a choice.`,
         icon: "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/icon.gif",
-        description:`Player 1 has made a bet and is waiting for Player 2 to make a choice and match their bet of ${amount} SOL! You can make a bet of lower amount as well and the same amount will be matched by the host as possible and the winner takes the amount and in case of a tie, it will be sent back equally, after deducting a 10% fee.`,
+        description:`You can place a bet equal to or less than this amount to compete. The winner takes double the amount they bet and in case of a tie, both players will get their bet amount back after a 10% fee deduction.`,
         label: "Rock Paper Scissors",
         "links": {
         "actions":[

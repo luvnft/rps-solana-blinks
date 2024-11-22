@@ -22,7 +22,8 @@ const firebaseConfig = {
 // __________________________________________________________
 
 const app = !getApps.length ? initializeApp(firebaseConfig) : getApp();
-  
+const firestore = getFirestore(app);
+
 const auth = getAuth(app);
 
 
@@ -35,8 +36,29 @@ const auth = getAuth(app);
     const amount = url.searchParams.get("amount");
     const player1 = url.searchParams.get("player");
     const host = url.searchParams.get("host");
+    const account = url.searchParams.get("account");
     let payload: ActionGetResponse;
-    if(player1 && host==="F") {
+    if(account) {
+      let db = await getDoc(doc(firestore, "hosts", account?.toString()));
+      let amount = 0;
+      if(db.exists()) amount = Number(db.data().amount);
+      payload= {
+        title: `You (${account}) have ${amount} SOL left in your wager.`,
+        icon: "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/icon.gif",
+        description:`Claim you amount back from the below button.`,
+        label: "Rock Paper Scissors",
+        "links": {
+        "actions":[
+                    {
+                    "label": "Claim amount!", // button text
+                    "href": `/api/actions/hostback?account=${account}`,
+                    type: "transaction",
+                    }
+                  ]
+      }
+      };
+    }
+    else if(player1 && host==="F") {
       payload= {
         title: `Player 1 (${player1}) has made a bet of ${amount} SOL. Waiting for Player 2 to make a choice.`,
         icon: "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/icon.gif",

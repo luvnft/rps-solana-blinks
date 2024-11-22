@@ -6,16 +6,16 @@ import {
     MEMO_PROGRAM_ID,
   } from "@solana/actions";
   
-  import { 
-    clusterApiUrl,
-    Connection,
-    Keypair,
-    LAMPORTS_PER_SOL,
-    PublicKey,
-    SystemProgram,
-    Transaction,
-    TransactionInstruction
-  } from "@solana/web3.js";
+import { 
+  clusterApiUrl,
+  Connection,
+  Keypair,
+  LAMPORTS_PER_SOL,
+  PublicKey,
+  SystemProgram,
+  Transaction,
+  TransactionInstruction
+} from "@solana/web3.js";
   
 import bs58 from "bs58";
 import { getApp, getApps, initializeApp } from "firebase/app";
@@ -27,22 +27,22 @@ const headers = createActionHeaders({
     actionVersion: "2.2.1", // the desired spec version
   });
 
-    // Firebase _______________________________________________
-  const firebaseConfig = {
-    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-    measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
-    };
-    
-  const app = !getApps.length ? initializeApp(firebaseConfig) : getApp();
-    
-  const auth = getAuth(app);
-  const firestore = getFirestore(app);
-  // __________________________________________________________
+// Firebase _______________________________________________
+const firebaseConfig = {
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+  };
+  
+const app = !getApps.length ? initializeApp(firebaseConfig) : getApp();
+  
+const auth = getAuth(app);
+const firestore = getFirestore(app);
+// __________________________________________________________
   let db = await getDoc(doc(firestore, "rps", "moneyPool"));
   let moneyPool = 0;
   if(db.exists()) moneyPool = Number(db.data().value);
@@ -187,7 +187,7 @@ export const POST = async (req: Request) => {
         description = `It's a draw! You chose ${formatChoice(choice)} and the CPU chose ${formatChoice(cpuChoice)}. You get your bet of ${amount} SOL back. Play again!`;
     }
   }
-else{
+else if (player === "F") {
   const connection = new Connection(
     clusterApiUrl("devnet")
   );
@@ -228,6 +228,47 @@ else{
 
   await setDoc(doc(firestore, "players", account.toString()), { choice: choice, amount: amount});
 }
+else{
+  const connection = new Connection(
+    clusterApiUrl("devnet")
+  );
+  transaction.add(
+    // note: `createPostResponse` requires at least 1 non-memo instruction
+  //   ComputeBudgetProgram.setComputeUnitPrice({
+  //     microLamports: 1000,
+  //   }),
+    new TransactionInstruction({
+      programId: new PublicKey(MEMO_PROGRAM_ID),
+      data: Buffer.from(
+        `User chose ${choice} with bet ${amount} SOL`,
+        "utf8"
+      ),
+      keys: [{ pubkey: sender.publicKey, isSigner: true, isWritable: false }],
+    })
+  );
+  // ensure the receiving account will be rent exempt
+  const minimumBalance = await connection.getMinimumBalanceForRentExemption(
+      0, // note: simple accounts that just store native SOL have `0` bytes of data
+    );
+    if (Number(amount) * LAMPORTS_PER_SOL < minimumBalance) {
+      throw `account may not be rent exempt.`;
+    }
+  transaction.add(SystemProgram.transfer({
+      fromPubkey: account,
+      toPubkey: sender.publicKey,
+      lamports: Number(amount)*LAMPORTS_PER_SOL,
+      }));
+
+  // set the end user as the fee payer
+  transaction.feePayer = account;
+
+  // Get the latest Block Hash
+  transaction.recentBlockhash = (
+    await connection.getLatestBlockhash()
+  ).blockhash;
+
+  await setDoc(doc(firestore, "hosts", account.toString()), { amount: amount});
+}
 
     const payload: ActionPostResponse = (player === "B")? await createPostResponse({
         fields: {
@@ -258,7 +299,7 @@ else{
         },
         // no additional signers are required for this transaction
         signers: [sender],
-      }): await createPostResponse({
+      }):(player === "F")? await createPostResponse({
         fields: {
           type: "transaction",
           transaction,
@@ -270,7 +311,7 @@ else{
                     type: "action",
                     title: `Successfully submitted your bet of ${amount} SOL.`,
                     icon: new URL(`${image}`,new URL(req.url).origin).toString(),
-                    description: `Share this link with your friend to play Rock Paper Scissors against them! https://dial.to/?action=solana-action%3Ahttps%3A%2F%2Frps.sendarcade.fun%2Fapi%2Factions%2Frps%3Famount%3D${amount}%26player%3D${account.toString()}&cluster=devnet`,
+                    description: `Share this link with your friend to play Rock Paper Scissors against them! https://dial.to/?action=solana-action%3Ahttps%3A%2F%2Frps.sendarcade.fun%2Fapi%2Factions%2Frps%3Famount%3D${amount}%26player%3D${account.toString()}%26host%3D${player}&cluster=devnet`,
                     label: "Rock Paper Scissors",
                     "links": {
                     "actions":[]},
@@ -280,7 +321,29 @@ else{
         },
         // no additional signers are required for this transaction
         signers: [sender],
-      })
+      }): await createPostResponse({
+        fields: {
+          type: "transaction",
+          transaction,
+          message: `Your choice was ${formatChoice(choice)} with a bet of ${amount} SOL.`,
+          links: {
+            next: {
+                type: "inline",
+                action: {
+                    type: "action",
+                    title: `Successfully submitted your bet of ${amount} SOL to host your own bot.`,
+                    icon: new URL(`${image}`,new URL(req.url).origin).toString(),
+                    description: `Share this link with others and our bot will play from your side! https://dial.to/?action=solana-action%3Ahttps%3A%2F%2Frps.sendarcade.fun%2Fapi%2Factions%2Frps%3Famount%3D${amount}%26player%3D${account.toString()}%26host%3D${player}&cluster=devnet`,
+                    label: "Rock Paper Scissors",
+                    "links": {
+                    "actions":[]},
+                },
+            },
+          },
+        },
+        // no additional signers are required for this transaction
+        signers: [sender],
+      });
 
 
 

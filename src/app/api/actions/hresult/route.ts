@@ -1,24 +1,24 @@
 import {
-    ActionPostResponse,
-    createActionHeaders,
-    createPostResponse,
-    ActionGetResponse,
-    ActionPostRequest,
-    MEMO_PROGRAM_ID,
-  } from "@solana/actions";
-  
-  import { 
-    clusterApiUrl,
-    ComputeBudgetProgram,
-    Connection,
-    Keypair,
-    LAMPORTS_PER_SOL,
-    PublicKey,
-    Transaction,
-    TransactionInstruction
-  } from "@solana/web3.js";
-  
-  import bs58 from "bs58";
+  ActionPostResponse,
+  createActionHeaders,
+  createPostResponse,
+  ActionGetResponse,
+  ActionPostRequest,
+  MEMO_PROGRAM_ID,
+} from "@solana/actions";
+
+import {
+  clusterApiUrl,
+  ComputeBudgetProgram,
+  Connection,
+  Keypair,
+  LAMPORTS_PER_SOL,
+  PublicKey,
+  Transaction,
+  TransactionInstruction
+} from "@solana/web3.js";
+
+import bs58 from "bs58";
 import { getApps, initializeApp, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
@@ -26,41 +26,41 @@ import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
 
 // Firebase _______________________________________________
 const firebaseConfig = {
-    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-    measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
-    };
-    
-  const app = !getApps.length ? initializeApp(firebaseConfig) : getApp();
-    
-  const auth = getAuth(app);
-  const firestore = getFirestore(app);
-  // __________________________________________________________
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+};
+
+const app = !getApps.length ? initializeApp(firebaseConfig) : getApp();
+
+const auth = getAuth(app);
+const firestore = getFirestore(app);
+// __________________________________________________________
 
 const headers = createActionHeaders({
-    chainId: "devnet", // or chainId: "devnet"
-    actionVersion: "2.2.1", // the desired spec version
-  });
-  
+  chainId: "devnet", // or chainId: "devnet"
+  actionVersion: "2.2.1", // the desired spec version
+});
+
 export const POST = async (req: Request) => {
   try {
     // Extract the query parameters from the URL
     const url = new URL(req.url);
     const amount = url.searchParams.get("amount");
-    const winner = url.searchParams.get("winner");  
+    const winner = url.searchParams.get("winner");
     const player1 = url.searchParams.get("player1")!;
     const player2 = url.searchParams.get("player2")!;
 
     let db = await getDoc(doc(firestore, "hosts", player1?.toString()));
     let pool = 0;
-    if(db.exists()) pool = Number(db.data().amount);
+    if (db.exists()) pool = Number(db.data().amount);
     pool = pool - Number(amount);
-    let prizePool = Number(amount)*2*0.9;
-    prizePool = parseFloat(prizePool.toFixed(4)); 
+    let prizePool = Number(amount) * 2 * 0.9;
+    prizePool = parseFloat(prizePool.toFixed(4));
 
     // Ensure the required parameters are present
     if (!amount) {
@@ -112,29 +112,29 @@ export const POST = async (req: Request) => {
       pool = pool + prizePool;
     }
     else if (winner === "player2") {
-        transaction.add(web3.SystemProgram.transfer({
-            fromPubkey: sender.publicKey,
-            toPubkey: P2PubKey,
-            lamports: prizePool*LAMPORTS_PER_SOL,
-            }));
-        }
+      transaction.add(web3.SystemProgram.transfer({
+        fromPubkey: sender.publicKey,
+        toPubkey: P2PubKey,
+        lamports: prizePool * LAMPORTS_PER_SOL,
+      }));
+    }
     else {
-        pool = pool + prizePool/2;
-        transaction.add(web3.SystemProgram.transfer({
-            fromPubkey: sender.publicKey,
-            toPubkey: P2PubKey,
-            lamports: (prizePool/2)*LAMPORTS_PER_SOL,
-            }));
-        }
+      pool = pool + prizePool / 2;
+      transaction.add(web3.SystemProgram.transfer({
+        fromPubkey: sender.publicKey,
+        toPubkey: P2PubKey,
+        lamports: (prizePool / 2) * LAMPORTS_PER_SOL,
+      }));
+    }
     // set the end user as the fee payer
-             
+
     transaction.feePayer = account;
 
     // Get the latest Block Hash
     transaction.recentBlockhash = (
       await connection.getLatestBlockhash()
     ).blockhash;
-    await setDoc(doc(firestore, "hosts", P1PubKey.toString()), { amount: pool});
+    await setDoc(doc(firestore, "hosts", P1PubKey.toString()), { amount: pool });
     // const nacl = require("tweetnacl");
     // let transaction = new web3.Transaction();
     // transaction.add(
@@ -146,15 +146,15 @@ export const POST = async (req: Request) => {
     //   );
     //   await web3.sendAndConfirmTransaction(connection, transaction, [sender]);
     const payload: ActionPostResponse = await createPostResponse({
-        fields: {
-          type: "transaction",
-          transaction,
-          message: (winner==="Tie")?`${prizePool/2} sent to each player, Play again!`:`${prizePool} SOL sent to the winner, Play again!`
-          ,
-        },
-        // no additional signers are required for this transaction
-        signers: [sender],
-      });
+      fields: {
+        type: "transaction",
+        transaction,
+        message: (winner === "Tie") ? `${prizePool / 2} sent to each player, Play again!` : `${prizePool} SOL sent to the winner, Play again!`
+        ,
+      },
+      // no additional signers are required for this transaction
+      signers: [sender],
+    });
 
     return Response.json(payload, {
       headers,
@@ -167,5 +167,5 @@ export const POST = async (req: Request) => {
       headers,
     });
   }
-  
+
 };

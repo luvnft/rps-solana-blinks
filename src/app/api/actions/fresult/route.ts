@@ -1,41 +1,41 @@
 import {
-    ActionPostResponse,
-    createActionHeaders,
-    createPostResponse,
-    ActionGetResponse,
-    ActionPostRequest,
-    MEMO_PROGRAM_ID,
-  } from "@solana/actions";
-  
-  import { 
-    clusterApiUrl,
-    ComputeBudgetProgram,
-    Connection,
-    Keypair,
-    LAMPORTS_PER_SOL,
-    PublicKey,
-    Transaction,
-    TransactionInstruction
-  } from "@solana/web3.js";
-  
-  import bs58 from "bs58";
+  ActionPostResponse,
+  createActionHeaders,
+  createPostResponse,
+  ActionGetResponse,
+  ActionPostRequest,
+  MEMO_PROGRAM_ID,
+} from "@solana/actions";
+
+import {
+  clusterApiUrl,
+  ComputeBudgetProgram,
+  Connection,
+  Keypair,
+  LAMPORTS_PER_SOL,
+  PublicKey,
+  Transaction,
+  TransactionInstruction
+} from "@solana/web3.js";
+
+import bs58 from "bs58";
 
 const headers = createActionHeaders({
-    chainId: "devnet", // or chainId: "devnet"
-    actionVersion: "2.2.1", // the desired spec version
-  });
-  
+  chainId: "devnet", // or chainId: "devnet"
+  actionVersion: "2.2.1", // the desired spec version
+});
+
 export const POST = async (req: Request) => {
   try {
     // Extract the query parameters from the URL
     const url = new URL(req.url);
     const amount = url.searchParams.get("amount");
-    const winner = url.searchParams.get("winner");  
+    const winner = url.searchParams.get("winner");
     const player1 = url.searchParams.get("player1")!;
     const player2 = url.searchParams.get("player2")!;
 
-    let prizePool = Number(amount)*2*0.9;
-    prizePool = parseFloat(prizePool.toFixed(4)); 
+    let prizePool = Number(amount) * 2 * 0.9;
+    prizePool = parseFloat(prizePool.toFixed(4));
 
     // Ensure the required parameters are present
     if (!amount) {
@@ -87,30 +87,30 @@ export const POST = async (req: Request) => {
       transaction.add(web3.SystemProgram.transfer({
         fromPubkey: sender.publicKey,
         toPubkey: P1PubKey,
-        lamports: prizePool*LAMPORTS_PER_SOL,
-        }));
+        lamports: prizePool * LAMPORTS_PER_SOL,
+      }));
     }
     else if (winner === "player2") {
-        transaction.add(web3.SystemProgram.transfer({
-            fromPubkey: sender.publicKey,
-            toPubkey: P2PubKey,
-            lamports: prizePool*LAMPORTS_PER_SOL,
-            }));
-        }
+      transaction.add(web3.SystemProgram.transfer({
+        fromPubkey: sender.publicKey,
+        toPubkey: P2PubKey,
+        lamports: prizePool * LAMPORTS_PER_SOL,
+      }));
+    }
     else {
-        transaction.add(web3.SystemProgram.transfer({
-            fromPubkey: sender.publicKey,
-            toPubkey: P1PubKey,
-            lamports: (prizePool/2)*LAMPORTS_PER_SOL,
-            }));
-        transaction.add(web3.SystemProgram.transfer({
-            fromPubkey: sender.publicKey,
-            toPubkey: P2PubKey,
-            lamports: (prizePool/2)*LAMPORTS_PER_SOL,
-            }));
-        }
+      transaction.add(web3.SystemProgram.transfer({
+        fromPubkey: sender.publicKey,
+        toPubkey: P1PubKey,
+        lamports: (prizePool / 2) * LAMPORTS_PER_SOL,
+      }));
+      transaction.add(web3.SystemProgram.transfer({
+        fromPubkey: sender.publicKey,
+        toPubkey: P2PubKey,
+        lamports: (prizePool / 2) * LAMPORTS_PER_SOL,
+      }));
+    }
     // set the end user as the fee payer
-             
+
     transaction.feePayer = account;
 
     // Get the latest Block Hash
@@ -129,15 +129,15 @@ export const POST = async (req: Request) => {
     //   );
     //   await web3.sendAndConfirmTransaction(connection, transaction, [sender]);
     const payload: ActionPostResponse = await createPostResponse({
-        fields: {
-          type: "transaction",
-          transaction,
-          message: (winner==="Tie")?`${prizePool/2} sent to each player, Play again!`:`${prizePool} SOL sent to the winner, Play again!`
-          ,
-        },
-        // no additional signers are required for this transaction
-        signers: [sender],
-      });
+      fields: {
+        type: "transaction",
+        transaction,
+        message: (winner === "Tie") ? `${prizePool / 2} sent to each player, Play again!` : `${prizePool} SOL sent to the winner, Play again!`
+        ,
+      },
+      // no additional signers are required for this transaction
+      signers: [sender],
+    });
 
     return Response.json(payload, {
       headers,
@@ -150,5 +150,5 @@ export const POST = async (req: Request) => {
       headers,
     });
   }
-  
+
 };

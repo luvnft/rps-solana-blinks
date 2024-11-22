@@ -1,12 +1,12 @@
 import {
-    ActionPostResponse,
-    createActionHeaders,
-    createPostResponse,
-    ActionPostRequest,
-    MEMO_PROGRAM_ID,
-  } from "@solana/actions";
-  
-import { 
+  ActionPostResponse,
+  createActionHeaders,
+  createPostResponse,
+  ActionPostRequest,
+  MEMO_PROGRAM_ID,
+} from "@solana/actions";
+
+import {
   clusterApiUrl,
   Connection,
   Keypair,
@@ -16,16 +16,16 @@ import {
   Transaction,
   TransactionInstruction
 } from "@solana/web3.js";
-  
+
 import bs58 from "bs58";
 import { getApp, getApps, initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
 
 const headers = createActionHeaders({
-    chainId: "devnet", // or chainId: "devnet"
-    actionVersion: "2.2.1", // the desired spec version
-  });
+  chainId: "devnet", // or chainId: "devnet"
+  actionVersion: "2.2.1", // the desired spec version
+});
 
 // Firebase _______________________________________________
 const firebaseConfig = {
@@ -36,16 +36,16 @@ const firebaseConfig = {
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
-  };
-  
+};
+
 const app = !getApps.length ? initializeApp(firebaseConfig) : getApp();
-  
+
 const auth = getAuth(app);
 const firestore = getFirestore(app);
 // __________________________________________________________
-  let db = await getDoc(doc(firestore, "rps", "moneyPool"));
-  let moneyPool = 0;
-  if(db.exists()) moneyPool = Number(db.data().value);
+let db = await getDoc(doc(firestore, "rps", "moneyPool"));
+let moneyPool = 0;
+if (db.exists()) moneyPool = Number(db.data().value);
 
 
 export const POST = async (req: Request) => {
@@ -55,7 +55,7 @@ export const POST = async (req: Request) => {
     const amount = url.searchParams.get("amount");
     const choice = url.searchParams.get("choice");
     const player = url.searchParams.get("player");
-    
+
     const body: ActionPostRequest = await req.json();
     // Validate to confirm the user publickey received is valid before use
     let account: PublicKey;
@@ -84,283 +84,285 @@ export const POST = async (req: Request) => {
     let image: string = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/icon.gif";
     let title: string = "Rock Paper Scissors";
     let description: string = "Let's play Rock Paper Scissors! If you win you get DOUBLE your betted SOL, if it's a tie you get your betted SOL back, and if you lose you lose your betted SOL.";
-    let winAmount:Number = 0;
-  if (player === "B") {
-    // Ensure the required parameters are present
-    if (!amount || !choice || !player) {
-      return new Response('Missing "amount" or "Player" in request', {
-        status: 400,
-        headers,
-      });
-    }
-    // Solana Blockchain Cluster (Set Mainnet "mainnet-beta" or Devnet "devnet")
-    // If your RPC not present, it will use default devnet RPC provided to us via web3.js "clusterApiUrl("devnet")"
-    // NOTE: "clusterApiUrl("devnet")" is not for mainnet use - for mainnet production launched Blinks, get your own RPC
-    // For testing on mainnet - use "mainnet-beta"
-    const connection = new Connection(
-      clusterApiUrl("devnet")
-    );
-    transaction.add(
-      // note: `createPostResponse` requires at least 1 non-memo instruction
-    //   ComputeBudgetProgram.setComputeUnitPrice({
-    //     microLamports: 1000,
-    //   }),
-      new TransactionInstruction({
-        programId: new PublicKey(MEMO_PROGRAM_ID),
-        data: Buffer.from(
-          `User chose ${choice} with bet ${amount} SOL`,
-          "utf8"
-        ),
-        keys: [{ pubkey: sender.publicKey, isSigner: true, isWritable: false }],
-      })
-    );
-    // ensure the receiving account will be rent exempt
-    const minimumBalance = await connection.getMinimumBalanceForRentExemption(
+    let winAmount: Number = 0;
+    if (player === "B") {
+      // Ensure the required parameters are present
+      if (!amount || !choice || !player) {
+        return new Response('Missing "amount" or "Player" in request', {
+          status: 400,
+          headers,
+        });
+      }
+      // Solana Blockchain Cluster (Set Mainnet "mainnet-beta" or Devnet "devnet")
+      // If your RPC not present, it will use default devnet RPC provided to us via web3.js "clusterApiUrl("devnet")"
+      // NOTE: "clusterApiUrl("devnet")" is not for mainnet use - for mainnet production launched Blinks, get your own RPC
+      // For testing on mainnet - use "mainnet-beta"
+      const connection = new Connection(
+        clusterApiUrl("devnet")
+      );
+      transaction.add(
+        // note: `createPostResponse` requires at least 1 non-memo instruction
+        //   ComputeBudgetProgram.setComputeUnitPrice({
+        //     microLamports: 1000,
+        //   }),
+        new TransactionInstruction({
+          programId: new PublicKey(MEMO_PROGRAM_ID),
+          data: Buffer.from(
+            `User chose ${choice} with bet ${amount} SOL`,
+            "utf8"
+          ),
+          keys: [{ pubkey: sender.publicKey, isSigner: true, isWritable: false }],
+        })
+      );
+      // ensure the receiving account will be rent exempt
+      const minimumBalance = await connection.getMinimumBalanceForRentExemption(
         0, // note: simple accounts that just store native SOL have `0` bytes of data
       );
       if (Number(amount) * LAMPORTS_PER_SOL < minimumBalance) {
         throw `account may not be rent exempt.`;
       }
-    transaction.add(SystemProgram.transfer({
+      transaction.add(SystemProgram.transfer({
         fromPubkey: account,
         toPubkey: sender.publicKey,
-        lamports: Number(amount)*LAMPORTS_PER_SOL,
-        }));
+        lamports: Number(amount) * LAMPORTS_PER_SOL,
+      }));
 
-    // set the end user as the fee payer
-    transaction.feePayer = account;
+      // set the end user as the fee payer
+      transaction.feePayer = account;
 
-    // Get the latest Block Hash
-    transaction.recentBlockhash = (
-      await connection.getLatestBlockhash()
-    ).blockhash;
+      // Get the latest Block Hash
+      transaction.recentBlockhash = (
+        await connection.getLatestBlockhash()
+      ).blockhash;
 
-    let outcome: "win" | "lose" | "draw";
-    const poolThreshold = 0.2 * moneyPool;
-    if (moneyPool - (2 * Number(amount)) < poolThreshold) {
+      let outcome: "win" | "lose" | "draw";
+      const poolThreshold = 0.2 * moneyPool;
+      if (moneyPool - (2 * Number(amount)) < poolThreshold) {
         // If profit condition is not met, declare as loss
         outcome = "lose";
-    }
-    else{
+      }
+      else {
         // Determine game outcome based on 3:2:1 ratio of win:lose:draw
         const random = Math.floor(Math.random() * 6); // Generates 0 to 5
         if (random < 3) outcome = "win";
         else if (random < 5) outcome = "lose";
         else outcome = "draw";
-    }
+      }
 
-    if(outcome === "lose"){
+      if (outcome === "lose") {
         moneyPool += Number(amount);
         await setDoc(doc(firestore, "rps", "moneyPool"), { value: moneyPool });
-    }
-    // Set CPU's choice based on user's choice and the decided outcome
-    let cpuChoice: string;
-    if (outcome === "win") {
-      cpuChoice = choice === "R" ? "S" : choice === "P" ? "R" : "P"; // Win scenario
-    } else if (outcome === "lose") {
-      cpuChoice = choice === "R" ? "P" : choice === "P" ? "S" : "R"; // Lose scenario
-    } else {
-      cpuChoice = choice; // Draw scenario
-    }
+      }
+      // Set CPU's choice based on user's choice and the decided outcome
+      let cpuChoice: string;
+      if (outcome === "win") {
+        cpuChoice = choice === "R" ? "S" : choice === "P" ? "R" : "P"; // Win scenario
+      } else if (outcome === "lose") {
+        cpuChoice = choice === "R" ? "P" : choice === "P" ? "S" : "R"; // Lose scenario
+      } else {
+        cpuChoice = choice; // Draw scenario
+      }
 
-    if (outcome === "win") {
+      if (outcome === "win") {
         if (choice === "R") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/RW.png";
         else if (choice === "P") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/PW.png";
         else if (choice === "S") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/SW.png";
         title = "You Won!";
         winAmount = Number(amount) * 2;
         description = `Congratulations! You chose ${formatChoice(choice)} and the CPU chose ${formatChoice(cpuChoice)}. You won ${winAmount} SOL! Claim your prize by clicking the button below now.`;
-    }
-    else if (outcome === "lose") {
+      }
+      else if (outcome === "lose") {
         if (choice === "R") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/RL.png";
         else if (choice === "P") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/PL.png";
         else if (choice === "S") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/SL.png";
         title = "You Lost!";
         winAmount = 0;
         description = `Unlucky! You chose ${formatChoice(choice)} and the CPU chose ${formatChoice(cpuChoice)}. You lost ${amount} SOL. Try your luck again!`;
-    }
-    else {
+      }
+      else {
         if (choice === "R") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/RD.png";
         else if (choice === "P") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/PD.png";
         else if (choice === "S") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/SD.png";
         title = "It's a Draw!";
         winAmount = Number(amount);
         description = `It's a draw! You chose ${formatChoice(choice)} and the CPU chose ${formatChoice(cpuChoice)}. You get your bet of ${amount} SOL back. Play again!`;
+      }
     }
-  }
-else if (player === "F") {
-  // Ensure the required parameters are present
-  if (!amount || !choice || !player) {
-    return new Response('Missing "amount" or "Player" in request', {
-      status: 400,
-      headers,
-    });
-  }
+    else if (player === "F") {
+      // Ensure the required parameters are present
+      if (!amount || !choice || !player) {
+        return new Response('Missing "amount" or "Player" in request', {
+          status: 400,
+          headers,
+        });
+      }
 
-  const connection = new Connection(
-    clusterApiUrl("devnet")
-  );
-  transaction.add(
-    // note: `createPostResponse` requires at least 1 non-memo instruction
-  //   ComputeBudgetProgram.setComputeUnitPrice({
-  //     microLamports: 1000,
-  //   }),
-    new TransactionInstruction({
-      programId: new PublicKey(MEMO_PROGRAM_ID),
-      data: Buffer.from(
-        `User chose ${choice} with bet ${amount} SOL`,
-        "utf8"
-      ),
-      keys: [{ pubkey: sender.publicKey, isSigner: true, isWritable: false }],
-    })
-  );
-  // ensure the receiving account will be rent exempt
-  const minimumBalance = await connection.getMinimumBalanceForRentExemption(
-      0, // note: simple accounts that just store native SOL have `0` bytes of data
-    );
-    if (Number(amount) * LAMPORTS_PER_SOL < minimumBalance) {
-      throw `account may not be rent exempt.`;
-    }
-  transaction.add(SystemProgram.transfer({
-      fromPubkey: account,
-      toPubkey: sender.publicKey,
-      lamports: Number(amount)*LAMPORTS_PER_SOL,
+      const connection = new Connection(
+        clusterApiUrl("devnet")
+      );
+      transaction.add(
+        // note: `createPostResponse` requires at least 1 non-memo instruction
+        //   ComputeBudgetProgram.setComputeUnitPrice({
+        //     microLamports: 1000,
+        //   }),
+        new TransactionInstruction({
+          programId: new PublicKey(MEMO_PROGRAM_ID),
+          data: Buffer.from(
+            `User chose ${choice} with bet ${amount} SOL`,
+            "utf8"
+          ),
+          keys: [{ pubkey: sender.publicKey, isSigner: true, isWritable: false }],
+        })
+      );
+      // ensure the receiving account will be rent exempt
+      const minimumBalance = await connection.getMinimumBalanceForRentExemption(
+        0, // note: simple accounts that just store native SOL have `0` bytes of data
+      );
+      if (Number(amount) * LAMPORTS_PER_SOL < minimumBalance) {
+        throw `account may not be rent exempt.`;
+      }
+      transaction.add(SystemProgram.transfer({
+        fromPubkey: account,
+        toPubkey: sender.publicKey,
+        lamports: Number(amount) * LAMPORTS_PER_SOL,
       }));
 
-  // set the end user as the fee payer
-  transaction.feePayer = account;
+      // set the end user as the fee payer
+      transaction.feePayer = account;
 
-  // Get the latest Block Hash
-  transaction.recentBlockhash = (
-    await connection.getLatestBlockhash()
-  ).blockhash;
+      // Get the latest Block Hash
+      transaction.recentBlockhash = (
+        await connection.getLatestBlockhash()
+      ).blockhash;
 
-  await setDoc(doc(firestore, "players", account.toString()), { choice: choice, amount: amount});
-}
-else{
-  // Ensure the required parameters are present
-  if (!amount || !player) {
-    return new Response('Missing "amount" or "Player" in request', {
-      status: 400,
-      headers,
-    });
-  }
-  const connection = new Connection(
-    clusterApiUrl("devnet")
-  );
-  transaction.add(
-    // note: `createPostResponse` requires at least 1 non-memo instruction
-  //   ComputeBudgetProgram.setComputeUnitPrice({
-  //     microLamports: 1000,
-  //   }),
-    new TransactionInstruction({
-      programId: new PublicKey(MEMO_PROGRAM_ID),
-      data: Buffer.from(
-        `User chose ${choice} with bet ${amount} SOL`,
-        "utf8"
-      ),
-      keys: [{ pubkey: sender.publicKey, isSigner: true, isWritable: false }],
-    })
-  );
-  // ensure the receiving account will be rent exempt
-  const minimumBalance = await connection.getMinimumBalanceForRentExemption(
-      0, // note: simple accounts that just store native SOL have `0` bytes of data
-    );
-    if (Number(amount) * LAMPORTS_PER_SOL < minimumBalance) {
-      throw `account may not be rent exempt.`;
+      await setDoc(doc(firestore, "players", account.toString()), { choice: choice, amount: amount });
     }
-  transaction.add(SystemProgram.transfer({
-      fromPubkey: account,
-      toPubkey: sender.publicKey,
-      lamports: Number(amount)*LAMPORTS_PER_SOL,
+    else {
+      // Ensure the required parameters are present
+      if (!amount || !player) {
+        return new Response('Missing "amount" or "Player" in request', {
+          status: 400,
+          headers,
+        });
+      }
+      const connection = new Connection(
+        clusterApiUrl("devnet")
+      );
+      transaction.add(
+        // note: `createPostResponse` requires at least 1 non-memo instruction
+        //   ComputeBudgetProgram.setComputeUnitPrice({
+        //     microLamports: 1000,
+        //   }),
+        new TransactionInstruction({
+          programId: new PublicKey(MEMO_PROGRAM_ID),
+          data: Buffer.from(
+            `User chose ${choice} with bet ${amount} SOL`,
+            "utf8"
+          ),
+          keys: [{ pubkey: sender.publicKey, isSigner: true, isWritable: false }],
+        })
+      );
+      // ensure the receiving account will be rent exempt
+      const minimumBalance = await connection.getMinimumBalanceForRentExemption(
+        0, // note: simple accounts that just store native SOL have `0` bytes of data
+      );
+      if (Number(amount) * LAMPORTS_PER_SOL < minimumBalance) {
+        throw `account may not be rent exempt.`;
+      }
+      transaction.add(SystemProgram.transfer({
+        fromPubkey: account,
+        toPubkey: sender.publicKey,
+        lamports: Number(amount) * LAMPORTS_PER_SOL,
       }));
 
-  // set the end user as the fee payer
-  transaction.feePayer = account;
+      // set the end user as the fee payer
+      transaction.feePayer = account;
 
-  // Get the latest Block Hash
-  transaction.recentBlockhash = (
-    await connection.getLatestBlockhash()
-  ).blockhash;
+      // Get the latest Block Hash
+      transaction.recentBlockhash = (
+        await connection.getLatestBlockhash()
+      ).blockhash;
 
-  await setDoc(doc(firestore, "hosts", account.toString()), { amount: amount});
-}
+      await setDoc(doc(firestore, "hosts", account.toString()), { amount: amount });
+    }
 
-    const payload: ActionPostResponse = (player === "B")? await createPostResponse({
-        fields: {
-          type: "transaction",
-          transaction,
-          message: `Placed with a bet of ${amount} SOL.`,
-          links: {
-            next: {
-                type: "inline",
-                action: {
-                    type: "action",
-                    title: `${title}`,
-                    icon: new URL(`${image}`,new URL(req.url).origin).toString(),
-                    description: `${description}`,
-                    label: "Rock Paper Scissors",
-                    "links": {
-                    "actions": winAmount!=0?[
-                        {
-                        "label": "Claim Prize", // button text
-                        "href": `/api/actions/result?amount=${winAmount}`,
-                        type: "transaction"
-                        }
-                    ]:[]
-                    }
-                },
+    const payload: ActionPostResponse = (player === "B") ? await createPostResponse({
+      fields: {
+        type: "transaction",
+        transaction,
+        message: `Placed with a bet of ${amount} SOL.`,
+        links: {
+          next: {
+            type: "inline",
+            action: {
+              type: "action",
+              title: `${title}`,
+              icon: new URL(`${image}`, new URL(req.url).origin).toString(),
+              description: `${description}`,
+              label: "Rock Paper Scissors",
+              "links": {
+                "actions": winAmount != 0 ? [
+                  {
+                    "label": "Claim Prize", // button text
+                    "href": `/api/actions/result?amount=${winAmount}`,
+                    type: "transaction"
+                  }
+                ] : []
+              }
             },
           },
         },
-        // no additional signers are required for this transaction
-        signers: [sender],
-      }):(player === "F")? await createPostResponse({
-        fields: {
-          type: "transaction",
-          transaction,
-          message: `Placed with a bet of ${amount} SOL.`,
-          links: {
-            next: {
-                type: "inline",
-                action: {
-                    type: "action",
-                    title: `Successfully submitted your bet of ${amount} SOL.`,
-                    icon: new URL(`${image}`,new URL(req.url).origin).toString(),
-                    description: `Share this link with your friend to play Rock Paper Scissors against them! https://dial.to/?action=solana-action%3Ahttps%3A%2F%2Frps.sendarcade.fun%2Fapi%2Factions%2Frps%3Famount%3D${amount}%26player%3D${account.toString()}%26host%3D${player}&cluster=devnet`,
-                    label: "Rock Paper Scissors",
-                    "links": {
-                    "actions":[]},
-                },
+      },
+      // no additional signers are required for this transaction
+      signers: [sender],
+    }) : (player === "F") ? await createPostResponse({
+      fields: {
+        type: "transaction",
+        transaction,
+        message: `Placed with a bet of ${amount} SOL.`,
+        links: {
+          next: {
+            type: "inline",
+            action: {
+              type: "action",
+              title: `Successfully submitted your bet of ${amount} SOL.`,
+              icon: new URL(`${image}`, new URL(req.url).origin).toString(),
+              description: `Share this link with your friend to play Rock Paper Scissors against them! https://dial.to/?action=solana-action%3Ahttps%3A%2F%2Frps.sendarcade.fun%2Fapi%2Factions%2Frps%3Famount%3D${amount}%26player%3D${account.toString()}%26host%3D${player}&cluster=devnet`,
+              label: "Rock Paper Scissors",
+              "links": {
+                "actions": []
+              },
             },
           },
         },
-        // no additional signers are required for this transaction
-        signers: [sender],
-      }): await createPostResponse({
-        fields: {
-          type: "transaction",
-          transaction,
-          message: `Placed with a bet of ${amount} SOL.`,
-          links: {
-            next: {
-                type: "inline",
-                action: {
-                    type: "action",
-                    title: `Successfully submitted your bet of ${amount} SOL to host your own bot.`,
-                    icon: new URL(`${image}`,new URL(req.url).origin).toString(),
-                    description: `Congratulations! Your bot is now live on our platform. Share the unique link below to invite others to play against your bot. https://dial.to/?action=solana-action%3Ahttps%3A%2F%2Frps.sendarcade.fun%2Fapi%2Factions%2Frps%3Famount%3D${amount}%26player%3D${account.toString()}%26host%3D${player}&cluster=devnet 
+      },
+      // no additional signers are required for this transaction
+      signers: [sender],
+    }) : await createPostResponse({
+      fields: {
+        type: "transaction",
+        transaction,
+        message: `Placed with a bet of ${amount} SOL.`,
+        links: {
+          next: {
+            type: "inline",
+            action: {
+              type: "action",
+              title: `Successfully submitted your bet of ${amount} SOL to host your own bot.`,
+              icon: new URL(`${image}`, new URL(req.url).origin).toString(),
+              description: `Congratulations! Your bot is now live on our platform. Share the unique link below to invite others to play against your bot. https://dial.to/?action=solana-action%3Ahttps%3A%2F%2Frps.sendarcade.fun%2Fapi%2Factions%2Frps%3Famount%3D${amount}%26player%3D${account.toString()}%26host%3D${player}&cluster=devnet 
                                   You can also use the provided link to get your amount back into your account whenever you wish. This will show you the current amount after the bets. https://dial.to/?action=solana-action%3Ahttps%3A%2F%2Frps.sendarcade.fun%2Fapi%2Factions%2Frps%3Faccount%3D${account.toString()}&cluster=devnet`,
-                    label: "Rock Paper Scissors",
-                    "links": {
-                    "actions":[]},
-                },
+              label: "Rock Paper Scissors",
+              "links": {
+                "actions": []
+              },
             },
           },
         },
-        // no additional signers are required for this transaction
-        signers: [sender],
-      });
+      },
+      // no additional signers are required for this transaction
+      signers: [sender],
+    });
 
 
 
@@ -375,5 +377,5 @@ else{
       headers,
     });
   }
-  
+
 };

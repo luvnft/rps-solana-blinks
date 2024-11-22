@@ -1,30 +1,30 @@
 import {
-    ActionPostResponse,
-    createActionHeaders,
-    createPostResponse,
-    ActionGetResponse,
-    ActionPostRequest,
-    MEMO_PROGRAM_ID,
-  } from "@solana/actions";
-  
-  import { 
-    clusterApiUrl,
-    ComputeBudgetProgram,
-    Connection,
-    Keypair,
-    LAMPORTS_PER_SOL,
-    PublicKey,
-    Transaction,
-    TransactionInstruction
-  } from "@solana/web3.js";
-  
-  import bs58 from "bs58";
+  ActionPostResponse,
+  createActionHeaders,
+  createPostResponse,
+  ActionGetResponse,
+  ActionPostRequest,
+  MEMO_PROGRAM_ID,
+} from "@solana/actions";
+
+import {
+  clusterApiUrl,
+  ComputeBudgetProgram,
+  Connection,
+  Keypair,
+  LAMPORTS_PER_SOL,
+  PublicKey,
+  Transaction,
+  TransactionInstruction
+} from "@solana/web3.js";
+
+import bs58 from "bs58";
 
 const headers = createActionHeaders({
-    chainId: "devnet", // or chainId: "devnet"
-    actionVersion: "2.2.1", // the desired spec version
-  });
-  
+  chainId: "devnet", // or chainId: "devnet"
+  actionVersion: "2.2.1", // the desired spec version
+});
+
 export const POST = async (req: Request) => {
   try {
     // Extract the query parameters from the URL
@@ -75,10 +75,10 @@ export const POST = async (req: Request) => {
       })
     );
     transaction.add(web3.SystemProgram.transfer({
-        fromPubkey: sender.publicKey,
-        toPubkey: account,
-        lamports: Number(amount)*LAMPORTS_PER_SOL,
-        }));
+      fromPubkey: sender.publicKey,
+      toPubkey: account,
+      lamports: Number(amount) * LAMPORTS_PER_SOL,
+    }));
     // set the end user as the fee payer
     transaction.feePayer = account;
 
@@ -98,14 +98,14 @@ export const POST = async (req: Request) => {
     //   );
     //   await web3.sendAndConfirmTransaction(connection, transaction, [sender]);
     const payload: ActionPostResponse = await createPostResponse({
-        fields: {
-          type: "transaction",
-          transaction,
-          message: `${amount} SOL sent to your account, Play again!`,
-        },
-        // no additional signers are required for this transaction
-        signers: [sender],
-      });
+      fields: {
+        type: "transaction",
+        transaction,
+        message: `${amount} SOL sent to your account, Play again!`,
+      },
+      // no additional signers are required for this transaction
+      signers: [sender],
+    });
 
 
     return Response.json(payload, {
@@ -119,5 +119,5 @@ export const POST = async (req: Request) => {
       headers,
     });
   }
-  
+
 };

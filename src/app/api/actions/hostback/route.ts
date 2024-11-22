@@ -75,7 +75,7 @@ export const POST = async (req: Request) => {
         let db = await getDoc(doc(firestore, "hosts", account?.toString()));
         let amount = 0;
         if (db.exists()) amount = Number(db.data().amount);
-        
+
         // Solana Blockchain Cluster (Set Mainnet "mainnet-beta" or Devnet "devnet")
         // If your RPC not present, it will use default devnet RPC provided to us via web3.js "clusterApiUrl("devnet")"
         // NOTE: "clusterApiUrl("devnet")" is not for mainnet use - for mainnet production launched Blinks, get your own RPC

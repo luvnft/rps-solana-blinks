@@ -1,66 +1,66 @@
 import {
-    ActionPostResponse,
-    createActionHeaders,
-    createPostResponse,
-    ActionGetResponse,
-    ActionPostRequest,
-    MEMO_PROGRAM_ID,
-  } from "@solana/actions";
-  
-  import { 
-    clusterApiUrl,
-    ComputeBudgetProgram,
-    Connection,
-    Keypair,
-    LAMPORTS_PER_SOL,
-    PublicKey,
-    Transaction,
-    TransactionInstruction
-  } from "@solana/web3.js";
-  
-  import bs58 from "bs58";
+  ActionPostResponse,
+  createActionHeaders,
+  createPostResponse,
+  ActionGetResponse,
+  ActionPostRequest,
+  MEMO_PROGRAM_ID,
+} from "@solana/actions";
+
+import {
+  clusterApiUrl,
+  ComputeBudgetProgram,
+  Connection,
+  Keypair,
+  LAMPORTS_PER_SOL,
+  PublicKey,
+  Transaction,
+  TransactionInstruction
+} from "@solana/web3.js";
+
+import bs58 from "bs58";
 import { getApps, initializeApp, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore, getDoc, doc, deleteDoc } from "firebase/firestore";
 
 // Firebase _______________________________________________
 const firebaseConfig = {
-    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-    measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
-    };
-    
-  const app = !getApps.length ? initializeApp(firebaseConfig) : getApp();
-    
-  const auth = getAuth(app);
-  const firestore = getFirestore(app);
-  // __________________________________________________________
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+};
+
+const app = !getApps.length ? initializeApp(firebaseConfig) : getApp();
+
+const auth = getAuth(app);
+const firestore = getFirestore(app);
+// __________________________________________________________
 
 const headers = createActionHeaders({
-    chainId: "devnet", // or chainId: "devnet"
-    actionVersion: "2.2.1", // the desired spec version
-  });
-  
+  chainId: "devnet", // or chainId: "devnet"
+  actionVersion: "2.2.1", // the desired spec version
+});
 
-  function formatChoice(choice: string): string {
-    switch (choice) {
-      case "R":
-        return "rock";
-      case "S":
-        return "scissors";
-      case "P":
-        return "paper";
-      default:
-        return choice;
-    }
+
+function formatChoice(choice: string): string {
+  switch (choice) {
+    case "R":
+      return "rock";
+    case "S":
+      return "scissors";
+    case "P":
+      return "paper";
+    default:
+      return choice;
   }
+}
 
-  let title = "Rock Paper Scissors";
-  let image: string = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/icon.gif";
+let title = "Rock Paper Scissors";
+let image: string = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/icon.gif";
 
 export const POST = async (req: Request) => {
   try {
@@ -73,7 +73,7 @@ export const POST = async (req: Request) => {
     let db = await getDoc(doc(firestore, "hosts", player1?.toString()));
     let amount = 0;
     let P1choice = "";
-    if(db.exists()) amount = Number(db.data().amount);
+    if (db.exists()) amount = Number(db.data().amount);
 
     // Ensure the required parameters are present
     if (!amount || !choice || !player1) {
@@ -83,10 +83,10 @@ export const POST = async (req: Request) => {
       });
     }
     if (bet > amount) {
-        return new Response('Bet not not valid.', {
-            status: 400,
-            headers,
-            });
+      return new Response('Bet not not valid.', {
+        status: 400,
+        headers,
+      });
     }
     const body: ActionPostRequest = await req.json();
     // Validate to confirm the user publickey received is valid before use
@@ -102,13 +102,13 @@ export const POST = async (req: Request) => {
     const choices = ["R", "P", "S"];
     P1choice = choices[Math.floor(Math.random() * choices.length)];
     let winner = "";
-    if(P1choice === choice) winner = "Tie";
-    else if(P1choice === "R" && choice === "S") winner = player1;
-    else if(P1choice === "S" && choice === "P") winner = player1;
-    else if(P1choice === "P" && choice === "R") winner = player1;
+    if (P1choice === choice) winner = "Tie";
+    else if (P1choice === "R" && choice === "S") winner = player1;
+    else if (P1choice === "S" && choice === "P") winner = player1;
+    else if (P1choice === "P" && choice === "R") winner = player1;
     else winner = "Player 2";
 
-    if(winner === "Tie") title = "It's a tie!";
+    if (winner === "Tie") title = "It's a tie!";
     else if (winner === player1) title = `Player 1(${player1}) wins!`;
     else title = `Player 2(${account.toString()}) wins!`;
 
@@ -146,10 +146,10 @@ export const POST = async (req: Request) => {
       })
     );
     transaction.add(web3.SystemProgram.transfer({
-        fromPubkey: account,
-        toPubkey: sender.publicKey,
-        lamports: Number(bet)*LAMPORTS_PER_SOL,
-        }));
+      fromPubkey: account,
+      toPubkey: sender.publicKey,
+      lamports: Number(bet) * LAMPORTS_PER_SOL,
+    }));
     // set the end user as the fee payer
     transaction.feePayer = account;
 
@@ -170,35 +170,35 @@ export const POST = async (req: Request) => {
     //   );
     //   await web3.sendAndConfirmTransaction(connection, transaction, [sender]);
     const payload: ActionPostResponse = await createPostResponse({
-        fields: {
-          type: "transaction",
-          transaction,
-          message: `Your choice was ${formatChoice(choice)} with a bet of ${bet} SOL.`,
-          links: {
-            next: {
-                type: "inline",
-                action: {
-                    type: "action",
-                    title: `${title}`,
-                    icon: new URL(`${image}`,new URL(req.url).origin).toString(),
-                    description: `Claim your prize below!`,
-                    label: "Rock Paper Scissors",
-                    "links": {
-                    "actions":[
-                        {
-                        "label": "Claim Prize", // button text
-                        "href": `/api/actions/hresult?amount=${bet}&winner=${winner}&player1=${player1}&player2=${account.toString()}`,
-                        type: "transaction"
-                        }
-                    ]
-                    }
-                },
+      fields: {
+        type: "transaction",
+        transaction,
+        message: `Your choice was ${formatChoice(choice)} with a bet of ${bet} SOL.`,
+        links: {
+          next: {
+            type: "inline",
+            action: {
+              type: "action",
+              title: `${title}`,
+              icon: new URL(`${image}`, new URL(req.url).origin).toString(),
+              description: `Claim your prize below!`,
+              label: "Rock Paper Scissors",
+              "links": {
+                "actions": [
+                  {
+                    "label": "Claim Prize", // button text
+                    "href": `/api/actions/hresult?amount=${bet}&winner=${winner}&player1=${player1}&player2=${account.toString()}`,
+                    type: "transaction"
+                  }
+                ]
+              }
             },
           },
         },
-        // no additional signers are required for this transaction
-        signers: [sender],
-      });
+      },
+      // no additional signers are required for this transaction
+      signers: [sender],
+    });
 
 
     return Response.json(payload, {
@@ -212,5 +212,5 @@ export const POST = async (req: Request) => {
       headers,
     });
   }
-  
+
 };

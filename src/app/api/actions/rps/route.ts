@@ -80,9 +80,20 @@ const auth = getAuth(app);
         "actions":[
                     {
                     "label": "Play!", // button text
-                    "href": `/api/actions/friend?choice={choice}&player=${player1}`,
+                    "href": `/api/actions/host?choice={choice}&player=${player1}&amount={amount}`,
                     type: "transaction",
                     parameters: [
+                      {
+                        type: "select",
+                        name: "amount", // parameter name in the `href` above
+                        label: "Bet Amount in SOL", // placeholder of the text input
+                        required: true,
+                        options: [
+                          { label: "1 SOL", value: "1" },
+                          { label: "0.1 SOL", value: "0.1" },
+                          { label: "0.01 SOL", value: "0.01" },
+                        ],
+                      },
                       {
                         type: "radio",
                           name: "choice", // parameter name in the `href` above

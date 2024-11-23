@@ -194,7 +194,7 @@ export const POST = async (req: Request) => {
               description: `${description}`,
               label: "Rock Paper Scissors",
               "links": {
-                "actions": (winner === "player2")?[
+                "actions": (winner != "player1")?[
                   {
                     "label": "Claim Prize", // button text
                     "href": `/api/actions/hresult?amount=${bet}&winner=${winner}&player1=${player1}&player2=${account.toString()}`,

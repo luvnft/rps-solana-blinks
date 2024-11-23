@@ -139,7 +139,7 @@ export const GET = async (req: Request) => {
       title: "Double or Nothing: Rock Paper Scissors Game",
       icon: "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/icon.gif",
       description:
-        "",
+        "dd",
       label: "Rock Paper Scissors",
       "links": {
         "actions": [

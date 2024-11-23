@@ -108,7 +108,7 @@ export const POST = async (req: Request) => {
 
     const P1PubKey = new PublicKey(player1);
     const P2PubKey = new PublicKey(player2);
-    prizePool.toFixed(4);
+    prizePool = parseFloat(prizePool.toFixed(4));
     if (winner === "player1") {
       pool = pool + prizePool;
     }

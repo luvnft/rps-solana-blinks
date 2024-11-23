@@ -83,7 +83,6 @@ export const POST = async (req: Request) => {
 
     const P1PubKey = new PublicKey(player1);
     const P2PubKey = new PublicKey(player2);
-    prizePool.toFixed(4);
     if (winner === "player1") {
       transaction.add(web3.SystemProgram.transfer({
         fromPubkey: sender.publicKey,

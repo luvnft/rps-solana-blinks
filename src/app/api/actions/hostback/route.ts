@@ -75,6 +75,7 @@ export const POST = async (req: Request) => {
         let db = await getDoc(doc(firestore, "hosts", account?.toString()));
         let amount = 0;
         if (db.exists()) amount = Number(db.data().amount);
+        amount= parseFloat(amount.toFixed(4));
 
         // Solana Blockchain Cluster (Set Mainnet "mainnet-beta" or Devnet "devnet")
         // If your RPC not present, it will use default devnet RPC provided to us via web3.js "clusterApiUrl("devnet")"
@@ -100,7 +101,6 @@ export const POST = async (req: Request) => {
                 keys: [{ pubkey: sender.publicKey, isSigner: true, isWritable: false }],
             })
         );
-        amount.toFixed(4);
         transaction.add(web3.SystemProgram.transfer({
             fromPubkey: sender.publicKey,
             toPubkey: account,

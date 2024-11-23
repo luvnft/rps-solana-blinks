@@ -136,7 +136,7 @@ import {
     }
     else {
       payload = {
-        title: "Double or Nothing: Rock Paper Scissors Game",
+        title: "Double or Nothing: Rock Paper Scissors Game. Host your own bot.",
         icon: "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/icon.gif",
         description:
           "",

@@ -145,7 +145,7 @@ export const GET = async (req: Request) => {
         "actions": [
           {
             "label": "Play!", // button text
-            "href": "/api/actions/backend?amount={amount}&choice={choice}",
+            "href": "/api/actions/backend?amount={amount}&choice={choice}&player={B}",
             "parameters": [
               {
                 type: "select",

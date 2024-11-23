@@ -111,6 +111,7 @@ export const POST = async (req: Request) => {
     prizePool = parseFloat(prizePool.toFixed(4));
     if (winner === "player1") {
       pool = pool + prizePool;
+      await setDoc(doc(firestore, "hosts", player1), { amount: pool.toString() });
     }
     else if (winner === "player2") {
       transaction.add(web3.SystemProgram.transfer({
@@ -126,6 +127,7 @@ export const POST = async (req: Request) => {
         toPubkey: P2PubKey,
         lamports: (prizePool / 2) * LAMPORTS_PER_SOL,
       }));
+      await setDoc(doc(firestore, "hosts", player1), { amount: pool.toString() });
     }
     // set the end user as the fee payer
 
@@ -135,7 +137,7 @@ export const POST = async (req: Request) => {
     transaction.recentBlockhash = (
       await connection.getLatestBlockhash()
     ).blockhash;
-    await setDoc(doc(firestore, "hosts", player1), { amount: pool.toString() });
+    
     // const nacl = require("tweetnacl");
     // let transaction = new web3.Transaction();
     // transaction.add(

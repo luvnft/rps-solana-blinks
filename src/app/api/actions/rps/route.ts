@@ -63,7 +63,7 @@ export const GET = async (req: Request) => {
     payload = {
       title: `Player 1 (${player1}) has made a bet of ${amount} SOL. Waiting for Player 2 to make a choice.`,
       icon: "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/icon.gif",
-      description: `Player 1 has made a bet and is waiting for Player 2 to make a choice and match their bet of ${amount} SOL! Both bet amounts will be pooled together, and the winner will take it all, but in case of a tie, both players will get their bet amount back, after deducting a 10% fee.`,
+      description: `Player 1 has made a bet and is waiting for Player 2 to make a choice and match their bet of ${amount} SOL! Both bet amounts will be pooled together, and the winner will take it all, but in case of a tie, both players will get their bet amount back.`,
       label: "Rock Paper Scissors",
       "links": {
         "actions": [
@@ -97,7 +97,7 @@ export const GET = async (req: Request) => {
     payload = {
       title: `Player 1 (${player1}) has made a bet and has ${amount} SOL left in their wager. Waiting for Player 2 to make a choice.`,
       icon: "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/icon.gif",
-      description: `You can place a bet equal to or less than this amount to compete. The winner takes double the amount they bet and in case of a tie, both players will get their bet amount back after a 10% fee deduction.`,
+      description: `You can place a bet equal to or less than this amount to compete. The winner takes double the amount they bet and in case of a tie, both players will get their bet amount back.`,
       label: "Rock Paper Scissors",
       "links": {
         "actions": [
@@ -136,7 +136,7 @@ export const GET = async (req: Request) => {
   }
   else {
     payload = {
-      title: "Double or Nothing: Rock Paper Scissors Game",
+      title: "Double or Nothing: Rock Paper Scissors",
       icon: "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/icon.gif",
       description:
         "",

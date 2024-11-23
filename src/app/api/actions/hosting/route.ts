@@ -145,7 +145,7 @@ import {
           "actions": [
             {
               "label": "Play!", // button text
-              "href": "/api/actions/backend?amount={amount}&player={H}",
+              "href": `/api/actions/backend?amount={amount}&player=${"H"}`,
               "parameters": [
                 {
                   type: "select",

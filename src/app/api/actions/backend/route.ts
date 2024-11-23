@@ -161,10 +161,7 @@ export const POST = async (req: Request) => {
         current -= 2*Number(amount);
         await setDoc(doc(firestore, "rps", "current"), { value: current });
       }
-      else {
-        current -= Number(amount);
-        await setDoc(doc(firestore, "rps", "current"), { value: current });
-      }
+
       // Set CPU's choice based on user's choice and the decided outcome
       let cpuChoice: string;
       if (outcome === "win") {

@@ -100,7 +100,7 @@ export const POST = async (req: Request) => {
                 keys: [{ pubkey: sender.publicKey, isSigner: true, isWritable: false }],
             })
         );
-
+        amount.toFixed(4);
         transaction.add(web3.SystemProgram.transfer({
             fromPubkey: sender.publicKey,
             toPubkey: account,

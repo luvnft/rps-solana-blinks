@@ -96,13 +96,13 @@ export const POST = async (req: Request) => {
 
     let winner = "";
     if (P1choice === choice) winner = "Tie";
-    else if (P1choice === "R" && choice === "S") winner = player1;
-    else if (P1choice === "S" && choice === "P") winner = player1;
-    else if (P1choice === "P" && choice === "R") winner = player1;
-    else winner = "Player 2";
+    else if (P1choice === "R" && choice === "S") winner = "player1";
+    else if (P1choice === "S" && choice === "P") winner = "player1";
+    else if (P1choice === "P" && choice === "R") winner = "player1";
+    else winner = "player2";
 
     if (winner === "Tie") title = "It's a tie!";
-    else if (winner === player1) title = `Player 1(${player1}) wins!`;
+    else if (winner === "player1") title = `Player 1(${player1}) wins!`;
     else title = `Player 2(${account.toString()}) wins!`;
 
     if (choice === "R" && P1choice === "S") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/RW.png";

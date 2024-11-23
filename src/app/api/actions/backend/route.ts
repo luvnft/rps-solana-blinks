@@ -359,8 +359,8 @@ export const POST = async (req: Request) => {
               type: "action",
               title: `Successfully submitted your bet of ${amount} SOL to host your own bot.`,
               icon: new URL(`${image}`, new URL(req.url).origin).toString(),
-              description: `Congratulations! Your bot is now live on our platform. Share the unique link below to invite others to play against your bot. https://dial.to/?action=solana-action%3Ahttps%3A%2F%2Frps.sendarcade.fun%2Fapi%2Factions%2Frps%3Famount%3D${amount}%26player%3D${account.toString()}%26host%3D${player}&cluster=mainnet 
-                                  You can also use the provided link to get your amount back into your account whenever you wish. This will show you the current amount after the bets. https://dial.to/?action=solana-action%3Ahttps%3A%2F%2Frps.sendarcade.fun%2Fapi%2Factions%2Frps%3Faccount%3D${account.toString()}&cluster=mainnet`,
+              description: `Congratulations! Your bot is now live on our platform. Share the unique link below to invite others to play against your bot. https://dial.to/?action=solana-action%3Ahttps%3A%2F%2Frps.sendarcade.fun%2Fapi%2Factions%2Fhosting%3Famount%3D${amount}%26player%3D${account.toString()}%26host%3D${player}&cluster=mainnet 
+                                  You can also use the provided link to get your amount back into your account whenever you wish. This will show you the current amount after the bets. https://dial.to/?action=solana-action%3Ahttps%3A%2F%2Frps.sendarcade.fun%2Fapi%2Factions%2Fhosting%3Faccount%3D${account.toString()}&cluster=mainnet`,
               label: "Rock Paper Scissors",
               "links": {
                 "actions": []

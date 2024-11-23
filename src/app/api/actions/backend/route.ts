@@ -178,7 +178,7 @@ export const POST = async (req: Request) => {
         else if (choice === "S") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/SW.png";
         title = "You Won!";
         winAmount = Number(amount) * 2;
-        description = `Congratulations! You chose ${formatChoice(choice)} and the CPU chose ${formatChoice(cpuChoice)}. You won ${winAmount} SOL! Claim your prize by clicking the button below now.`;
+        description = `Congratulations! You chose ${formatChoice(choice)} and the opponent chose ${formatChoice(cpuChoice)}. You won ${winAmount} SOL! Claim your prize by clicking the button below now.`;
       }
       else if (outcome === "lose") {
         if (choice === "R") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/RL.png";
@@ -186,7 +186,7 @@ export const POST = async (req: Request) => {
         else if (choice === "S") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/SL.png";
         title = "You Lost!";
         winAmount = 0;
-        description = `Unlucky! You chose ${formatChoice(choice)} and the CPU chose ${formatChoice(cpuChoice)}. You lost ${amount} SOL. Try your luck again!`;
+        description = `Unlucky! You chose ${formatChoice(choice)} and the opponent chose ${formatChoice(cpuChoice)}. You lost ${amount} SOL. Try your luck again!`;
       }
       else {
         if (choice === "R") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/RD.png";
@@ -194,7 +194,7 @@ export const POST = async (req: Request) => {
         else if (choice === "S") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/SD.png";
         title = "It's a Draw!";
         winAmount = Number(amount);
-        description = `It's a draw! You chose ${formatChoice(choice)} and the CPU chose ${formatChoice(cpuChoice)}. You get your bet of ${amount} SOL back. Play again!`;
+        description = `It's a draw! You chose ${formatChoice(choice)} and the opponent chose ${formatChoice(cpuChoice)}. You get your bet of ${amount} SOL back. Play again!`;
       }
     }
     else if (player === "F") {

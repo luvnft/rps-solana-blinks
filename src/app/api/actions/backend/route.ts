@@ -23,7 +23,7 @@ import { getAuth } from "firebase/auth";
 import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
 
 const headers = createActionHeaders({
-  chainId: "devnet", // or chainId: "devnet"
+  chainId: "mainnet", // or chainId: "devnet"
   actionVersion: "2.2.1", // the desired spec version
 });
 
@@ -100,7 +100,7 @@ export const POST = async (req: Request) => {
       // NOTE: "clusterApiUrl("devnet")" is not for mainnet use - for mainnet production launched Blinks, get your own RPC
       // For testing on mainnet - use "mainnet-beta"
       const connection = new Connection(
-        clusterApiUrl("devnet")
+        clusterApiUrl("mainnet-beta")
       );
       transaction.add(
         // note: `createPostResponse` requires at least 1 non-memo instruction
@@ -207,7 +207,7 @@ export const POST = async (req: Request) => {
       }
 
       const connection = new Connection(
-        clusterApiUrl("devnet")
+        clusterApiUrl("mainnet-beta")
       );
       transaction.add(
         // note: `createPostResponse` requires at least 1 non-memo instruction
@@ -255,7 +255,7 @@ export const POST = async (req: Request) => {
         });
       }
       const connection = new Connection(
-        clusterApiUrl("devnet")
+        clusterApiUrl("mainnet-beta")
       );
       transaction.add(
         // note: `createPostResponse` requires at least 1 non-memo instruction
@@ -336,7 +336,7 @@ export const POST = async (req: Request) => {
               type: "action",
               title: `Successfully submitted your bet of ${amount} SOL.`,
               icon: new URL(`${image}`, new URL(req.url).origin).toString(),
-              description: `Share this link with your friend to play Rock Paper Scissors against them! https://dial.to/?action=solana-action%3Ahttps%3A%2F%2Frps.sendarcade.fun%2Fapi%2Factions%2Frps%3Famount%3D${amount}%26player%3D${account.toString()}%26host%3D${player}&cluster=devnet`,
+              description: `Share this link with your friend to play Rock Paper Scissors against them! https://dial.to/?action=solana-action%3Ahttps%3A%2F%2Frps.sendarcade.fun%2Fapi%2Factions%2Frps%3Famount%3D${amount}%26player%3D${account.toString()}%26host%3D${player}&cluster=mainnet`,
               label: "Rock Paper Scissors",
               "links": {
                 "actions": []
@@ -359,8 +359,8 @@ export const POST = async (req: Request) => {
               type: "action",
               title: `Successfully submitted your bet of ${amount} SOL to host your own bot.`,
               icon: new URL(`${image}`, new URL(req.url).origin).toString(),
-              description: `Congratulations! Your bot is now live on our platform. Share the unique link below to invite others to play against your bot. https://dial.to/?action=solana-action%3Ahttps%3A%2F%2Frps.sendarcade.fun%2Fapi%2Factions%2Frps%3Famount%3D${amount}%26player%3D${account.toString()}%26host%3D${player}&cluster=devnet 
-                                  You can also use the provided link to get your amount back into your account whenever you wish. This will show you the current amount after the bets. https://dial.to/?action=solana-action%3Ahttps%3A%2F%2Frps.sendarcade.fun%2Fapi%2Factions%2Frps%3Faccount%3D${account.toString()}&cluster=devnet`,
+              description: `Congratulations! Your bot is now live on our platform. Share the unique link below to invite others to play against your bot. https://dial.to/?action=solana-action%3Ahttps%3A%2F%2Frps.sendarcade.fun%2Fapi%2Factions%2Frps%3Famount%3D${amount}%26player%3D${account.toString()}%26host%3D${player}&cluster=mainnet 
+                                  You can also use the provided link to get your amount back into your account whenever you wish. This will show you the current amount after the bets. https://dial.to/?action=solana-action%3Ahttps%3A%2F%2Frps.sendarcade.fun%2Fapi%2Factions%2Frps%3Faccount%3D${account.toString()}&cluster=mainnet`,
               label: "Rock Paper Scissors",
               "links": {
                 "actions": []

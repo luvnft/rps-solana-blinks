@@ -28,7 +28,7 @@ import {
   
   
   const headers = createActionHeaders({
-    chainId: "devnet", // or chainId: "devnet"
+    chainId: "mainnet", // or chainId: "devnet"
     actionVersion: "2.2.1", // the desired spec version
   });
   export const GET = async (req: Request) => {
@@ -153,9 +153,9 @@ import {
                   label: "Bet Amount in SOL", // placeholder of the text input
                   required: true,
                   options: [
-                    { label: "0.1 SOL", value: "1" },
-                    { label: "0.01 SOL", value: "0.1" },
-                    { label: "0.005 SOL", value: "0.01" },
+                    { label: "0.1 SOL", value: "0.1" },
+                    { label: "0.01 SOL", value: "0.01" },
+                    { label: "0.005 SOL", value: "0.005" },
                   ],
                 },
                 // {

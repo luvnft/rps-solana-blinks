@@ -33,7 +33,7 @@ export const POST = async (req: Request) => {
 
     // Ensure the required parameters are present
     if (!amount) {
-      return new Response('Missing "amount" or "choice" in request', {
+      return new Response('Missing "amount" in request', {
         status: 400,
         headers,
       });

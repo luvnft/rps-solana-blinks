@@ -41,9 +41,10 @@ export const GET = async (req: Request) => {
   if (account) {
     let db = await getDoc(doc(firestore, "hosts", account?.toString()));
     let amount = 0;
+    amount = parseFloat(amount.toFixed(4));
     if (db.exists()) amount = Number(db.data().amount);
     payload = {
-      title: `You (${account}) have ${amount} SOL left in your wager.`,
+      title: `You(${account}) have ${amount} SOL left in your wager.`,
       icon: "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/icon.gif",
       description: `Claim you amount back from the below button.`,
       label: "Rock Paper Scissors",
@@ -176,7 +177,7 @@ export const GET = async (req: Request) => {
                 options: [
                   { label: "Our bot (Instant prize, no fees)", value: "B" },
                   { label: "Friend (10% fees cut of total value)", value: "F" },
-                  { label: "Host your own bot and ask others to play (10% fees cut of total value)", value: "H" },
+                  { label: "Host your own bot and ask others to play (10% fees cut of total value in each play)", value: "H" },
                 ],
               },
             ],

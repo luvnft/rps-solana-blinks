@@ -61,6 +61,7 @@ function formatChoice(choice: string): string {
 
 let title = "Rock Paper Scissors";
 let image: string = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/icon.gif";
+let description: string = "Let's play Rock Paper Scissors! If you win you get DOUBLE your betted SOL, if it's a tie you get your betted SOL back, and if you lose you lose your betted SOL.";
 
 export const POST = async (req: Request) => {
   try {
@@ -101,10 +102,18 @@ export const POST = async (req: Request) => {
     else if (P1choice === "P" && choice === "R") winner = "player1";
     else winner = "player2";
 
-    if (winner === "Tie") title = "It's a tie!";
-    else if (winner === "player1") title = `Player 1(${player1}) wins!`;
-    else title = `Player 2(${account.toString()}) wins!`;
-
+    if (winner === "Tie"){ 
+      title = "It's a tie!";
+      description = `It's a draw! You chose ${formatChoice(choice)} and player1 chose ${formatChoice(P1choice)}. You both get your bet SOL back. Play again!`;
+    }
+    else if (winner === "player1"){
+      title = `Player 1(${player1}) wins!`;
+      description = `Unlucky! You chose ${formatChoice(choice)} and player1 chose ${formatChoice(P1choice)}. You lost. Claim the prize for player1. Try your luck again!`;
+    } 
+    else {
+      title = `Player 2(${account.toString()}) wins!`;
+      description = `Congratulations! You chose ${formatChoice(choice)} and player1 chose ${formatChoice(P1choice)}. You won double your bet SOL! Claim your prize by clicking the button below now.`;
+    }
     if (choice === "R" && P1choice === "S") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/RW.png";
     else if (choice === "S" && P1choice === "P") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/SW.png";
     else if (choice === "P" && P1choice === "R") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/PW.png";
@@ -132,7 +141,7 @@ export const POST = async (req: Request) => {
       new TransactionInstruction({
         programId: new PublicKey(MEMO_PROGRAM_ID),
         data: Buffer.from(
-          `User won ${amount} SOL`,
+          `User played ${amount} SOL`,
           "utf8"
         ),
         keys: [{ pubkey: sender.publicKey, isSigner: true, isWritable: false }],
@@ -174,12 +183,12 @@ export const POST = async (req: Request) => {
               type: "action",
               title: `${title}`,
               icon: new URL(`${image}`, new URL(req.url).origin).toString(),
-              description: `Claim your prize below!`,
+              description: `${description}`,
               label: "Rock Paper Scissors",
               "links": {
                 "actions": [
                   {
-                    "label": "Claim Prize", // button text
+                    "label": "Claim Prize!", // button text
                     "href": `/api/actions/fresult?amount=${amount}&winner=${winner}&player1=${player1}&player2=${account.toString()}`,
                     type: "transaction"
                   }

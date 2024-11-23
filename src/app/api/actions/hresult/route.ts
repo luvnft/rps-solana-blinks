@@ -63,8 +63,8 @@ export const POST = async (req: Request) => {
     prizePool = parseFloat(prizePool.toFixed(4));
 
     // Ensure the required parameters are present
-    if (!amount) {
-      return new Response('Missing "amount" in request', {
+    if (!amount || !winner || !player1 || !player2 || !prizePool || !pool) {
+      return new Response('Missing arguments in request', {
         status: 400,
         headers,
       });

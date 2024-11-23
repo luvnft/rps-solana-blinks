@@ -38,8 +38,8 @@ export const POST = async (req: Request) => {
     prizePool = parseFloat(prizePool.toFixed(4));
 
     // Ensure the required parameters are present
-    if (!amount) {
-      return new Response('Missing "amount" in request', {
+    if (!amount || !winner || !player1 || !player2) {
+      return new Response('Missing "amount", "winner", "player1" or "player2" in request', {
         status: 400,
         headers,
       });
@@ -74,7 +74,7 @@ export const POST = async (req: Request) => {
       new TransactionInstruction({
         programId: new PublicKey(MEMO_PROGRAM_ID),
         data: Buffer.from(
-          `Winner will get money.`,
+          `${winner} will get money.`,
           "utf8"
         ),
         keys: [{ pubkey: sender.publicKey, isSigner: true, isWritable: false }],

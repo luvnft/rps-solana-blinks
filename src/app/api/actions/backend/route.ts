@@ -46,6 +46,8 @@ const firestore = getFirestore(app);
 let db = await getDoc(doc(firestore, "rps", "moneyPool"));
 let moneyPool = 0;
 if (db.exists()) moneyPool = Number(db.data().value);
+let current = 0;
+if (db.exists()) current = Number(db.data().value);
 
 
 export const POST = async (req: Request) => {
@@ -88,7 +90,7 @@ export const POST = async (req: Request) => {
     if (player === "B") {
       // Ensure the required parameters are present
       if (!amount || !choice || !player) {
-        return new Response('Missing "amount" or "Player" in request', {
+        return new Response('Missing "choice","amount" or "Player" in request', {
           status: 400,
           headers,
         });
@@ -137,7 +139,7 @@ export const POST = async (req: Request) => {
 
       let outcome: "win" | "lose" | "draw";
       const poolThreshold = 0.2 * moneyPool;
-      if (moneyPool - (2 * Number(amount)) < poolThreshold) {
+      if (current - (2 * Number(amount)) < poolThreshold) {
         // If profit condition is not met, declare as loss
         outcome = "lose";
       }
@@ -151,7 +153,17 @@ export const POST = async (req: Request) => {
 
       if (outcome === "lose") {
         moneyPool += Number(amount);
+        current += Number(amount);
         await setDoc(doc(firestore, "rps", "moneyPool"), { value: moneyPool });
+        await setDoc(doc(firestore, "rps", "current"), { value: current });
+      }
+      else if (outcome === "win") {
+        current -= 2*Number(amount);
+        await setDoc(doc(firestore, "rps", "current"), { value: current });
+      }
+      else {
+        current -= Number(amount);
+        await setDoc(doc(firestore, "rps", "current"), { value: current });
       }
       // Set CPU's choice based on user's choice and the decided outcome
       let cpuChoice: string;
@@ -191,7 +203,7 @@ export const POST = async (req: Request) => {
     else if (player === "F") {
       // Ensure the required parameters are present
       if (!amount || !choice || !player) {
-        return new Response('Missing "amount" or "Player" in request', {
+        return new Response('Missing "choice","amount" or "Player" in request', {
           status: 400,
           headers,
         });
@@ -256,7 +268,7 @@ export const POST = async (req: Request) => {
         new TransactionInstruction({
           programId: new PublicKey(MEMO_PROGRAM_ID),
           data: Buffer.from(
-            `User chose ${choice} with bet ${amount} SOL`,
+            `User hosted a bot with a bet of ${amount} SOL`,
             "utf8"
           ),
           keys: [{ pubkey: sender.publicKey, isSigner: true, isWritable: false }],
@@ -303,7 +315,7 @@ export const POST = async (req: Request) => {
               "links": {
                 "actions": winAmount != 0 ? [
                   {
-                    "label": "Claim Prize", // button text
+                    "label": "Claim Prize!", // button text
                     "href": `/api/actions/result?amount=${winAmount}`,
                     type: "transaction"
                   }

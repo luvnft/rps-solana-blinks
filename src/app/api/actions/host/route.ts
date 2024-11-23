@@ -170,7 +170,7 @@ export const POST = async (req: Request) => {
 
     if (winner === "player1") {
       let pool = amount + bet;
-      await setDoc(doc(firestore, "hosts", player1), { amount: pool.toString });
+      await setDoc(doc(firestore, "hosts", player1), { amount: pool.toString() });
     }
 
     // await deleteDoc(doc(firestore, "players", player1?.toString()));

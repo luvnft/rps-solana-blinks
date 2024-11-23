@@ -109,11 +109,8 @@ export const POST = async (req: Request) => {
     const P1PubKey = new PublicKey(player1);
     const P2PubKey = new PublicKey(player2);
     prizePool = parseFloat(prizePool.toFixed(4));
-    if (winner === "player1") {
-      pool = pool + prizePool;
-      await setDoc(doc(firestore, "hosts", player1), { amount: pool.toString() });
-    }
-    else if (winner === "player2") {
+  
+    if (winner === "player2") {
       transaction.add(web3.SystemProgram.transfer({
         fromPubkey: sender.publicKey,
         toPubkey: P2PubKey,

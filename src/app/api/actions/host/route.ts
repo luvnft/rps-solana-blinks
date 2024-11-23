@@ -21,7 +21,7 @@ import {
 import bs58 from "bs58";
 import { getApps, initializeApp, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore, getDoc, doc, deleteDoc } from "firebase/firestore";
+import { getFirestore, getDoc, doc, deleteDoc, setDoc } from "firebase/firestore";
 
 // Firebase _______________________________________________
 const firebaseConfig = {
@@ -167,6 +167,11 @@ export const POST = async (req: Request) => {
     transaction.recentBlockhash = (
       await connection.getLatestBlockhash()
     ).blockhash;
+
+    if (winner === "player1") {
+      let pool = amount + bet;
+      await setDoc(doc(firestore, "hosts", player1), { amount: pool.toString });
+    }
 
     // await deleteDoc(doc(firestore, "players", player1?.toString()));
     // const nacl = require("tweetnacl");

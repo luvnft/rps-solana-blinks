@@ -169,7 +169,8 @@ export const POST = async (req: Request) => {
     ).blockhash;
 
     if (winner === "player1") {
-      let pool = amount + bet;
+      let pool = amount - bet;
+      pool = pool + parseFloat((bet*2*0.9).toFixed(4));
       await setDoc(doc(firestore, "hosts", player1), { amount: pool.toString() });
     }
 

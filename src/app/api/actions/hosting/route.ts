@@ -94,10 +94,11 @@ import {
       let db = await getDoc(doc(firestore, "hosts", player1.toString()));
       let amount = 0;
       if (db.exists()) amount = Number(db.data().amount);
+      amount = parseFloat(amount.toFixed(4));
       payload = {
-        title: `Player 1 (${player1}) has made a bet and has ${amount} SOL left in their wager. Waiting for Player 2 to make a choice.`,
+        title: `Double or Nothing: Rock Paper Scissors`,
         icon: "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/icon.gif",
-        description: `You can place a bet equal to or less than this amount to compete. The winner takes double the amount they bet and in case of a tie, both players will get their bet amount back.`,
+        description: ``,
         label: "Rock Paper Scissors",
         "links": {
           "actions": [
@@ -112,9 +113,9 @@ import {
                   label: "Bet Amount in SOL", // placeholder of the text input
                   required: true,
                   options: [
-                    { label: "1 SOL", value: "1" },
-                    { label: "0.1 SOL", value: "0.1" },
-                    { label: "0.01 SOL", value: "0.01" },
+                    { label: `${amount} SOL`, value: `${amount.toString()}` },
+                    { label: `${amount/2} SOL`, value: `${(amount/2).toString()}` },
+                    { label: `${amount/4} SOL`, value: `${(amount/4).toString()}` },
                   ],
                 },
                 {

@@ -169,17 +169,17 @@ export const GET = async (req: Request) => {
                   { label: "Scissors", value: "S" },
                 ],
               },
-              // {
-              //   type: "radio",
-              //   name: "player", // parameter name in the `href` above
-              //   label: "Who would you like to play against?", // placeholder of the text input
-              //   required: true,
-              //   options: [
-              //     { label: "Our bot", value: "B" },
-              //     { label: "Friend", value: "F" },
-              //     { label: "Host your own bot and ask others to play (10% fees cut of total value in each play)", value: "H" },
-              //   ],
-              // },
+              {
+                type: "radio",
+                name: "player", // parameter name in the `href` above
+                label: "Who would you like to play against?", // placeholder of the text input
+                required: true,
+                options: [
+                  { label: "Our bot", value: "B" },
+                  { label: "Friend", value: "F" },
+                  { label: "Host your own bot and ask others to play (10% fees cut of total value in each play)", value: "H" },
+                ],
+              },
             ],
             type: "transaction"
           }

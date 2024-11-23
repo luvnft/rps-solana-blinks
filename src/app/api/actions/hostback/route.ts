@@ -22,7 +22,7 @@ import bs58 from "bs58";
 
 import { getApps, initializeApp, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore, getDoc, doc } from "firebase/firestore";
+import { getFirestore, getDoc, doc, deleteDoc } from "firebase/firestore";
 // Firebase _______________________________________________
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -115,6 +115,7 @@ export const POST = async (req: Request) => {
         transaction.recentBlockhash = (
             await connection.getLatestBlockhash()
         ).blockhash;
+        await deleteDoc(doc(firestore, "hosts", account?.toString()));
 
         // const nacl = require("tweetnacl");
         // let transaction = new web3.Transaction();

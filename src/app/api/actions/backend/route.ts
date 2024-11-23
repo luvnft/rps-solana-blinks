@@ -158,7 +158,7 @@ export const POST = async (req: Request) => {
         await setDoc(doc(firestore, "rps", "current"), { value: current });
       }
       else if (outcome === "win") {
-        current -= 2*Number(amount);
+        current -= 2 * Number(amount);
         await setDoc(doc(firestore, "rps", "current"), { value: current });
       }
 

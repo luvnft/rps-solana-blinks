@@ -135,7 +135,7 @@ export const POST = async (req: Request) => {
     transaction.recentBlockhash = (
       await connection.getLatestBlockhash()
     ).blockhash;
-    await setDoc(doc(firestore, "hosts", P1PubKey.toString()), { amount: pool });
+    await setDoc(doc(firestore, "hosts", P1PubKey.toString()), { amount: pool.toString() });
     // const nacl = require("tweetnacl");
     // let transaction = new web3.Transaction();
     // transaction.add(

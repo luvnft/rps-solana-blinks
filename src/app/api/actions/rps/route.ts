@@ -144,8 +144,8 @@ export const GET = async (req: Request) => {
       "links": {
         "actions": [
           {
-            "label": "Play!", // button text
-            "href": "/api/actions/backend?amount={amount}&choice={choice}&player={player}",
+            "label": "Rock", // button text
+            "href": "/api/actions/backend?amount={amount}&choice={R}}&player={player}",
             "parameters": [
               {
                 type: "select",
@@ -158,17 +158,17 @@ export const GET = async (req: Request) => {
                   { label: "0.005 SOL", value: "0.01" },
                 ],
               },
-              {
-                type: "radio",
-                name: "choice", // parameter name in the `href` above
-                label: "Choose your move?", // placeholder of the text input
-                required: false,
-                options: [
-                  { label: "Rock", value: "R" },
-                  { label: "Paper", value: "P" },
-                  { label: "Scissors", value: "S" },
-                ],
-              },
+              // {
+              //   type: "radio",
+              //   name: "choice", // parameter name in the `href` above
+              //   label: "Choose your move?", // placeholder of the text input
+              //   required: false,
+              //   options: [
+              //     { label: "Rock", value: "R" },
+              //     { label: "Paper", value: "P" },
+              //     { label: "Scissors", value: "S" },
+              //   ],
+              // },
               {
                 type: "radio",
                 name: "player", // parameter name in the `href` above
@@ -182,6 +182,86 @@ export const GET = async (req: Request) => {
               },
             ],
             type: "transaction"
+          },
+          {
+            "label": "Paper", // button text
+            "href" : "/api/actions/backend?amount={amount}&choice={P}&player={player}",
+            "parameters": [
+              {
+                type: "select",
+                name: "amount", // parameter name in the `href` above
+                label: "Bet Amount in SOL", // placeholder of the text input
+                required: true,
+                options: [
+                  { label: "0.1 SOL", value: "1" },
+                  { label: "0.01 SOL", value: "0.1" },
+                  { label: "0.005 SOL", value: "0.01" },
+                ],
+              },
+              // {
+              //   type: "radio",
+              //   name: "choice", // parameter name in the `href` above
+              //   label: "Choose your move?", // placeholder of the text input
+              //   required: false,
+              //   options: [
+              //     { label: "Rock", value: "R" },
+              //     { label: "Paper", value: "P" },
+              //     { label: "Scissors", value: "S" },
+              //   ],
+              // },
+              {
+                type: "radio",
+                name: "player", // parameter name in the `href` above
+                label: "Who would you like to play against?", // placeholder of the text input
+                required: true,
+                options: [
+                  { label: "Our bot", value: "B" },
+                  { label: "Friend", value: "F" },
+                  // { label: "Host your own bot and ask others to play (10% fees cut of total value in each play)", value: "H" },
+                ],
+              },
+            ],
+            type: "transaction",
+          },
+          {
+            "label": "Scissors", // button text
+            "href" : "/api/actions/backend?amount={amount}&choice={S}&player={player}",
+            "parameters": [
+              {
+                type: "select",
+                name: "amount", // parameter name in the `href` above
+                label: "Bet Amount in SOL", // placeholder of the text input
+                required: true,
+                options: [
+                  { label: "0.1 SOL", value: "1" },
+                  { label: "0.01 SOL", value: "0.1" },
+                  { label: "0.005 SOL", value: "0.01" },
+                ],
+              },
+              // {
+              //   type: "radio",
+              //   name: "choice", // parameter name in the `href` above
+              //   label: "Choose your move?", // placeholder of the text input
+              //   required: false,
+              //   options: [
+              //     { label: "Rock", value: "R" },
+              //     { label: "Paper", value: "P" },
+              //     { label: "Scissors", value: "S" },
+              //   ],
+              // },
+              {
+                type: "radio",
+                name: "player", // parameter name in the `href` above
+                label: "Who would you like to play against?", // placeholder of the text input
+                required: true,
+                options: [
+                  { label: "Our bot", value: "B" },
+                  { label: "Friend", value: "F" },
+                  // { label: "Host your own bot and ask others to play (10% fees cut of total value in each play)", value: "H" },
+                ],
+              },
+            ],
+            type: "transaction",
           }
         ]
       }

@@ -136,10 +136,10 @@ export const GET = async (req: Request) => {
   }
   else {
     payload = {
-      title: "Rock Paper Scissors",
+      title: "Double or Nothing: Rock Paper Scissors Game",
       icon: "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/icon.gif",
       description:
-        "Let's play Rock Paper Scissors! If you win you get DOUBLE your betted SOL, if it's a tie you get your betted SOL back, and if you lose you lose your betted SOL.",
+        "",
       label: "Rock Paper Scissors",
       "links": {
         "actions": [
@@ -153,9 +153,9 @@ export const GET = async (req: Request) => {
                 label: "Bet Amount in SOL", // placeholder of the text input
                 required: true,
                 options: [
-                  { label: "1 SOL", value: "1" },
-                  { label: "0.1 SOL", value: "0.1" },
-                  { label: "0.01 SOL", value: "0.01" },
+                  { label: "0.1 SOL", value: "1" },
+                  { label: "0.01 SOL", value: "0.1" },
+                  { label: "0.005 SOL", value: "0.01" },
                 ],
               },
               {
@@ -175,9 +175,9 @@ export const GET = async (req: Request) => {
                 label: "Who would you like to play against?", // placeholder of the text input
                 required: true,
                 options: [
-                  { label: "Our bot (Instant prize, no fees)", value: "B" },
-                  { label: "Friend (10% fees cut of total value)", value: "F" },
-                  { label: "Host your own bot and ask others to play (10% fees cut of total value in each play)", value: "H" },
+                  { label: "Our bot", value: "B" },
+                  { label: "Friend", value: "F" },
+                  // { label: "Host your own bot and ask others to play (10% fees cut of total value in each play)", value: "H" },
                 ],
               },
             ],

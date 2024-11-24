@@ -137,7 +137,7 @@ import {
           message: `You Lost, Play again!`,
         },
         // no additional signers are required for this transaction
-        signers: [sender],
+        // signers: [sender],
       });
   
   

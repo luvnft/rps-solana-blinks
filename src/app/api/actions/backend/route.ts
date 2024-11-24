@@ -157,7 +157,7 @@ export const POST = async (req: Request) => {
       }
       // outcome = "lose"
 
-      
+
 
       // Set CPU's choice based on user's choice and the decided outcome
       let cpuChoice: string;
@@ -370,18 +370,19 @@ export const POST = async (req: Request) => {
       // no additional signers are required for this transaction
       signers: [sender],
     });
-
-    if (outcome === "lose") {
-      moneyPool += Number(amount);
-      moneyPool = parseFloat(moneyPool.toFixed(4));
-      current += Number(amount);
-      current = parseFloat(current.toFixed(4));
-      await setDoc(doc(firestore, "rps", "moneyPool"), { value: moneyPool });
-      await setDoc(doc(firestore, "rps", "current"), { value: current });
-    }
-    else if (outcome === "win") {
-      current -= (2 * Number(amount));
-      await setDoc(doc(firestore, "rps", "current"), { value: current });
+    if (payload) {
+      if (outcome === "lose") {
+        moneyPool += Number(amount);
+        moneyPool = parseFloat(moneyPool.toFixed(4));
+        current += Number(amount);
+        current = parseFloat(current.toFixed(4));
+        await setDoc(doc(firestore, "rps", "moneyPool"), { value: moneyPool });
+        await setDoc(doc(firestore, "rps", "current"), { value: current });
+      }
+      else if (outcome === "win") {
+        current -= (2 * Number(amount));
+        await setDoc(doc(firestore, "rps", "current"), { value: current });
+      }
     }
 
     return Response.json(payload, {

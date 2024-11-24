@@ -44,16 +44,17 @@ const app = !getApps.length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
 const firestore = getFirestore(app);
 // __________________________________________________________
-let db = await getDoc(doc(firestore, "rps", "moneyPool"));
+let mp = await getDoc(doc(firestore, "rps", "moneyPool"));
+let c = await getDoc(doc(firestore, "rps", "current"));
 
 
 export const POST = async (req: Request) => {
   try {
     let moneyPool = 0;
-    if (db.exists()) moneyPool = Number(db.data().value);
+    if (mp.exists()) moneyPool = Number(mp.data().value);
     moneyPool = parseFloat(moneyPool.toFixed(4));
     let current = 0;
-    if (db.exists()) current = Number(db.data().value);
+    if (c.exists()) current = Number(c.data().value);
     current = parseFloat(current.toFixed(4));
 
     // Extract the query parameters from the URL

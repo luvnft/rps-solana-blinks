@@ -55,7 +55,7 @@ export const POST = async (req: Request) => {
     let current = 0;
     if (db.exists()) current = Number(db.data().value);
     current = parseFloat(current.toFixed(4));
-    
+
     // Extract the query parameters from the URL
     const url = new URL(req.url);
     const amount = url.searchParams.get("amount");
@@ -143,7 +143,7 @@ export const POST = async (req: Request) => {
 
       let outcome: "win" | "lose" | "draw";
       const poolThreshold = 0.5 * moneyPool;
-      if (current - (2 * Number(amount)) < poolThreshold) {
+      if ((current - (2 * Number(amount))) < poolThreshold) {
         // If profit condition is not met, declare as loss
         outcome = "lose";
       }

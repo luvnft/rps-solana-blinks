@@ -333,7 +333,7 @@ export const POST = async (req: Request) => {
         links: {
           next: {
             type: "post",
-            href: "/api/actions/lost",
+            href: `/api/actions/lost?amount=${amount}&outcome=${outcome}`,
             
           },
         },

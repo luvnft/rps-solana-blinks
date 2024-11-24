@@ -329,7 +329,7 @@ export const POST = async (req: Request) => {
       fields: {
         type: "transaction",
         transaction,
-        message: `Sorry you Lost, Play again!`,
+        // message: `Sorry you Lost, Play again!`,
         links: {
           next: {
             type: "post",
@@ -340,6 +340,7 @@ export const POST = async (req: Request) => {
       },
       signers: [sender],
     })
+  
     // : (player === "F") ? await createPostResponse({
     //   fields: {
     //     type: "transaction",

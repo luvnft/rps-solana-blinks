@@ -332,23 +332,9 @@ export const POST = async (req: Request) => {
         message: `Placed with a bet of ${amount} SOL.`,
         links: {
           next: {
-            type: "inline",
-            action: {
-              type: "action",
-              title: `${title}`,
-              icon: new URL(`${image}`, new URL(req.url).origin).toString(),
-              description: `${description}`,
-              label: "Rock Paper Scissors",
-              "links": {
-                "actions": [
-                  {
-                    "label": "Claim Prize!", // button text
-                    "href": `/api/actions/lost?amount=${winAmount}&outcome=${outcome}`,
-                    type: "transaction"
-                  }
-                ]
-              }
-            },
+            type: "post",
+            href: "/api/actions/lost",
+            
           },
         },
       },

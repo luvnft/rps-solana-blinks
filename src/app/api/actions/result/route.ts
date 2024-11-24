@@ -19,17 +19,44 @@ import {
 } from "@solana/web3.js";
 
 import bs58 from "bs58";
+import { getApps, initializeApp, getApp } from "firebase/app";
+import { getDoc, doc, getFirestore } from "firebase/firestore";
 
 const headers = createActionHeaders({
   chainId: "mainnet", // or chainId: "devnet"
   actionVersion: "2.2.1", // the desired spec version
 });
 
+
+// Firebase _______________________________________________
+const firebaseConfig = {
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+};
+const app = !getApps.length ? initializeApp(firebaseConfig) : getApp();
+
+const firestore = getFirestore(app);
+
+let db = await getDoc(doc(firestore, "rps", "moneyPool"));
+
+
 export const POST = async (req: Request) => {
   try {
+    let moneyPool = 0;
+    if (db.exists()) moneyPool = Number(db.data().value);
+    moneyPool = parseFloat(moneyPool.toFixed(4));
+    let current = 0;
+    if (db.exists()) current = Number(db.data().value);
+    current = parseFloat(current.toFixed(4));
     // Extract the query parameters from the URL
     const url = new URL(req.url);
     const amount = url.searchParams.get("amount");
+    const winner = url.searchParams.get("winner");
 
     // Ensure the required parameters are present
     if (!amount) {
@@ -40,6 +67,8 @@ export const POST = async (req: Request) => {
     }
     const body: ActionPostRequest = await req.json();
     // Validate to confirm the user publickey received is valid before use
+
+    
     let account: PublicKey;
     try {
       account = new PublicKey(body.account);

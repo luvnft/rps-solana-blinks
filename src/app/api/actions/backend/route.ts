@@ -150,11 +150,11 @@ export const POST = async (req: Request) => {
         outcome = "lose";
       }
       else {
-        // Determine game outcome based on 3:2:1 ratio of lose:draw:win
-        const random = Math.floor(Math.random() * 6); // Generates 0 to 5
-        if (random < 3) outcome = "lose";
-        else if (random < 5) outcome = "draw";
-        else outcome = "win";
+        // Determine game outcome based on 50% lose, 40% win, 10% draw
+        const random = Math.floor(Math.random() * 10); // Generates 0 to 9
+        if (random < 5) outcome = "lose";
+        else if (random < 9) outcome = "win";
+        else outcome = "draw";
       }
       // outcome = "lose"
 

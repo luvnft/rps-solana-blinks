@@ -79,10 +79,7 @@ export const POST = async (req: Request) => {
       current = parseFloat(current.toFixed(4));
       await setDoc(doc(firestore, "rps", "moneyPool"), { value: moneyPool });
       await setDoc(doc(firestore, "rps", "current"), { value: current });
-      return new Response(JSON.stringify("You Lost" ), {
-        status: 400,
-        headers,
-      });
+      amount =0;
     }
     let account: PublicKey;
     try {

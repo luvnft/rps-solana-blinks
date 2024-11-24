@@ -162,7 +162,7 @@ export const GET = async (req: Request) => {
                 type: "radio",
                 name: "choice", // parameter name in the `href` above
                 label: "Choose your move?", // placeholder of the text input
-                required: false,
+                required: true,
                 options: [
                   { label: "Rock", value: "R" },
                   { label: "Paper", value: "P" },

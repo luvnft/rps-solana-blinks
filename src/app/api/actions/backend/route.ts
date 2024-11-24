@@ -61,8 +61,6 @@ export const POST = async (req: Request) => {
     const amount = url.searchParams.get("amount");
     const choice = url.searchParams.get("choice");
     const player = url.searchParams.get("player");
-    let outcome: "win" | "lose" | "draw";
-    outcome = "lose";
 
     const body: ActionPostRequest = await req.json();
     // Validate to confirm the user publickey received is valid before use
@@ -143,41 +141,53 @@ export const POST = async (req: Request) => {
         await connection.getLatestBlockhash()
       ).blockhash;
 
+      let outcome: "win" | "lose" | "draw";
       const poolThreshold = 0.5 * moneyPool;
-      if ((current - (2 * Number(amount))) < poolThreshold) {
-        // If profit condition is not met, declare as loss
-        outcome = "lose";
-      }
-      else {
-        // Determine game outcome based on 3:2:1 ratio of lose:draw:win
-        const random = Math.floor(Math.random() * 6); // Generates 0 to 5
-        if (random < 3) outcome = "lose";
-        else if (random < 5) outcome = "draw";
-        else outcome = "win";
-      }
-      // outcome = "lose"
+      // if ((current - (2 * Number(amount))) < poolThreshold) {
+      //   // If profit condition is not met, declare as loss
+      //   outcome = "lose";
+      // }
+      // else {
+      //   // Determine game outcome based on 3:2:1 ratio of lose:draw:win
+      //   const random = Math.floor(Math.random() * 6); // Generates 0 to 5
+      //   if (random < 3) outcome = "lose";
+      //   else if (random < 5) outcome = "draw";
+      //   else outcome = "win";
+      // }
+      outcome = "lose"
 
-
+      if (outcome === "lose") {
+        moneyPool += Number(amount);
+        moneyPool = parseFloat(moneyPool.toFixed(4));
+        current += Number(amount);
+        current = parseFloat(current.toFixed(4));
+        await setDoc(doc(firestore, "rps", "moneyPool"), { value: moneyPool });
+        await setDoc(doc(firestore, "rps", "current"), { value: current });
+      }
+      else if (outcome === "win") {
+        current -= (2 * Number(amount));
+        await setDoc(doc(firestore, "rps", "current"), { value: current });
+      }
 
       // Set CPU's choice based on user's choice and the decided outcome
       let cpuChoice: string;
-      if (outcome === "win") {
-        cpuChoice = choice === "R" ? "S" : choice === "P" ? "R" : "P"; // Win scenario
-      }
+      // if (outcome === "win") {
+      //   cpuChoice = choice === "R" ? "S" : choice === "P" ? "R" : "P"; // Win scenario
+      // }
       if (outcome === "lose") {
         cpuChoice = choice === "R" ? "P" : choice === "P" ? "S" : "R"; // Lose scenario
       } else {
         cpuChoice = choice; // Draw scenario
       }
 
-      if (outcome === "win") {
-        if (choice === "R") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/RW.png";
-        else if (choice === "P") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/PW.png";
-        else if (choice === "S") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/SW.png";
-        title = "You Won!";
-        winAmount = Number(amount) * 2;
-        description = `Congratulations! You chose ${formatChoice(choice)} and the opponent chose ${formatChoice(cpuChoice)}. You won ${winAmount} SOL! Claim your prize by clicking the button below now.`;
-      }
+      // if (outcome === "win") {
+      //   if (choice === "R") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/RW.png";
+      //   else if (choice === "P") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/PW.png";
+      //   else if (choice === "S") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/SW.png";
+      //   title = "You Won!";
+      //   winAmount = Number(amount) * 2;
+      //   description = `Congratulations! You chose ${formatChoice(choice)} and the opponent chose ${formatChoice(cpuChoice)}. You won ${winAmount} SOL! Claim your prize by clicking the button below now.`;
+      // }
       if (outcome === "lose") {
         if (choice === "R") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/RL.png";
         else if (choice === "P") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/PL.png";
@@ -292,8 +302,8 @@ export const POST = async (req: Request) => {
 
       await setDoc(doc(firestore, "hosts", account.toString()), { amount: amount });
     }
-    let payload: any = "0"
-    payload = (player === "B") ? await createPostResponse({
+
+    const payload: ActionPostResponse = (player === "B") ? await createPostResponse({
       fields: {
         type: "transaction",
         transaction,
@@ -311,7 +321,7 @@ export const POST = async (req: Request) => {
                 "actions": winAmount != 0 ? [
                   {
                     "label": "Claim Prize!", // button text
-                    "href": `/api/actions/result?amount=${winAmount}&outcome=${outcome}`,
+                    "href": `/api/actions/result?amount=${winAmount}`,
                     type: "transaction"
                   }
                 ] : []
@@ -370,20 +380,8 @@ export const POST = async (req: Request) => {
       // no additional signers are required for this transaction
       signers: [sender],
     });
-    if (!(payload === "0")) {
-      if (outcome === "lose") {
-        moneyPool += Number(amount);
-        moneyPool = parseFloat(moneyPool.toFixed(4));
-        current += Number(amount);
-        current = parseFloat(current.toFixed(4));
-        await setDoc(doc(firestore, "rps", "moneyPool"), { value: moneyPool });
-        await setDoc(doc(firestore, "rps", "current"), { value: current });
-      }
-      else if (outcome === "win") {
-        current -= (2 * Number(amount));
-        await setDoc(doc(firestore, "rps", "current"), { value: current });
-      }
-    }
+
+
 
     return Response.json(payload, {
       headers,

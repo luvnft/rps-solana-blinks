@@ -343,7 +343,7 @@ export const POST = async (req: Request) => {
                 "actions": [
                   {
                     "label": "Claim Prize!", // button text
-                    "href": `/api/actions/result?amount=${winAmount}&outcome=${outcome}`,
+                    "href": `/api/actions/lost?amount=${winAmount}&outcome=${outcome}`,
                     type: "transaction"
                   }
                 ]

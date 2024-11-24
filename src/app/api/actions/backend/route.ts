@@ -292,8 +292,8 @@ export const POST = async (req: Request) => {
 
       await setDoc(doc(firestore, "hosts", account.toString()), { amount: amount });
     }
-
-    const payload: ActionPostResponse = (player === "B") ? await createPostResponse({
+    let payload: any = "0"
+    payload = (player === "B") ? await createPostResponse({
       fields: {
         type: "transaction",
         transaction,
@@ -370,7 +370,7 @@ export const POST = async (req: Request) => {
       // no additional signers are required for this transaction
       signers: [sender],
     });
-    if (payload) {
+    if (!(payload === "0")) {
       if (outcome === "lose") {
         moneyPool += Number(amount);
         moneyPool = parseFloat(moneyPool.toFixed(4));

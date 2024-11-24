@@ -165,23 +165,24 @@ export const POST = async (req: Request) => {
 
       // Set CPU's choice based on user's choice and the decided outcome
       let cpuChoice: string;
-      if (outcome === "win") {
-        cpuChoice = choice === "R" ? "S" : choice === "P" ? "R" : "P"; // Win scenario
-      } else if (outcome === "lose") {
+      // if (outcome === "win") {
+      //   cpuChoice = choice === "R" ? "S" : choice === "P" ? "R" : "P"; // Win scenario
+      // } 
+      if (outcome === "lose") {
         cpuChoice = choice === "R" ? "P" : choice === "P" ? "S" : "R"; // Lose scenario
       } else {
         cpuChoice = choice; // Draw scenario
       }
 
-      if (outcome === "win") {
-        if (choice === "R") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/RW.png";
-        else if (choice === "P") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/PW.png";
-        else if (choice === "S") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/SW.png";
-        title = "You Won!";
-        winAmount = Number(amount) * 2;
-        description = `Congratulations! You chose ${formatChoice(choice)} and the opponent chose ${formatChoice(cpuChoice)}. You won ${winAmount} SOL! Claim your prize by clicking the button below now.`;
-      }
-      else if (outcome === "lose") {
+      // if (outcome === "win") {
+      //   if (choice === "R") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/RW.png";
+      //   else if (choice === "P") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/PW.png";
+      //   else if (choice === "S") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/SW.png";
+      //   title = "You Won!";
+      //   winAmount = Number(amount) * 2;
+      //   description = `Congratulations! You chose ${formatChoice(choice)} and the opponent chose ${formatChoice(cpuChoice)}. You won ${winAmount} SOL! Claim your prize by clicking the button below now.`;
+      // }
+      if (outcome === "lose") {
         if (choice === "R") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/RL.png";
         else if (choice === "P") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/PL.png";
         else if (choice === "S") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/SL.png";

@@ -145,7 +145,7 @@ export const POST = async (req: Request) => {
         await connection.getLatestBlockhash()
       ).blockhash;
 
-      const poolThreshold = 0.5 * moneyPool;
+      const poolThreshold = 0.3 * moneyPool;
       if ((current - (2 * Number(amount))) < poolThreshold) {
         // If profit condition is not met, declare as loss
         outcome = "lose";

@@ -329,7 +329,7 @@ export const POST = async (req: Request) => {
       fields: {
         type: "transaction",
         transaction,
-        message: `Placed with a bet of ${amount} SOL.`,
+        message: `Sorry you Lost, Play again!`,
         links: {
           next: {
             type: "post",

@@ -69,8 +69,6 @@ import {
       const body: ActionPostRequest = await req.json();
       // Validate to confirm the user publickey received is valid before use
   
-     
-  
         moneyPool += Number(amount);
         moneyPool = parseFloat(moneyPool.toFixed(4));
         current += Number(amount);
@@ -136,22 +134,6 @@ import {
           type: "transaction",
           transaction,
           message: `You Lost, Play again!`,
-          links: {
-            next: {
-              type: "inline",
-              action: {
-                type: "action",
-                title: `Unlucky! You lost! Try again.`,
-                icon: new URL(`https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/icon.gif`, new URL(req.url).origin).toString(),
-                description: ``,
-                label: "Rock Paper Scissors",
-                "links": {
-                  "actions": [
-                    
-                  ]
-                }}
-              }
-            }
           }
         // no additional signers are required for this transaction
         // signers: [sender],

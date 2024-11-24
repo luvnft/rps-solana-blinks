@@ -134,7 +134,7 @@ import {
         fields: {
           type: "transaction",
           transaction,
-          message: `You Lost, Play again!`,
+          message: `You Lost, Play again! ${amount} SOL`,
         },
         // no additional signers are required for this transaction
         // signers: [sender],

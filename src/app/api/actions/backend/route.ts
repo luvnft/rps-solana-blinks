@@ -45,16 +45,17 @@ const auth = getAuth(app);
 const firestore = getFirestore(app);
 // __________________________________________________________
 let db = await getDoc(doc(firestore, "rps", "moneyPool"));
-let moneyPool = 0;
-if (db.exists()) moneyPool = Number(db.data().value);
-moneyPool = parseFloat(moneyPool.toFixed(4));
-let current = 0;
-if (db.exists()) current = Number(db.data().value);
-current = parseFloat(current.toFixed(4));
 
 
 export const POST = async (req: Request) => {
   try {
+    let moneyPool = 0;
+    if (db.exists()) moneyPool = Number(db.data().value);
+    moneyPool = parseFloat(moneyPool.toFixed(4));
+    let current = 0;
+    if (db.exists()) current = Number(db.data().value);
+    current = parseFloat(current.toFixed(4));
+    
     // Extract the query parameters from the URL
     const url = new URL(req.url);
     const amount = url.searchParams.get("amount");
@@ -172,7 +173,7 @@ export const POST = async (req: Request) => {
       let cpuChoice: string;
       if (outcome === "win") {
         cpuChoice = choice === "R" ? "S" : choice === "P" ? "R" : "P"; // Win scenario
-      } 
+      }
       if (outcome === "lose") {
         cpuChoice = choice === "R" ? "P" : choice === "P" ? "S" : "R"; // Lose scenario
       } else {

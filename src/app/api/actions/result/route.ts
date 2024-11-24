@@ -68,10 +68,10 @@ export const POST = async (req: Request) => {
     const body: ActionPostRequest = await req.json();
     // Validate to confirm the user publickey received is valid before use
 
-    if (outcome === "win") {
+
       current -=  Number(amount);
       await setDoc(doc(firestore, "rps", "current"), { value: current });
-    }
+    
     
     let account: PublicKey;
     try {

@@ -69,14 +69,14 @@ import {
       // Validate to confirm the user publickey received is valid before use
   
      
-     if (outcome === "lose") {
+  
         moneyPool += Number(amount);
         moneyPool = parseFloat(moneyPool.toFixed(4));
         current += Number(amount);
         current = parseFloat(current.toFixed(4));
         await setDoc(doc(firestore, "rps", "moneyPool"), { value: moneyPool });
         await setDoc(doc(firestore, "rps", "current"), { value: current });
-      }
+      
       let account: PublicKey;
       try {
         account = new PublicKey(body.account);

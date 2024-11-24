@@ -20,7 +20,7 @@ import {
 
 import bs58 from "bs58";
 import { getApps, initializeApp, getApp } from "firebase/app";
-import { getDoc, doc, getFirestore } from "firebase/firestore";
+import { getDoc, doc, getFirestore, setDoc } from "firebase/firestore";
 
 const headers = createActionHeaders({
   chainId: "mainnet", // or chainId: "devnet"
@@ -56,7 +56,7 @@ export const POST = async (req: Request) => {
     // Extract the query parameters from the URL
     const url = new URL(req.url);
     const amount = url.searchParams.get("amount");
-    const winner = url.searchParams.get("winner");
+    const outcome = url.searchParams.get("outcome");
 
     // Ensure the required parameters are present
     if (!amount) {
@@ -68,7 +68,22 @@ export const POST = async (req: Request) => {
     const body: ActionPostRequest = await req.json();
     // Validate to confirm the user publickey received is valid before use
 
-    
+    if (outcome === "win") {
+      current -=  Number(amount);
+      await setDoc(doc(firestore, "rps", "current"), { value: current });
+    }
+    else if (outcome === "lose") {
+      moneyPool += Number(amount);
+      moneyPool = parseFloat(moneyPool.toFixed(4));
+      current += Number(amount);
+      current = parseFloat(current.toFixed(4));
+      await setDoc(doc(firestore, "rps", "moneyPool"), { value: moneyPool });
+      await setDoc(doc(firestore, "rps", "current"), { value: current });
+      return new Response(JSON.stringify("You Lost" ), {
+        status: 400,
+        headers,
+      });
+    }
     let account: PublicKey;
     try {
       account = new PublicKey(body.account);

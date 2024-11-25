@@ -28,7 +28,7 @@ import {
   
   
   const headers = createActionHeaders({
-    chainId: "mainnet", // or chainId: "devnet"
+    chainId: "devnet", // or chainId: "devnet"
     actionVersion: "2.2.1", // the desired spec version
   });
   export const GET = async (req: Request) => {
@@ -54,36 +54,6 @@ import {
               "label": "Claim amount!", // button text
               "href": `/api/actions/hostback?account=${account}`,
               type: "transaction",
-            }
-          ]
-        }
-      };
-    }
-    else if (player1 && host === "F") {
-      payload = {
-        title: `Player 1 (${player1}) has made a bet of ${amount} SOL. Waiting for Player 2 to make a choice.`,
-        icon: "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/icon.gif",
-        description: `Player 1 has made a bet and is waiting for Player 2 to make a choice and match their bet of ${amount} SOL! Both bet amounts will be pooled together, and the winner will take it all, but in case of a tie, both players will get their bet amount back.`,
-        label: "Rock Paper Scissors",
-        "links": {
-          "actions": [
-            {
-              "label": "Play!", // button text
-              "href": `/api/actions/friend?choice={choice}&player=${player1}`,
-              type: "transaction",
-              parameters: [
-                {
-                  type: "radio",
-                  name: "choice", // parameter name in the `href` above
-                  label: "Choose your move?", // placeholder of the text input
-                  required: true,
-                  options: [
-                    { label: "Rock", value: "R" },
-                    { label: "Paper", value: "P" },
-                    { label: "Scissors", value: "S" },
-                  ],
-                },
-              ]
             }
           ]
         }
@@ -159,29 +129,7 @@ import {
                     { label: "0.005 SOL", value: "0.005" },
                   ],
                 },
-                // {
-                //   type: "radio",
-                //   name: "choice", // parameter name in the `href` above
-                //   label: "Choose your move?", // placeholder of the text input
-                //   required: false,
-                //   options: [
-                //     { label: "Rock", value: "R" },
-                //     { label: "Paper", value: "P" },
-                //     { label: "Scissors", value: "S" },
-                //   ],
-                // },
-                // {
-                //   type: "radio",
-                //   name: "player", // parameter name in the `href` above
-                //   label: "Who would you like to play against?", // placeholder of the text input
-                //   required: true,
-                //   options: [
-                //     { label: "Our bot", value: "B" },
-                //     { label: "Friend", value: "F" },
-                //     { label: "Host your own bot and ask others to play (10% fees cut of total value in each play)", value: "H" },
-                //   ],
-                // },
-              ],
+                ],
               type: "transaction"
             }
           ]

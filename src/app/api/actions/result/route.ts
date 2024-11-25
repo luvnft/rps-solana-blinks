@@ -84,14 +84,15 @@ export const POST = async (req: Request) => {
       });
     }
     let p = await getDoc(doc(firestore, "players", account.toString()));
-    if (p.exists()) current = Number(p.data().amount);
+    let amountDb = 0;
+    if (p.exists()) amountDb = Number(p.data().amount);
     else {
       return new Response('Player not found in database', {
         status: 400,
         headers, //Must include CORS HEADERS
       });
     }
-    let amountDb = parseFloat(current.toFixed(4));
+   amountDb = parseFloat(amountDb.toFixed(4));
     if (amountDb != Number(amount)) {
       return new Response('Amount did not match DB.', {
         status: 400,

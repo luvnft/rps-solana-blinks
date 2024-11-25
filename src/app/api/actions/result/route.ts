@@ -20,7 +20,7 @@ import {
 
 import bs58 from "bs58";
 import { getApps, initializeApp, getApp } from "firebase/app";
-import { getDoc, doc, getFirestore, setDoc } from "firebase/firestore";
+import { getDoc, doc, getFirestore, setDoc, deleteDoc } from "firebase/firestore";
 
 const headers = createActionHeaders({
   chainId: "mainnet", // or chainId: "devnet"
@@ -70,10 +70,10 @@ export const POST = async (req: Request) => {
     // Validate to confirm the user publickey received is valid before use
 
 
-      current -=  Number(amount);
-      await setDoc(doc(firestore, "rps", "current"), { value: current });
-    
-    
+    current -= Number(amount);
+    await setDoc(doc(firestore, "rps", "current"), { value: current });
+
+
     let account: PublicKey;
     try {
       account = new PublicKey(body.account);
@@ -83,7 +83,22 @@ export const POST = async (req: Request) => {
         headers, //Must include CORS HEADERS
       });
     }
-
+    let p = await getDoc(doc(firestore, "players", account.toString()));
+    if (p.exists()) current = Number(p.data().amount);
+    else {
+      return new Response('Player not found in database', {
+        status: 400,
+        headers, //Must include CORS HEADERS
+      });
+    }
+    let amountDb = parseFloat(current.toFixed(4));
+    if (amountDb != Number(amount)) {
+      return new Response('Amount did not match DB.', {
+        status: 400,
+        headers, //Must include CORS HEADERS
+      });
+    }
+    await deleteDoc(doc(firestore, "players", account?.toString()));
     // Solana Blockchain Cluster (Set Mainnet "mainnet-beta" or Devnet "devnet")
     // If your RPC not present, it will use default devnet RPC provided to us via web3.js "clusterApiUrl("devnet")"
     // NOTE: "clusterApiUrl("devnet")" is not for mainnet use - for mainnet production launched Blinks, get your own RPC

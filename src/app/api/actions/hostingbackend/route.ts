@@ -41,7 +41,7 @@ export const POST = async (req: Request) => {
                 headers,
             });
         }
-        if (choice === "H" && !amount && Number(amount)<0) {
+        if (choice === "H" && !amount && Number(amount) < 0) {
             return new Response('Amount not found', {
                 status: 400,
                 headers,
@@ -59,7 +59,7 @@ export const POST = async (req: Request) => {
         const sender = Keypair.fromSecretKey(bs58.decode(process.env.SOLANA_HOSTING_SECRET!));
         // Validate to confirm the user publickey received is valid before use
         const transaction = new Transaction();
-        if (choice === "H") {     
+        if (choice === "H") {
             const connection = new Connection(
                 clusterApiUrl("devnet")
             );
@@ -97,9 +97,9 @@ export const POST = async (req: Request) => {
             );
             transaction.add(
                 // note: `createPostResponse` requires at least 1 non-memo instruction
-                  ComputeBudgetProgram.setComputeUnitPrice({
+                ComputeBudgetProgram.setComputeUnitPrice({
                     microLamports: 1000,
-                  }),
+                }),
                 new TransactionInstruction({
                     programId: new PublicKey(MEMO_PROGRAM_ID),
                     data: Buffer.from(
@@ -121,15 +121,35 @@ export const POST = async (req: Request) => {
             fields: {
                 type: "transaction",
                 transaction,
-                message: `Congratulations! Your bot is now live on our platform. Share the unique link below to invite others to play against your bot.
-                                    https://dial.to/?action=solana-action%3Ahttps%3A%2F%2Frps.sendarcade.fun%2Fapi%2Factions%2Fhosting%3Faccount%3D${account.toString}&cluster=devnet 
-                                    `,
+                message: "Processing your request...",
                 links: {
                     next: {
-                        type: "post",
-                        href: (choice==="H")?`/api/actions/hostingProcess?amount=${amount}&transaction=${transaction}`:`/api/actions/hostback?account=${account}`,
+                        type: "inline",
+                        action: {
+                            type: "action",
+                            title: `Successfully submitted your bet of ${amount} SOL to host your own bot.`,
+                            icon: "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/icon.gif",
+                            description:  "",
+                            label: "Rock Paper Scissors",
+                            "links": {
+                                "actions": [
+                                    {
+                                        "label": "Get Link to share!", // button text
+                                        "href": `/api/actions/hostingProcess?amount=${amount}&transaction=${transaction}`,
+                                        type: "transaction",
+
+                                    }
+                                ]
+                            },
+                        },
                     },
                 },
+                // links: {
+                //     next: {
+                //         type: "post",
+                //         href: (choice==="H")?`/api/actions/hostingProcess?amount=${amount}&transaction=${transaction}`:`/api/actions/hostback?account=${account}`,
+                //     },
+                // },
             },
             // no additional signers are required for this transaction
             signers: [sender],

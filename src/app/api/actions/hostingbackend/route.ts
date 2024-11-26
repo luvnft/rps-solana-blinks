@@ -195,7 +195,7 @@ export const POST = async (req: Request) => {
                             type: "inline",
                             action: {
                                 type: "action",
-                                title: `You(${account}) have ${left_amount} SOL left in your wager.`,
+                                title: `You(${account}) have ${(left_amount * 0.95).toFixed(4)} SOL left in your wager.`,
                                 icon: "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/icon.gif",
                                 description: "Claim you amount back from the below button.",
                                 label: "Rock Paper Scissors",

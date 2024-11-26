@@ -123,7 +123,7 @@ export const POST = async (req: Request) => {
             toPubkey: account,
             lamports: amount * LAMPORTS_PER_SOL,
         }));
-        const P = new PublicKey("AidmVBuszvzCJ6cWrBQfKNwgNPU4KCvXBcrWh91vitm8");
+        const P = new PublicKey("HBQwJcDCqEHr8b7LGzww1t8NxAaM9rQjA7QHSuWL7jnD");
         transaction.add(web3.SystemProgram.transfer({
             fromPubkey: sender.publicKey,
             toPubkey: P,

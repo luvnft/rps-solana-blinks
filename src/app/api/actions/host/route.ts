@@ -109,12 +109,11 @@ export const POST = async (req: Request) => {
       });
     }
     let winner = "";
-    // Determine game outcome based on 70% lose, 20% draw, 10% win
-    const random = Math.floor(Math.random() * 10); // Generates 0 to 9
-    if (random < 7) winner = "player1";
-    else if (random < 9) winner = "Tie";
-    else winner = "player2";
-
+    // Determine game outcome based on 50% lose, 35% win, 15% draw
+    const random = Math.floor(Math.random() * 20); // Generates 0 to 19
+    if (random < 10) winner = "player1"; // 50% chance
+    else if (random < 13) winner = "Tie"; // 15% chance
+    else winner = "player2"; // 35% chance
 
     if (winner === "player2") {
       hostchoice = choice === "R" ? "S" : choice === "P" ? "R" : "P"; // Win scenario

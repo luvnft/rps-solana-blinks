@@ -123,7 +123,6 @@ export const POST = async (req: Request) => {
       hostchoice = choice === "R" ? "P" : choice === "P" ? "S" : "R"; // Lose scenario
     } else {
       hostchoice = choice; // Draw scenario
-      await setDoc(doc(firestore, "players", account.toString()), { amount: Number(amount) });
     }
 
 

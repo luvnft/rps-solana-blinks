@@ -12,7 +12,7 @@ export default function Home() {
             </span>
           </p>
           <h1 className="mt-8 text-4xl font-normal text-white sm:text-5xl lg:text-6xl xl:text-7xl">
-            Solana Blinks Rock Paper Scissors game by <a href="https://x.com/Arpitx35">Arpit</a>
+            Solana Blinks Rock Paper Scissors game by <a href="https://x.com/Arpitx35">Wizard of Hahz</a>
           </h1>
           <div className="flex flex-col items-center justify-center px-8 mt-12 space-y-5 sm:space-y-0 sm:px-0 sm:space-x-5 sm:flex-row">
             <div className="relative inline-flex items-center justify-center sm:w-auto group">

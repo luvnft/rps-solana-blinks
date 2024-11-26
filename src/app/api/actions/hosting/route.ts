@@ -115,14 +115,24 @@ import {
         "links": {
           "actions": [
             {
-              "label": "Host Bot / Claim amount", // button text
+              "label": "Go!", // button text
               "href": `/api/actions/hostingbackend?amount={amount}`,
               "parameters": [
+                {
+                  type: "radio",
+                  name: "choice", // parameter name in the `href` above
+                  label: "What do you want to do?", // placeholder of the text input
+                  required: true,
+                  options: [
+                    { label: "Host bot", value: "H" },
+                    { label: "Claim your amount back", value: "C" },
+                  ],
+                },
                 {
                   type: "number",
                   name: "amount", // parameter name in the `href` above
                   label: "Bet Amount in SOL", // placeholder of the text input
-                  required: true,
+                  required: false,
                 },
                 ],
               type: "transaction"

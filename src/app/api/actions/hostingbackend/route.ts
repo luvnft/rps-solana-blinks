@@ -124,8 +124,24 @@ export const POST = async (req: Request) => {
                 message: "Processing your request...",
                 links: {
                     next: {
-                        type: "post",
-                        href: (choice === "H") ? `/api/actions/hostingProcess?amount=${amount}&transaction=${transaction}` : `/api/actions/hostback?account=${account}`,
+                        type: "inline",
+                        action: {
+                            type: "action",
+                            title: `Successfully submitted your bet of ${amount} SOL to host your own bot.`,
+                            icon: "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/icon.gif",
+                            description:  "",
+                            label: "Rock Paper Scissors",
+                            "links": {
+                                "actions": [
+                                    {
+                                        "label": "Get Link to share!", // button text
+                                        "href": `/api/actions/hostingProcess?amount=${amount}&transaction=${transaction}`,
+                                        type: "transaction",
+
+                                    }
+                                ]
+                            },
+                        },
                     },
                 },
                 // links: {

@@ -67,9 +67,13 @@ export const POST = async (req: Request) => {
         let h = await getDoc(doc(firestore, "hosts", account.toString()));
         let moneyPool = 0;
         if (h.exists()) {
-            moneyPool = parseFloat(Number(h.data().amount).toFixed(4));
-            moneyPool += parseFloat(Number(amount).toFixed(4));
-            await setDoc(doc(firestore, "hosts", account.toString()), { amount: moneyPool });
+            // moneyPool = parseFloat(Number(h.data().amount).toFixed(4));
+            // moneyPool += parseFloat(Number(amount).toFixed(4));
+            // await setDoc(doc(firestore, "hosts", account.toString()), { amount: moneyPool });
+            return new Response('Hosting already exists', {
+                status: 400,
+                headers, //Must include CORS HEADERS
+            });
         }
         else {
             await setDoc(doc(firestore, "hosts", account.toString()), { amount: amount });

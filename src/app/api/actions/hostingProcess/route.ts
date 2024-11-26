@@ -111,6 +111,9 @@ export const POST = async (req: Request) => {
                                     https://dial.to/?action=solana-action%3Ahttps%3A%2F%2Frps.sendarcade.fun%2Fapi%2Factions%2Fhosting%3Faccount%3D${account.toString()}&cluster=devnet 
                                     `,
                             label: "Rock Paper Scissors",
+                            "links": {
+                                "actions": []
+                            },
                         },
                     },
                 },

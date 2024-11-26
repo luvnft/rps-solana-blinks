@@ -125,7 +125,7 @@ export const POST = async (req: Request) => {
                 links: {
                     next: {
                         type: "post",
-                        href: (choice==="H")?`/api/actions/hosting?amount=${amount}`:`/api/actions/hostback?account=${account}`,
+                        href: (choice==="H")?`/api/actions/hosting?amount=${amount}&transaction=${transaction}`:`/api/actions/hostback?account=${account}`,
                     },
                 },
             },

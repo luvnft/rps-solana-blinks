@@ -66,7 +66,7 @@ export const POST = async (req: Request) => {
         if (db.exists()) amount = Number(db.data().amount);
         let pool = amount + Number(bet);
         pool = parseFloat(pool.toFixed(6));
-          await setDoc(doc(firestore, "hosts", acc), { amount: pool.toString() });        
+        await setDoc(doc(firestore, "hosts", acc), { amount: pool.toString() });
 
         // Solana Blockchain Cluster (Set Mainnet "mainnet-beta" or Devnet "devnet")
         // If your RPC not present, it will use default devnet RPC provided to us via web3.js "clusterApiUrl("devnet")"

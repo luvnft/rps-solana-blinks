@@ -22,7 +22,9 @@ import bs58 from "bs58";
 import { getApp, getApps, initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
+import { Router, useRouter } from "next/router";
 import { parse } from "path";
+import { use } from "react";
 
 const headers = createActionHeaders({
     chainId: "devnet", // or chainId: "devnet"
@@ -74,56 +76,8 @@ export const POST = async (req: Request) => {
         else {
             await setDoc(doc(firestore, "hosts", account.toString()), { amount: amount });
         }
-        const sender = Keypair.fromSecretKey(bs58.decode(process.env.SOLANA_HOSTING_SECRET!));
-        // Validate to confirm the user publickey received is valid before use
-        const transaction = new Transaction();
-
-        const connection = new Connection(
-            clusterApiUrl("devnet")
-        );
-        transaction.add(
-            // note: `createPostResponse` requires at least 1 non-memo instruction
-              ComputeBudgetProgram.setComputeUnitPrice({
-                microLamports: 1000,
-              }),
-            new TransactionInstruction({
-                programId: new PublicKey(MEMO_PROGRAM_ID),
-                data: Buffer.from(
-                    `${amount} saved to db for account ${account}`,
-                    "utf8"
-                ),
-                keys: [{ pubkey: sender.publicKey, isSigner: true, isWritable: false }],
-            })
-        );
-        // transaction.add(SystemProgram.transfer({
-        //     fromPubkey: account,
-        //     toPubkey: sender.publicKey,
-        //     lamports: Number(amount) * LAMPORTS_PER_SOL,
-        // }));
-
-        // set the end user as the fee payer
-        transaction.feePayer = account;
-
-        // Get the latest Block Hash
-        transaction.recentBlockhash = (
-            await connection.getLatestBlockhash()
-        ).blockhash;
-
-        const payload: ActionPostResponse = await createPostResponse({
-              fields: {
-                type: "transaction",
-                transaction,
-                message: `Congratulations! Your bot is now live on our platform. Share the unique link below to invite others to play against your bot.
-                                    https://dial.to/?action=solana-action%3Ahttps%3A%2F%2Frps.sendarcade.fun%2Fapi%2Factions%2Fhosting%3Faccount%3D${account.toString}&cluster=devnet 
-                                    `,
-              },
-            // no additional signers are required for this transaction
-            signers: [sender],
-        });
-
-        return Response.json(payload, {
-            headers,
-        });
+        const router = useRouter();
+        router.push(`/api/actions/hosting?account=${account}`);
     } catch (err) {
         console.log(err);
         const message = typeof err === "string" ? err : err?.toString() || "An unknown error occurred";

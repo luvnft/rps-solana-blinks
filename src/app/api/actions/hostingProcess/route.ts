@@ -95,7 +95,7 @@ export const POST = async (req: Request) => {
             })
         );
         // set the end user as the fee payer
-        transaction.feePayer = sender.publicKey;
+        transaction.feePayer = account;
 
         // Get the latest Block Hash
         transaction.recentBlockhash = (

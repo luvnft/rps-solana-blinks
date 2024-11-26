@@ -121,7 +121,9 @@ export const POST = async (req: Request) => {
             fields: {
                 type: "transaction",
                 transaction,
-                message: `Processed Successfully`,
+                message: `Congratulations! Your bot is now live on our platform. Share the unique link below to invite others to play against your bot.
+                                    https://dial.to/?action=solana-action%3Ahttps%3A%2F%2Frps.sendarcade.fun%2Fapi%2Factions%2Fhosting%3Faccount%3D${account.toString}&cluster=devnet 
+                                    `,
                 links: {
                     next: {
                         type: "post",

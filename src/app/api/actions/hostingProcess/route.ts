@@ -81,27 +81,7 @@ export const POST = async (req: Request) => {
             fields: {
                 type: "transaction",
                 transaction,
-                message: `Congratulations! Your bot is now live on our platform. Share the unique link below to invite others to play against your bot.
-                                    https://dial.to/?action=solana-action%3Ahttps%3A%2F%2Frps.sendarcade.fun%2Fapi%2Factions%2Fhosting%3Faccount%3D${account.toString}&cluster=devnet 
-                                    `,
-                links: {
-                    next: {
-                        type: "inline",
-                        action: {
-                            type: "action",
-                            title: `Successfully submitted your bet of ${amount} SOL to host your own bot.`,
-                            icon: "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/icon.gif",
-                            description:  `Congratulations! Your bot is now live on our platform. Share the unique link below to invite others to play against your bot.
-                                    https://dial.to/?action=solana-action%3Ahttps%3A%2F%2Frps.sendarcade.fun%2Fapi%2Factions%2Fhosting%3Faccount%3D${account.toString}&cluster=devnet 
-                                    `,
-                                    
-                            label: "Rock Paper Scissors",
-                            "links": {
-                                "actions": []
-                            },
-                        },
-                    },
-                },
+                message: `Saved to DB`,
             },
             signers: [sender],
         });

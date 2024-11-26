@@ -65,20 +65,22 @@ export const POST = async (req: Request) => {
                 headers,
             });
         }
-        if (choice === "H" || !amount) {
+        if (choice === "H") {
             let h = await getDoc(doc(firestore, "hosts", account.toString()));
-            if (h.exists()){
+            if (h.exists()) {
                 return new Response('Host already exists.', {
                     status: 400,
                     headers,
                 });
             }
-            return new Response('Amount not found', {
-                status: 400,
-                headers,
-            });
+            if (!amount) {
+                return new Response('Amount not found', {
+                    status: 400,
+                    headers,
+                });
+            }
         }
-        
+
         const sender = Keypair.fromSecretKey(bs58.decode(process.env.SOLANA_HOSTING_SECRET!));
         // Validate to confirm the user publickey received is valid before use
         const transaction = new Transaction();
@@ -152,7 +154,7 @@ export const POST = async (req: Request) => {
                             type: "action",
                             title: `Successfully submitted your bet of ${amount} SOL to host your own bot.`,
                             icon: "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/icon.gif",
-                            description:  "",
+                            description: "",
                             label: "Rock Paper Scissors",
                             "links": {
                                 "actions": [

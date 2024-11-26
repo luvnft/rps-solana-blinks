@@ -65,6 +65,7 @@ export const POST = async (req: Request) => {
         let amount = 0;
         if (db.exists()) amount = Number(db.data().amount);
         let pool = amount + Number(bet);
+        pool = parseFloat(pool.toFixed(6));
           await setDoc(doc(firestore, "hosts", acc), { amount: pool.toString() });        
 
         // Solana Blockchain Cluster (Set Mainnet "mainnet-beta" or Devnet "devnet")

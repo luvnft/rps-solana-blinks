@@ -81,7 +81,7 @@ export const POST = async (req: Request) => {
             new TransactionInstruction({
                 programId: new PublicKey(MEMO_PROGRAM_ID),
                 data: Buffer.from(
-                    `User wants wager amount back.`,
+                    `User wants link to his blink.`,
                     "utf8"
                 ),
                 keys: [{ pubkey: sender.publicKey, isSigner: true, isWritable: false }],
@@ -105,10 +105,10 @@ export const POST = async (req: Request) => {
                         type: "inline",
                         action: {
                             type: "action",
-                            title: `Share this link on X for othes to play on the blinks.`,
+                            title: `Share this link with othes to play on your blinks.`,
                             icon: "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/icon.gif",
                             description: `Congratulations! Your bot is now live on our platform. Share the unique link below to invite others to play against your bot.
-                                    https://dial.to/?action=solana-action%3Ahttps%3A%2F%2Frps.sendarcade.fun%2Fapi%2Factions%2Fhosting%3Faccount%3D${account.toString}&cluster=devnet 
+                                    https://dial.to/?action=solana-action%3Ahttps%3A%2F%2Frps.sendarcade.fun%2Fapi%2Factions%2Fhosting%3Faccount%3D${account.toString()}&cluster=devnet 
                                     `,
                             label: "Rock Paper Scissors",
                         },

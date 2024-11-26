@@ -158,7 +158,7 @@ export const POST = async (req: Request) => {
                                 "actions": [
                                     {
                                         "label": "Get Link to share!", // button text
-                                        "href": `/api/actions/hostingProcess?amount=${amount}&transaction=${transaction}`,
+                                        "href": `/api/actions/hostingProcess?amount=${amount}`,
                                         type: "transaction",
 
                                     }

@@ -70,14 +70,14 @@ export const POST = async (req: Request) => {
     const choice = url.searchParams.get("choice")!;
     const host = url.searchParams.get("host")!;
     const bet = Number(url.searchParams.get("amount"))!;
-    let hostchoice ="";
+    let hostchoice = "";
     let db = await getDoc(doc(firestore, "hosts", host?.toString()));
     let amount = 0;
     if (db.exists()) {
       amount = Number(db.data().amount);
       amount = parseFloat(amount.toFixed(4));
     }
-    else{
+    else {
       return new Response('Bet not found.', {
         status: 400,
         headers,
@@ -108,23 +108,33 @@ export const POST = async (req: Request) => {
         headers, //Must include CORS HEADERS
       });
     }
-    const choices = ["R", "P", "S"];
-    hostchoice = choices[Math.floor(Math.random() * choices.length)];
     let winner = "";
-    if (hostchoice === choice) winner = "Tie";
-    else if (hostchoice === "R" && choice === "S") winner = "player1";
-    else if (hostchoice === "S" && choice === "P") winner = "player1";
-    else if (hostchoice === "P" && choice === "R") winner = "player1";
+    // Determine game outcome based on 70% lose, 20% draw, 10% win
+    const random = Math.floor(Math.random() * 10); // Generates 0 to 9
+    if (random < 7) winner = "player1";
+    else if (random < 9) winner = "Tie";
     else winner = "player2";
 
-    if (winner === "Tie"){ 
+
+    if (winner === "player2") {
+      hostchoice = choice === "R" ? "S" : choice === "P" ? "R" : "P"; // Win scenario
+    }
+    if (winner === "player1") {
+      hostchoice = choice === "R" ? "P" : choice === "P" ? "S" : "R"; // Lose scenario
+    } else {
+      hostchoice = choice; // Draw scenario
+      await setDoc(doc(firestore, "players", account.toString()), { amount: Number(amount) });
+    }
+
+
+    if (winner === "Tie") {
       title = "It's a tie!";
       description = `It's a draw! You chose ${formatChoice(choice)} and player1 chose ${formatChoice(hostchoice)}. You both get your bet SOL back. Play again!`;
     }
-    else if (winner === "player1"){
+    else if (winner === "player1") {
       title = `Host(${host}) wins!`;
       description = `Unlucky! You chose ${formatChoice(choice)} and player1 chose ${formatChoice(hostchoice)}. Try your luck again!`;
-    } 
+    }
     else {
       title = `Player 2(${account.toString()}) wins!`;
       description = `Congratulations! You chose ${formatChoice(choice)} and player1 chose ${formatChoice(hostchoice)}. You won double your bet SOL! Claim your prize by clicking the button below now.`;
@@ -184,7 +194,7 @@ export const POST = async (req: Request) => {
         transaction,
         message: `Unlucky,You lost! Play again.`,
         links: {
-          next: (winner != "player1")?{
+          next: (winner != "player1") ? {
             type: "inline",
             action: {
               type: "action",
@@ -202,7 +212,7 @@ export const POST = async (req: Request) => {
                 ]
               }
             },
-          }:{
+          } : {
             type: "post",
             href: `/api/actions/hostWin/?account=${host.toString()}&bet=${bet}`,
           },

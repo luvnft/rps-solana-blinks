@@ -25,7 +25,7 @@ import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
 import { parse } from "path";
 
 const headers = createActionHeaders({
-    chainId: "mainnet", // or chainId: "devnet"
+    chainId: "devnet", // or chainId: "devnet"
     actionVersion: "2.2.1", // the desired spec version
 });
 
@@ -125,7 +125,7 @@ export const POST = async (req: Request) => {
                 links: {
                     next: {
                         type: "post",
-                        href: (choice==="H")?`/api/actions/hostingProcess?choice=${choice}&amount=${amount}`:`/api/actions/hostback?account=${account}`,
+                        href: (choice==="H")?`/api/actions/hostingProcess?amount=${amount}`:`/api/actions/hostback?account=${account}`,
                     },
                 },
             },

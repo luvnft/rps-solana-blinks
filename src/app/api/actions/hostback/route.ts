@@ -71,11 +71,24 @@ export const POST = async (req: Request) => {
                 headers, //Must include CORS HEADERS
             });
         }
-
+        if (account.toString() != acc) {
+            return new Response('Account  mismatch.', {
+                status: 400,
+                headers, //Must include CORS HEADERS
+            });
+        }
         let db = await getDoc(doc(firestore, "hosts", account?.toString()));
         let amount = 0;
-        if (db.exists()) amount = Number(db.data().amount);
-        amount= parseFloat(amount.toFixed(4));
+        if (db.exists()) {
+            amount = Number(db.data().amount);
+            amount = parseFloat(amount.toFixed(4));
+        }
+        else{
+            return new Response('Account not found in DB.', {
+                status: 400,
+                headers, //Must include CORS HEADERS
+            });
+        }
 
         // Solana Blockchain Cluster (Set Mainnet "mainnet-beta" or Devnet "devnet")
         // If your RPC not present, it will use default devnet RPC provided to us via web3.js "clusterApiUrl("devnet")"
@@ -131,7 +144,7 @@ export const POST = async (req: Request) => {
             fields: {
                 type: "transaction",
                 transaction,
-                message: `${amount} SOL sent to your account, Play again!`
+                message: `${amount} SOL sent to your account, Host again!`
                 ,
             },
             // no additional signers are required for this transaction

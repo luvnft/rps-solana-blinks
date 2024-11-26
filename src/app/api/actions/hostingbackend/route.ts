@@ -117,6 +117,18 @@ export const POST = async (req: Request) => {
             ).blockhash;
         }
         else {
+            let db = await getDoc(doc(firestore, "hosts", account?.toString()));
+            let amount = 0;
+            if (db.exists()) {
+                amount = Number(db.data().amount);
+                amount = parseFloat(amount.toFixed(4));
+            }
+            else {
+                return new Response('Account not found.', {
+                    status: 400,
+                    headers, //Must include CORS HEADERS
+                });
+            }
             const connection = new Connection(
                 clusterApiUrl("devnet")
             );
@@ -142,7 +154,7 @@ export const POST = async (req: Request) => {
                 await connection.getLatestBlockhash()
             ).blockhash;
         }
-        const payload: ActionPostResponse = await createPostResponse({
+        const payload: ActionPostResponse = (choice === "H") ? await createPostResponse({
             fields: {
                 type: "transaction",
                 transaction,
@@ -169,16 +181,41 @@ export const POST = async (req: Request) => {
                         },
                     },
                 },
-                // links: {
-                //     next: {
-                //         type: "post",
-                //         href: (choice==="H")?`/api/actions/hostingProcess?amount=${amount}&transaction=${transaction}`:`/api/actions/hostback?account=${account}`,
-                //     },
-                // },
             },
             // no additional signers are required for this transaction
             signers: [sender],
-        });
+        }) :
+            await createPostResponse({
+                fields: {
+                    type: "transaction",
+                    transaction,
+                    message: "Processing your request...",
+                    links: {
+                        next: {
+                            type: "inline",
+                            action: {
+                                type: "action",
+                                title: `You(${account}) have ${amount} SOL left in your wager.`,
+                                icon: "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/icon.gif",
+                                description: "Claim you amount back from the below button.",
+                                label: "Rock Paper Scissors",
+                                "links": {
+                                    "actions": [
+                                        {
+                                            "label": "Claim amount!", // button text
+                                            "href": `/api/actions/hostback?account=${account}`,
+                                            type: "transaction",
+
+                                        }
+                                    ]
+                                },
+                            },
+                        },
+                    },
+                },
+                // no additional signers are required for this transaction
+                signers: [sender],
+            });
 
         return Response.json(payload, {
             headers,

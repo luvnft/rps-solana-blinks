@@ -33,35 +33,11 @@ import {
   });
   export const GET = async (req: Request) => {
     const url = new URL(req.url);
-    const amount = url.searchParams.get("amount");
-    const player1 = url.searchParams.get("player");
-    const host = url.searchParams.get("host");
     const account = url.searchParams.get("account");
     let payload: ActionGetResponse;
     if (account) {
-      let db = await getDoc(doc(firestore, "hosts", account?.toString()));
-      let amount = 0;
-      amount = parseFloat(amount.toFixed(4));
-      if (db.exists()) amount = Number(db.data().amount);
-      payload = {
-        title: `You(${account}) have ${amount} SOL left in your wager.`,
-        icon: "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/icon.gif",
-        description: `Claim you amount back from the below button.`,
-        label: "Rock Paper Scissors",
-        "links": {
-          "actions": [
-            {
-              "label": "Claim amount!", // button text
-              "href": `/api/actions/hostback?account=${account}`,
-              type: "transaction",
-            }
-          ]
-        }
-      };
-    }
-    else if (player1 && host === "H") {
       const firestore = getFirestore(app);
-      let db = await getDoc(doc(firestore, "hosts", player1.toString()));
+      let db = await getDoc(doc(firestore, "hosts", account.toString()));
       let amount = 0;
       if (db.exists()) amount = Number(db.data().amount);
       amount = parseFloat(amount.toFixed(4));
@@ -74,7 +50,7 @@ import {
           "actions": [
             {
               "label": "Play!", // button text
-              "href": `/api/actions/host?choice={choice}&player=${player1}&amount={amount}`,
+              "href": `/api/actions/host?choice={choice}&player=${account}&amount={amount}`,
               type: "transaction",
               parameters: [
                 {

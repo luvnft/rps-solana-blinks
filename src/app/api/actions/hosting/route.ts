@@ -116,7 +116,7 @@ import {
           "actions": [
             {
               "label": "Go!", // button text
-              "href": `/api/actions/hostingbackend?amount={amount}`,
+              "href": `/api/actions/hostingbackend?amount={amount}&choice={choice}`,
               "parameters": [
                 {
                   type: "radio",

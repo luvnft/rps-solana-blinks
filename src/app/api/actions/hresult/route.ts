@@ -42,7 +42,7 @@ const firestore = getFirestore(app);
 // __________________________________________________________
 
 const headers = createActionHeaders({
-  chainId: "devnet", // or chainId: "devnet"
+  chainId: "mainnet", // or chainId: "devnet"
   actionVersion: "2.2.1", // the desired spec version
 });
 
@@ -105,7 +105,7 @@ export const POST = async (req: Request) => {
     // NOTE: "clusterApiUrl("devnet")" is not for mainnet use - for mainnet production launched Blinks, get your own RPC
     // For testing on mainnet - use "mainnet-beta"
     const connection = new Connection(
-      clusterApiUrl("devnet")
+      clusterApiUrl("mainnet-beta")
     );
     const web3 = require("@solana/web3.js");
     const sender = Keypair.fromSecretKey(bs58.decode(process.env.SOLANA_HOSTING_SECRET!));

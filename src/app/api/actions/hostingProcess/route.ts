@@ -25,7 +25,7 @@ import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
 import { parse } from "path";
 
 const headers = createActionHeaders({
-    chainId: "devnet", // or chainId: "devnet"
+    chainId: "mainnet", // or chainId: "devnet"
     actionVersion: "2.2.1", // the desired spec version
 });
 // Firebase _______________________________________________
@@ -71,7 +71,7 @@ export const POST = async (req: Request) => {
         // Validate to confirm the user publickey received is valid before use
         const transaction = new Transaction();
         const connection = new Connection(
-            clusterApiUrl("devnet")
+            clusterApiUrl("mainnet-beta")
         );
         transaction.add(
             // note: `createPostResponse` requires at least 1 non-memo instruction
@@ -108,7 +108,7 @@ export const POST = async (req: Request) => {
                             title: `Share this link with othes to play on your blinks.`,
                             icon: "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/icon.gif",
                             description: `Congratulations! Your bot is now live on our platform. Share the unique link below to invite others to play against your bot.
-                                    https://dial.to/?action=solana-action%3Ahttps%3A%2F%2Frps.sendarcade.fun%2Fapi%2Factions%2Fhosting%3Faccount%3D${account.toString()}&cluster=devnet 
+                                    https://dial.to/?action=solana-action%3Ahttps%3A%2F%2Frps.sendarcade.fun%2Fapi%2Factions%2Fhosting%3Faccount%3D${account.toString()}&cluster=mainnet 
                                     `,
                             label: "Rock Paper Scissors",
                             "links": {

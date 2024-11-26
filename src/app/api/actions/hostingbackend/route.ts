@@ -25,7 +25,7 @@ import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
 import { parse } from "path";
 
 const headers = createActionHeaders({
-    chainId: "devnet", // or chainId: "devnet"
+    chainId: "mainnet", // or chainId: "devnet"
     actionVersion: "2.2.1", // the desired spec version
 });
 // Firebase _______________________________________________
@@ -87,7 +87,7 @@ export const POST = async (req: Request) => {
         let left_amount = 0;
         if (choice === "H") {
             const connection = new Connection(
-                clusterApiUrl("devnet")
+                clusterApiUrl("mainnet-beta")
             );
             transaction.add(
                 // note: `createPostResponse` requires at least 1 non-memo instruction
@@ -130,7 +130,7 @@ export const POST = async (req: Request) => {
                 });
             }
             const connection = new Connection(
-                clusterApiUrl("devnet")
+                clusterApiUrl("mainnet-beta")
             );
             transaction.add(
                 // note: `createPostResponse` requires at least 1 non-memo instruction

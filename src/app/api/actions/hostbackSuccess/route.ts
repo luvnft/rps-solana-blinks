@@ -23,7 +23,7 @@ import { getApps, initializeApp, getApp } from "firebase/app";
 import { getDoc, doc, getFirestore, setDoc, deleteDoc } from "firebase/firestore";
 
 const headers = createActionHeaders({
-    chainId: "devnet", // or chainId: "devnet"
+    chainId: "mainnet", // or chainId: "devnet"
     actionVersion: "2.2.1", // the desired spec version
 });
 
@@ -61,14 +61,22 @@ export const POST = async (req: Request) => {
                 headers, //Must include CORS HEADERS
             });
         }
+        let h = await getDoc(doc(firestore, "hosts", account?.toString()));
+        let amount = 0;
+        if(h.exists()) amount = h.data().amount;
         await deleteDoc(doc(firestore, "hosts", account?.toString()));
-        
+        let db = await getDoc(doc(firestore, "rps", "profit"));
+        let profit = 0;
+        if(db.exists()) profit = db.data().amount;
+        profit += parseFloat((amount*0.05).toFixed(6));
+        await setDoc(doc(firestore, "rps", "profit"), {amount: profit});
+
         // Solana Blockchain Cluster (Set Mainnet "mainnet-beta" or Devnet "devnet")
         // If your RPC not present, it will use default devnet RPC provided to us via web3.js "clusterApiUrl("devnet")"
         // NOTE: "clusterApiUrl("devnet")" is not for mainnet use - for mainnet production launched Blinks, get your own RPC
         // For testing on mainnet - use "mainnet-beta"
         const connection = new Connection(
-            clusterApiUrl("devnet")
+            clusterApiUrl("mainnet-beta")
         );
         const web3 = require("@solana/web3.js");
         const sender = Keypair.fromSecretKey(bs58.decode(process.env.SOLANA_HOSTING_SECRET!));

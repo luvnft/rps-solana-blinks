@@ -28,7 +28,7 @@ import {
   
   
   const headers = createActionHeaders({
-    chainId: "devnet", // or chainId: "devnet"
+    chainId: "mainnet", // or chainId: "devnet"
     actionVersion: "2.2.1", // the desired spec version
   });
   export const GET = async (req: Request) => {

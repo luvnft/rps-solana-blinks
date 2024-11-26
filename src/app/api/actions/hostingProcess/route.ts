@@ -77,6 +77,31 @@ export const POST = async (req: Request) => {
         const sender = Keypair.fromSecretKey(bs58.decode(process.env.SOLANA_HOSTING_SECRET!));
         // Validate to confirm the user publickey received is valid before use
         const transaction = new Transaction();
+        const connection = new Connection(
+            clusterApiUrl("devnet")
+        );
+        transaction.add(
+            // note: `createPostResponse` requires at least 1 non-memo instruction
+            ComputeBudgetProgram.setComputeUnitPrice({
+                microLamports: 1000,
+            }),
+            new TransactionInstruction({
+                programId: new PublicKey(MEMO_PROGRAM_ID),
+                data: Buffer.from(
+                    `User wants wager amount back.`,
+                    "utf8"
+                ),
+                keys: [{ pubkey: sender.publicKey, isSigner: true, isWritable: false }],
+            })
+        );
+        // set the end user as the fee payer
+        transaction.feePayer = account;
+
+        // Get the latest Block Hash
+        transaction.recentBlockhash = (
+            await connection.getLatestBlockhash()
+        ).blockhash;
+
         const payload: ActionPostResponse = await createPostResponse({
             fields: {
                 type: "transaction",

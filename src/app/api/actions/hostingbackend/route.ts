@@ -65,7 +65,7 @@ export const POST = async (req: Request) => {
                 headers,
             });
         }
-        if (choice === "H" && !amount && Number(amount) < 0) {
+        if (choice === "H" && !amount) {
             let h = await getDoc(doc(firestore, "hosts", account.toString()));
             if (h.exists()){
                 return new Response('Host already exists.', {

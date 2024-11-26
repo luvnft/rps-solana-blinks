@@ -28,25 +28,28 @@ const headers = createActionHeaders({
     chainId: "devnet", // or chainId: "devnet"
     actionVersion: "2.2.1", // the desired spec version
 });
+// Firebase _______________________________________________
+const firebaseConfig = {
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+    measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+};
 
+const app = !getApps.length ? initializeApp(firebaseConfig) : getApp();
+
+const auth = getAuth(app);
+const firestore = getFirestore(app);
+// __________________________________________________________
 export const POST = async (req: Request) => {
     try {
         const url = new URL(req.url);
         const choice = url.searchParams.get("choice")!;
         const amount = url.searchParams.get("amount")!;
         const body: ActionPostRequest = await req.json();
-        if (!choice) {
-            return new Response('Choice not found', {
-                status: 400,
-                headers,
-            });
-        }
-        if (choice === "H" && !amount && Number(amount) < 0) {
-            return new Response('Amount not found', {
-                status: 400,
-                headers,
-            });
-        }
         let account: PublicKey;
         try {
             account = new PublicKey(body.account);
@@ -56,6 +59,26 @@ export const POST = async (req: Request) => {
                 headers, //Must include CORS HEADERS
             });
         }
+        if (!choice) {
+            return new Response('Choice not found', {
+                status: 400,
+                headers,
+            });
+        }
+        if (choice === "H" && !amount && Number(amount) < 0) {
+            let h = await getDoc(doc(firestore, "hosts", account.toString()));
+            if (h.exists()){
+                return new Response('Host already exists.', {
+                    status: 400,
+                    headers,
+                });
+            }
+            return new Response('Amount not found', {
+                status: 400,
+                headers,
+            });
+        }
+        
         const sender = Keypair.fromSecretKey(bs58.decode(process.env.SOLANA_HOSTING_SECRET!));
         // Validate to confirm the user publickey received is valid before use
         const transaction = new Transaction();

@@ -64,20 +64,9 @@ export const POST = async (req: Request) => {
                 headers, //Must include CORS HEADERS
             });
         }
-        let h = await getDoc(doc(firestore, "hosts", account.toString()));
-        let moneyPool = 0;
-        if (h.exists()) {
-            // moneyPool = parseFloat(Number(h.data().amount).toFixed(4));
-            // moneyPool += parseFloat(Number(amount).toFixed(4));
-            // await setDoc(doc(firestore, "hosts", account.toString()), { amount: moneyPool });
-            return new Response('Hosting already exists', {
-                status: 400,
-                headers, //Must include CORS HEADERS
-            });
-        }
-        else {
-            await setDoc(doc(firestore, "hosts", account.toString()), { amount: amount });
-        }
+
+        await setDoc(doc(firestore, "hosts", account.toString()), { amount: amount });
+
         const sender = Keypair.fromSecretKey(bs58.decode(process.env.SOLANA_HOSTING_SECRET!));
         // Validate to confirm the user publickey received is valid before use
         const transaction = new Transaction();
@@ -118,7 +107,7 @@ export const POST = async (req: Request) => {
                             type: "action",
                             title: `Share this link on X for othes to play on the blinks.`,
                             icon: "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/icon.gif",
-                            description:  `Congratulations! Your bot is now live on our platform. Share the unique link below to invite others to play against your bot.
+                            description: `Congratulations! Your bot is now live on our platform. Share the unique link below to invite others to play against your bot.
                                     https://dial.to/?action=solana-action%3Ahttps%3A%2F%2Frps.sendarcade.fun%2Fapi%2Factions%2Fhosting%3Faccount%3D${account.toString}&cluster=devnet 
                                     `,
                             label: "Rock Paper Scissors",

@@ -50,7 +50,7 @@ import {
           "actions": [
             {
               "label": "Play!", // button text
-              "href": `/api/actions/host?choice={choice}&player=${account}&amount={amount}`,
+              "href": `/api/actions/host?choice={choice}&host=${account}&amount={amount}`,
               type: "transaction",
               parameters: [
                 {
@@ -58,10 +58,14 @@ import {
                   name: "amount", // parameter name in the `href` above
                   label: "Bet Amount in SOL", // placeholder of the text input
                   required: true,
-                  options: [
+                  options: (amount<0.1)?[
                     { label: `${amount} SOL`, value: `${amount.toString()}` },
                     { label: `${amount/2} SOL`, value: `${(amount/2).toString()}` },
                     { label: `${amount/4} SOL`, value: `${(amount/4).toString()}` },
+                  ]:[
+                    { label: "0.1 SOL", value: "0.1" },
+                    { label: "0.01 SOL", value: "0.01" },
+                    { label: "0.005 SOL", value: "0.005" },
                   ],
                 },
                 {

@@ -71,7 +71,7 @@ export const POST = async (req: Request) => {
             clusterApiUrl("devnet")
         );
         const web3 = require("@solana/web3.js");
-        const sender = Keypair.fromSecretKey(bs58.decode(process.env.SOLANA_SENDER_SECRET!));
+        const sender = Keypair.fromSecretKey(bs58.decode(process.env.SOLANA_HOSTING_SECRET!));
 
         const transaction = new Transaction().add(
             // note: `createPostResponse` requires at least 1 non-memo instruction

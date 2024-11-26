@@ -19,10 +19,15 @@ import {
 } from "@solana/web3.js";
 
 import bs58 from "bs58";
-
 import { getApps, initializeApp, getApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore, getDoc, doc, deleteDoc } from "firebase/firestore";
+import { getDoc, doc, getFirestore, setDoc, deleteDoc } from "firebase/firestore";
+
+const headers = createActionHeaders({
+    chainId: "devnet", // or chainId: "devnet"
+    actionVersion: "2.2.1", // the desired spec version
+});
+
+
 // Firebase _______________________________________________
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -33,35 +38,20 @@ const firebaseConfig = {
     appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
     measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
-// __________________________________________________________
-
 const app = !getApps.length ? initializeApp(firebaseConfig) : getApp();
+
 const firestore = getFirestore(app);
 
-const auth = getAuth(app);
-
-
-const headers = createActionHeaders({
-    chainId: "devnet", // or chainId: "devnet"
-    actionVersion: "2.2.1", // the desired spec version
-});
 
 export const POST = async (req: Request) => {
     try {
-        // Extract the query parameters from the URL
+
         const url = new URL(req.url);
-        const acc = url.searchParams.get("account");
-
-        // Ensure the required parameters are present
-        if (!acc) {
-            return new Response('Missing "account" in request', {
-                status: 400,
-                headers,
-            });
-        }
-
+        const acc = url.searchParams.get("account")!;
+        const bet = url.searchParams.get("bet")!;
         const body: ActionPostRequest = await req.json();
         // Validate to confirm the user publickey received is valid before use
+
         let account: PublicKey;
         try {
             account = new PublicKey(body.account);
@@ -71,25 +61,11 @@ export const POST = async (req: Request) => {
                 headers, //Must include CORS HEADERS
             });
         }
-        if (account.toString() != acc) {
-            return new Response('Account  mismatch.', {
-                status: 400,
-                headers, //Must include CORS HEADERS
-            });
-        }
-        let db = await getDoc(doc(firestore, "hosts", account?.toString()));
+        let db = await getDoc(doc(firestore, "hosts", acc));
         let amount = 0;
-        if (db.exists()) {
-            amount = Number(db.data().amount);
-            amount = amount*0.95;
-            amount = parseFloat(amount.toFixed(6));
-        }
-        else{
-            return new Response('Account not found in DB.', {
-                status: 400,
-                headers, //Must include CORS HEADERS
-            });
-        }
+        if (db.exists()) amount = Number(db.data().amount);
+        let pool = amount + bet;
+          await setDoc(doc(firestore, "hosts", acc), { amount: pool.toString() });        
 
         // Solana Blockchain Cluster (Set Mainnet "mainnet-beta" or Devnet "devnet")
         // If your RPC not present, it will use default devnet RPC provided to us via web3.js "clusterApiUrl("devnet")"
@@ -109,19 +85,12 @@ export const POST = async (req: Request) => {
             new TransactionInstruction({
                 programId: new PublicKey(MEMO_PROGRAM_ID),
                 data: Buffer.from(
-                    `Winner will get money.`,
+                    `User`,
                     "utf8"
                 ),
-                keys: [{ pubkey: sender.publicKey, isSigner: true, isWritable: false }],
+                keys: [],
             })
         );
-        transaction.add(web3.SystemProgram.transfer({
-            fromPubkey: sender.publicKey,
-            toPubkey: account,
-            lamports: amount * LAMPORTS_PER_SOL,
-        }));
-
-        // set the end user as the fee payer
 
         transaction.feePayer = account;
 
@@ -129,34 +98,17 @@ export const POST = async (req: Request) => {
         transaction.recentBlockhash = (
             await connection.getLatestBlockhash()
         ).blockhash;
-      
 
-        // const nacl = require("tweetnacl");
-        // let transaction = new web3.Transaction();
-        // transaction.add(
-        //     web3.SystemProgram.transfer({
-        //       fromPubkey: sender.publickey,
-        //       toPubkey: account,
-        //       lamports: 1*LAMPORTS_PER_SOL,
-        //     }),
-        //   );
-        //   await web3.sendAndConfirmTransaction(connection, transaction, [sender]);
         const payload: ActionPostResponse = await createPostResponse({
             fields: {
                 type: "transaction",
                 transaction,
-                message: `${amount} SOL sent to your account, Host again!`,
-                links: {
-                    next: {
-                      type: "post",
-                      href: `/api/actions/hostbackSuccess`,
-                      
-                    },
-                  },
+                message: `Sucess`,
             },
             // no additional signers are required for this transaction
             signers: [sender],
         });
+
 
         return Response.json(payload, {
             headers,

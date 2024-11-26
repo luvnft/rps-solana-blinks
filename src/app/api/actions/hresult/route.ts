@@ -21,7 +21,7 @@ import {
 import bs58 from "bs58";
 import { getApps, initializeApp, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
+import { deleteDoc, doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
 
 
 // Firebase _______________________________________________
@@ -42,7 +42,7 @@ const firestore = getFirestore(app);
 // __________________________________________________________
 
 const headers = createActionHeaders({
-  chainId: "mainnet", // or chainId: "devnet"
+  chainId: "devnet", // or chainId: "devnet"
   actionVersion: "2.2.1", // the desired spec version
 });
 
@@ -50,25 +50,44 @@ export const POST = async (req: Request) => {
   try {
     // Extract the query parameters from the URL
     const url = new URL(req.url);
-    const amount = url.searchParams.get("amount");
     const winner = url.searchParams.get("winner");
-    const player1 = url.searchParams.get("player1")!;
-    const player2 = url.searchParams.get("player2")!;
-
-    let db = await getDoc(doc(firestore, "hosts", player1?.toString()));
-    let pool = 0;
-    if (db.exists()) pool = Number(db.data().amount);
-    pool = pool - Number(amount);
-    let prizePool = Number(amount) * 2 * 0.9;
-    prizePool = parseFloat(prizePool.toFixed(4));
-
+    let bet = 0;
+    let player1 = "";
+    const player2 = url.searchParams.get("account")!;
     // Ensure the required parameters are present
-    if (!amount || !winner || !player1 || !player2 || !prizePool || !pool) {
+    if (!player2) {
       return new Response('Missing arguments in request', {
         status: 400,
         headers,
       });
     }
+    let db = await getDoc(doc(firestore, "hplayers", player2?.toString()));
+    let pool = 0;
+    if (db.exists()) {
+      player1 = db.data().host;
+      bet = parseFloat(Number(db.data().amount).toFixed(4));
+    }
+    else {
+      return new Response('Bet not found', {
+        status: 400,
+        headers,
+      });
+    }
+    let h = await getDoc(doc(firestore, "hosts", player1));
+    if (h.exists()) {
+      pool = Number(h.data().amount);
+    }
+    else {
+      return new Response('Host not found', {
+        status: 400,
+        headers,
+      });
+    }
+    pool = pool - bet
+    let prizePool = 2 * bet;
+    prizePool = parseFloat(prizePool.toFixed(4));
+
+
     const body: ActionPostRequest = await req.json();
     // Validate to confirm the user publickey received is valid before use
     let account: PublicKey;
@@ -86,10 +105,10 @@ export const POST = async (req: Request) => {
     // NOTE: "clusterApiUrl("devnet")" is not for mainnet use - for mainnet production launched Blinks, get your own RPC
     // For testing on mainnet - use "mainnet-beta"
     const connection = new Connection(
-      clusterApiUrl("mainnet-beta")
+      clusterApiUrl("devnet")
     );
     const web3 = require("@solana/web3.js");
-    const sender = Keypair.fromSecretKey(bs58.decode(process.env.SOLANA_SENDER_SECRET!));
+    const sender = Keypair.fromSecretKey(bs58.decode(process.env.SOLANA_HOSTING_SECRET!));
 
     const transaction = new Transaction().add(
       // note: `createPostResponse` requires at least 1 non-memo instruction
@@ -109,7 +128,7 @@ export const POST = async (req: Request) => {
     const P1PubKey = new PublicKey(player1);
     const P2PubKey = new PublicKey(player2);
     prizePool = parseFloat(prizePool.toFixed(4));
-  
+
     if (winner === "player2") {
       transaction.add(web3.SystemProgram.transfer({
         fromPubkey: sender.publicKey,
@@ -133,8 +152,9 @@ export const POST = async (req: Request) => {
     transaction.recentBlockhash = (
       await connection.getLatestBlockhash()
     ).blockhash;
-    
+    pool = parseFloat(pool.toFixed(4));
     await setDoc(doc(firestore, "hosts", player1), { amount: pool.toString() });
+    await deleteDoc(doc(firestore, "hplayers", player2));
 
     // const nacl = require("tweetnacl");
     // let transaction = new web3.Transaction();

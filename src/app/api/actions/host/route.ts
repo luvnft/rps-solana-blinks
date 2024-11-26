@@ -41,7 +41,7 @@ const firestore = getFirestore(app);
 // __________________________________________________________
 
 const headers = createActionHeaders({
-  chainId: "mainnet", // or chainId: "devnet"
+  chainId: "devnet", // or chainId: "devnet"
   actionVersion: "2.2.1", // the desired spec version
 });
 
@@ -68,16 +68,24 @@ export const POST = async (req: Request) => {
     // Extract the query parameters from the URL
     const url = new URL(req.url);
     const choice = url.searchParams.get("choice")!;
-    const player1 = url.searchParams.get("player")!;
+    const host = url.searchParams.get("host")!;
     const bet = Number(url.searchParams.get("amount"))!;
-
-    let db = await getDoc(doc(firestore, "hosts", player1?.toString()));
+    let hostchoice ="";
+    let db = await getDoc(doc(firestore, "hosts", host?.toString()));
     let amount = 0;
-    let P1choice = "";
-    if (db.exists()) amount = Number(db.data().amount);
+    if (db.exists()) {
+      amount = Number(db.data().amount);
+      amount = parseFloat(amount.toFixed(4));
+    }
+    else{
+      return new Response('Bet not found.', {
+        status: 400,
+        headers,
+      });
+    }
 
     // Ensure the required parameters are present
-    if (!amount || !choice || !player1 || !bet) {
+    if (!amount || !choice || !host || !bet) {
       return new Response('Bet not found.', {
         status: 400,
         headers,
@@ -101,45 +109,45 @@ export const POST = async (req: Request) => {
       });
     }
     const choices = ["R", "P", "S"];
-    P1choice = choices[Math.floor(Math.random() * choices.length)];
+    hostchoice = choices[Math.floor(Math.random() * choices.length)];
     let winner = "";
-    if (P1choice === choice) winner = "Tie";
-    else if (P1choice === "R" && choice === "S") winner = "player1";
-    else if (P1choice === "S" && choice === "P") winner = "player1";
-    else if (P1choice === "P" && choice === "R") winner = "player1";
+    if (hostchoice === choice) winner = "Tie";
+    else if (hostchoice === "R" && choice === "S") winner = "player1";
+    else if (hostchoice === "S" && choice === "P") winner = "player1";
+    else if (hostchoice === "P" && choice === "R") winner = "player1";
     else winner = "player2";
 
     if (winner === "Tie"){ 
       title = "It's a tie!";
-      description = `It's a draw! You chose ${formatChoice(choice)} and player1 chose ${formatChoice(P1choice)}. You both get your bet SOL back. Play again!`;
+      description = `It's a draw! You chose ${formatChoice(choice)} and player1 chose ${formatChoice(hostchoice)}. You both get your bet SOL back. Play again!`;
     }
     else if (winner === "player1"){
-      title = `Player 1(${player1}) wins!`;
-      description = `Unlucky! You chose ${formatChoice(choice)} and player1 chose ${formatChoice(P1choice)}. Try your luck again!`;
+      title = `Host(${host}) wins!`;
+      description = `Unlucky! You chose ${formatChoice(choice)} and player1 chose ${formatChoice(hostchoice)}. Try your luck again!`;
     } 
     else {
       title = `Player 2(${account.toString()}) wins!`;
-      description = `Congratulations! You chose ${formatChoice(choice)} and player1 chose ${formatChoice(P1choice)}. You won double your bet SOL! Claim your prize by clicking the button below now.`;
+      description = `Congratulations! You chose ${formatChoice(choice)} and player1 chose ${formatChoice(hostchoice)}. You won double your bet SOL! Claim your prize by clicking the button below now.`;
     }
 
-    if (choice === "R" && P1choice === "S") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/RW.png";
-    else if (choice === "S" && P1choice === "P") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/SW.png";
-    else if (choice === "P" && P1choice === "R") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/PW.png";
-    else if (choice === "S" && P1choice === "R") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/SL.png";
-    else if (choice === "P" && P1choice === "S") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/PL.png";
-    else if (choice === "R" && P1choice === "P") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/RL.png";
-    else if (choice === "R" && P1choice === "R") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/RD.png";
-    else if (choice === "S" && P1choice === "S") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/SD.png";
-    else if (choice === "P" && P1choice === "P") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/PD.png";
+    if (choice === "R" && hostchoice === "S") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/RW.png";
+    else if (choice === "S" && hostchoice === "P") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/SW.png";
+    else if (choice === "P" && hostchoice === "R") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/PW.png";
+    else if (choice === "S" && hostchoice === "R") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/SL.png";
+    else if (choice === "P" && hostchoice === "S") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/PL.png";
+    else if (choice === "R" && hostchoice === "P") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/RL.png";
+    else if (choice === "R" && hostchoice === "R") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/RD.png";
+    else if (choice === "S" && hostchoice === "S") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/SD.png";
+    else if (choice === "P" && hostchoice === "P") image = "https://raw.githubusercontent.com/The-x-35/rps-solana-blinks/refs/heads/main/public/PD.png";
     // Solana Blockchain Cluster (Set Mainnet "mainnet-beta" or Devnet "devnet")
     // If your RPC not present, it will use default devnet RPC provided to us via web3.js "clusterApiUrl("devnet")"
     // NOTE: "clusterApiUrl("devnet")" is not for mainnet use - for mainnet production launched Blinks, get your own RPC
     // For testing on mainnet - use "mainnet-beta"
     const connection = new Connection(
-      clusterApiUrl("mainnet-beta")
+      clusterApiUrl("devnet")
     );
     const web3 = require("@solana/web3.js");
-    const sender = Keypair.fromSecretKey(bs58.decode(process.env.SOLANA_SENDER_SECRET!));
+    const sender = Keypair.fromSecretKey(bs58.decode(process.env.SOLANA_HOSTING_SECRET!));
 
     const transaction = new Transaction().add(
       // note: `createPostResponse` requires at least 1 non-memo instruction
@@ -168,30 +176,15 @@ export const POST = async (req: Request) => {
       await connection.getLatestBlockhash()
     ).blockhash;
 
-    if (winner === "player1") {
-      let pool = amount - bet;
-      pool = pool + parseFloat((bet*2*0.9).toFixed(4));
-      await setDoc(doc(firestore, "hosts", player1), { amount: pool.toString() });
-    }
+    await setDoc(doc(firestore, "hplayers", account.toString()), { amount: bet.toString(), host: host });
 
-    // await deleteDoc(doc(firestore, "players", player1?.toString()));
-    // const nacl = require("tweetnacl");
-    // let transaction = new web3.Transaction();
-    // transaction.add(
-    //     web3.SystemProgram.transfer({
-    //       fromPubkey: sender.publickey,
-    //       toPubkey: account,
-    //       lamports: 1*LAMPORTS_PER_SOL,
-    //     }),
-    //   );
-    //   await web3.sendAndConfirmTransaction(connection, transaction, [sender]);
     const payload: ActionPostResponse = await createPostResponse({
       fields: {
         type: "transaction",
         transaction,
-        message: `Your choice was ${formatChoice(choice)} with a bet of ${bet} SOL.`,
+        message: `Unlucky,You lost! Play again.`,
         links: {
-          next: {
+          next: (winner != "player1")?{
             type: "inline",
             action: {
               type: "action",
@@ -200,15 +193,18 @@ export const POST = async (req: Request) => {
               description: `${description}`,
               label: "Rock Paper Scissors",
               "links": {
-                "actions": (winner != "player1")?[
+                "actions": [
                   {
                     "label": "Claim Prize", // button text
-                    "href": `/api/actions/hresult?amount=${bet}&winner=${winner}&player1=${player1}&player2=${account.toString()}`,
+                    "href": `/api/actions/hresult?account=${account.toString()}&winner=${winner}`,
                     type: "transaction"
                   }
-                ]:[]
+                ]
               }
             },
+          }:{
+            type: "post",
+            href: `/api/actions/hostWin/?account=${host.toString()}&bet=${bet}`,
           },
         },
       },
